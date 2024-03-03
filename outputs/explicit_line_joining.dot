@@ -1,0 +1,164 @@
+digraph ASTVisual {
+ ordering = out ;
+10 [ label="NAME
+ (fruits)", color = "red", shape="box"]
+20 [ label="STRING
+ (\"apple\")", color = "red", shape="box"]
+30 [ label="STRING
+ (\"banana\")", color = "red", shape="box"]
+40 [ label="NAMED_LIST"]
+50 [ label="STRING
+ (\"cherry\")", color = "red", shape="box"]
+60 [ label="NAMED_LIST"]
+70 [ label="EQUAL
+(=)"]
+80 [ label="STRING
+ (\"apple\")", color = "red", shape="box"]
+90 [ label="IN
+(in)"]
+100 [ label="NAME
+ (fruits)", color = "red", shape="box"]
+110 [ label="NAME
+ (print)", color = "red", shape="box"]
+120 [ label="STRING
+ (\"Yes, 'apple' is in the fruits list\")", color = "red", shape="box"]
+130 [ label="ATOM_EXPR"]
+140 [ label="NAME
+ (print)", color = "red", shape="box"]
+150 [ label="STRING
+ (\"No, 'apple' is not in the fruits list\")", color = "red", shape="box"]
+160 [ label="ATOM_EXPR"]
+170 [ label="IF_ELSE"]
+180 [ label="NUMBER
+ (1900)", color = "red", shape="box"]
+190 [ label="LESS_THAN
+(<)"]
+200 [ label="NAME
+ (year)", color = "red", shape="box"]
+210 [ label="LESS_THAN
+(<)"]
+220 [ label="NUMBER
+ (2100)", color = "red", shape="box"]
+230 [ label="NUMBER
+ (1)", color = "red", shape="box"]
+240 [ label="LESS_THAN_EQUAL
+(<=)"]
+250 [ label="NAME
+ (month)", color = "red", shape="box"]
+260 [ label="LESS_THAN_EQUAL
+(<=)"]
+270 [ label="NUMBER
+ (12)", color = "red", shape="box"]
+280 [ label="AND
+(and)"]
+290 [ label="NUMBER
+ (1)", color = "red", shape="box"]
+300 [ label="LESS_THAN_EQUAL
+(<=)"]
+310 [ label="NAME
+ (day)", color = "red", shape="box"]
+320 [ label="LESS_THAN_EQUAL
+(<=)"]
+330 [ label="NUMBER
+ (31)", color = "red", shape="box"]
+340 [ label="AND
+(and)"]
+350 [ label="NUMBER
+ (0)", color = "red", shape="box"]
+360 [ label="LESS_THAN_EQUAL
+(<=)"]
+370 [ label="NAME
+ (hour)", color = "red", shape="box"]
+380 [ label="LESS_THAN
+(<)"]
+390 [ label="NUMBER
+ (24)", color = "red", shape="box"]
+400 [ label="AND
+(and)"]
+410 [ label="NUMBER
+ (0)", color = "red", shape="box"]
+420 [ label="LESS_THAN_EQUAL
+(<=)"]
+430 [ label="NAME
+ (minute)", color = "red", shape="box"]
+440 [ label="LESS_THAN
+(<)"]
+450 [ label="NUMBER
+ (60)", color = "red", shape="box"]
+460 [ label="AND
+(and)"]
+470 [ label="NUMBER
+ (0)", color = "red", shape="box"]
+480 [ label="LESS_THAN_EQUAL
+(<=)"]
+490 [ label="NAME
+ (second)", color = "red", shape="box"]
+500 [ label="LESS_THAN
+(<)"]
+510 [ label="NUMBER
+ (60)", color = "red", shape="box"]
+520 [ label="AND
+(and)"]
+530 [ label="NUMBER
+ (1)", color = "red", shape="box"]
+540 [ label="RETURN"]
+550 [ label="IF"]
+560 [ label="SNIPPET"]
+570 [ label="SNIPPET"]
+40 -> 20[ label=""]
+40 -> 30[ label=""]
+60 -> 40[ label=""]
+60 -> 50[ label=""]
+70 -> 10[ label=""]
+70 -> 60[ label=""]
+90 -> 80[ label=""]
+90 -> 100[ label=""]
+130 -> 110[ label=""]
+130 -> 120[ label=""]
+160 -> 140[ label=""]
+160 -> 150[ label=""]
+170 -> 90[ label="IF_EXPR"]
+170 -> 130[ label="IF_SUITE"]
+170 -> 160[ label="ELSE_SUITE"]
+210 -> 200[ label=""]
+210 -> 220[ label=""]
+190 -> 180[ label=""]
+190 -> 210[ label=""]
+260 -> 250[ label=""]
+260 -> 270[ label=""]
+240 -> 230[ label=""]
+240 -> 260[ label=""]
+280 -> 190[ label=""]
+280 -> 240[ label=""]
+320 -> 310[ label=""]
+320 -> 330[ label=""]
+300 -> 290[ label=""]
+300 -> 320[ label=""]
+340 -> 280[ label=""]
+340 -> 300[ label=""]
+380 -> 370[ label=""]
+380 -> 390[ label=""]
+360 -> 350[ label=""]
+360 -> 380[ label=""]
+400 -> 340[ label=""]
+400 -> 360[ label=""]
+440 -> 430[ label=""]
+440 -> 450[ label=""]
+420 -> 410[ label=""]
+420 -> 440[ label=""]
+460 -> 400[ label=""]
+460 -> 420[ label=""]
+500 -> 490[ label=""]
+500 -> 510[ label=""]
+480 -> 470[ label=""]
+480 -> 500[ label=""]
+520 -> 460[ label=""]
+520 -> 480[ label=""]
+540 -> 530[ label=""]
+550 -> 520[ label="EXPRESSION"]
+550 -> 540[ label="SUITE"]
+560 -> 170[ label=""]
+560 -> 550[ label=""]
+570 -> 70[ label=""]
+570 -> 560[ label=""]
+  }

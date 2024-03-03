@@ -1,0 +1,525 @@
+digraph ASTVisual {
+ ordering = out ;
+10 [ label="NAME
+ (self)", color = "red", shape="box"]
+20 [ label="NAME
+ (species)", color = "red", shape="box"]
+30 [ label="ARGUMENTS"]
+40 [ label="NAME
+ (self)", color = "red", shape="box"]
+50 [ label="."]
+60 [ label="NAME
+ (species)", color = "red", shape="box"]
+70 [ label="NAME
+ (species)", color = "red", shape="box"]
+80 [ label="EQUAL
+(=)"]
+90 [ label="FUNCTION"]
+100 [ label="NAME
+ (__init__)", color = "red", shape="box"]
+110 [ label="NAME
+ (self)", color = "red", shape="box"]
+120 [ label="NAME
+ (pass)", color = "red", shape="box"]
+130 [ label="FUNCTION"]
+140 [ label="NAME
+ (speak)", color = "red", shape="box"]
+150 [ label="MANY_STMT"]
+160 [ label="CLASS"]
+170 [ label="NAME
+ (Animal)", color = "red", shape="box"]
+180 [ label="NAME
+ (Animal)", color = "red", shape="box"]
+190 [ label="NAME
+ (self)", color = "red", shape="box"]
+200 [ label="NAME
+ (species)", color = "red", shape="box"]
+210 [ label="ARGUMENTS"]
+220 [ label="NAME
+ (sound)", color = "red", shape="box"]
+230 [ label="ARGUMENTS"]
+240 [ label="NAME
+ (Animal)", color = "red", shape="box"]
+250 [ label="."]
+260 [ label="NAME
+ (__init__)", color = "red", shape="box"]
+270 [ label="NAME
+ (self)", color = "red", shape="box"]
+280 [ label="NAME
+ (species)", color = "red", shape="box"]
+290 [ label="ARGUMENT_LIST"]
+300 [ label="ATOM_EXPR"]
+310 [ label="NAME
+ (self)", color = "red", shape="box"]
+320 [ label="."]
+330 [ label="NAME
+ (sound)", color = "red", shape="box"]
+340 [ label="NAME
+ (sound)", color = "red", shape="box"]
+350 [ label="EQUAL
+(=)"]
+360 [ label="MANY_STMT"]
+370 [ label="FUNCTION"]
+380 [ label="NAME
+ (__init__)", color = "red", shape="box"]
+390 [ label="NAME
+ (self)", color = "red", shape="box"]
+400 [ label="STRING
+ (\"A \")", color = "red", shape="box"]
+410 [ label="NAME
+ (self)", color = "red", shape="box"]
+420 [ label="."]
+430 [ label="NAME
+ (species)", color = "red", shape="box"]
+440 [ label="PLUS
+(+)"]
+450 [ label="STRING
+ (\" makes \")", color = "red", shape="box"]
+460 [ label="PLUS
+(+)"]
+470 [ label="NAME
+ (self)", color = "red", shape="box"]
+480 [ label="."]
+490 [ label="NAME
+ (sound)", color = "red", shape="box"]
+500 [ label="PLUS
+(+)"]
+510 [ label="STRING
+ (\" sound.\")", color = "red", shape="box"]
+520 [ label="PLUS
+(+)"]
+530 [ label="RETURN"]
+540 [ label="FUNCTION"]
+550 [ label="NAME
+ (speak)", color = "red", shape="box"]
+560 [ label="MANY_STMT"]
+570 [ label="CLASS"]
+580 [ label="NAME
+ (Mammal)", color = "red", shape="box"]
+590 [ label="NAME
+ (Mammal)", color = "red", shape="box"]
+600 [ label="NAME
+ (self)", color = "red", shape="box"]
+610 [ label="NAME
+ (breed)", color = "red", shape="box"]
+620 [ label="ARGUMENTS"]
+630 [ label="NAME
+ (sound)", color = "red", shape="box"]
+640 [ label="STRING
+ (\"bark\")", color = "red", shape="box"]
+650 [ label="EQUAL
+(=)"]
+660 [ label="ARGUMENTS"]
+670 [ label="NAME
+ (Mammal)", color = "red", shape="box"]
+680 [ label="."]
+690 [ label="NAME
+ (__init__)", color = "red", shape="box"]
+700 [ label="NAME
+ (self)", color = "red", shape="box"]
+710 [ label="STRING
+ (\"dog\")", color = "red", shape="box"]
+720 [ label="ARGUMENT_LIST"]
+730 [ label="NAME
+ (sound)", color = "red", shape="box"]
+740 [ label="ARGUMENT_LIST"]
+750 [ label="ATOM_EXPR"]
+760 [ label="NAME
+ (self)", color = "red", shape="box"]
+770 [ label="."]
+780 [ label="NAME
+ (breed)", color = "red", shape="box"]
+790 [ label="NAME
+ (breed)", color = "red", shape="box"]
+800 [ label="EQUAL
+(=)"]
+810 [ label="MANY_STMT"]
+820 [ label="FUNCTION"]
+830 [ label="NAME
+ (__init__)", color = "red", shape="box"]
+840 [ label="NAME
+ (self)", color = "red", shape="box"]
+850 [ label="STRING
+ (\"A \")", color = "red", shape="box"]
+860 [ label="NAME
+ (self)", color = "red", shape="box"]
+870 [ label="."]
+880 [ label="NAME
+ (breed)", color = "red", shape="box"]
+890 [ label="PLUS
+(+)"]
+900 [ label="STRING
+ (\" \")", color = "red", shape="box"]
+910 [ label="PLUS
+(+)"]
+920 [ label="NAME
+ (self)", color = "red", shape="box"]
+930 [ label="."]
+940 [ label="NAME
+ (species)", color = "red", shape="box"]
+950 [ label="PLUS
+(+)"]
+960 [ label="STRING
+ (\" makes \")", color = "red", shape="box"]
+970 [ label="PLUS
+(+)"]
+980 [ label="NAME
+ (self)", color = "red", shape="box"]
+990 [ label="."]
+1000 [ label="NAME
+ (sound)", color = "red", shape="box"]
+1010 [ label="PLUS
+(+)"]
+1020 [ label="STRING
+ (\".\")", color = "red", shape="box"]
+1030 [ label="PLUS
+(+)"]
+1040 [ label="RETURN"]
+1050 [ label="FUNCTION"]
+1060 [ label="NAME
+ (speak)", color = "red", shape="box"]
+1070 [ label="MANY_STMT"]
+1080 [ label="CLASS"]
+1090 [ label="NAME
+ (Dog)", color = "red", shape="box"]
+1100 [ label="NAME
+ (Mammal)", color = "red", shape="box"]
+1110 [ label="NAME
+ (self)", color = "red", shape="box"]
+1120 [ label="NAME
+ (breed)", color = "red", shape="box"]
+1130 [ label="ARGUMENTS"]
+1140 [ label="NAME
+ (sound)", color = "red", shape="box"]
+1150 [ label="STRING
+ (\"meow\")", color = "red", shape="box"]
+1160 [ label="EQUAL
+(=)"]
+1170 [ label="ARGUMENTS"]
+1180 [ label="NAME
+ (Mammal)", color = "red", shape="box"]
+1190 [ label="."]
+1200 [ label="NAME
+ (__init__)", color = "red", shape="box"]
+1210 [ label="NAME
+ (self)", color = "red", shape="box"]
+1220 [ label="STRING
+ (\"cat\")", color = "red", shape="box"]
+1230 [ label="ARGUMENT_LIST"]
+1240 [ label="NAME
+ (sound)", color = "red", shape="box"]
+1250 [ label="ARGUMENT_LIST"]
+1260 [ label="ATOM_EXPR"]
+1270 [ label="NAME
+ (self)", color = "red", shape="box"]
+1280 [ label="."]
+1290 [ label="NAME
+ (breed)", color = "red", shape="box"]
+1300 [ label="NAME
+ (breed)", color = "red", shape="box"]
+1310 [ label="EQUAL
+(=)"]
+1320 [ label="MANY_STMT"]
+1330 [ label="FUNCTION"]
+1340 [ label="NAME
+ (__init__)", color = "red", shape="box"]
+1350 [ label="NAME
+ (self)", color = "red", shape="box"]
+1360 [ label="STRING
+ (\"A \")", color = "red", shape="box"]
+1370 [ label="NAME
+ (self)", color = "red", shape="box"]
+1380 [ label="."]
+1390 [ label="NAME
+ (breed)", color = "red", shape="box"]
+1400 [ label="PLUS
+(+)"]
+1410 [ label="STRING
+ (\" \")", color = "red", shape="box"]
+1420 [ label="PLUS
+(+)"]
+1430 [ label="NAME
+ (self)", color = "red", shape="box"]
+1440 [ label="."]
+1450 [ label="NAME
+ (species)", color = "red", shape="box"]
+1460 [ label="PLUS
+(+)"]
+1470 [ label="STRING
+ (\" makes \")", color = "red", shape="box"]
+1480 [ label="PLUS
+(+)"]
+1490 [ label="NAME
+ (self)", color = "red", shape="box"]
+1500 [ label="."]
+1510 [ label="NAME
+ (sound)", color = "red", shape="box"]
+1520 [ label="PLUS
+(+)"]
+1530 [ label="STRING
+ (\".\")", color = "red", shape="box"]
+1540 [ label="PLUS
+(+)"]
+1550 [ label="RETURN"]
+1560 [ label="FUNCTION"]
+1570 [ label="NAME
+ (speak)", color = "red", shape="box"]
+1580 [ label="MANY_STMT"]
+1590 [ label="CLASS"]
+1600 [ label="NAME
+ (Cat)", color = "red", shape="box"]
+1610 [ label="NAME
+ (dog)", color = "red", shape="box"]
+1620 [ label="NAME
+ (Dog)", color = "red", shape="box"]
+1630 [ label="STRING
+ (\"Golden Retriever\")", color = "red", shape="box"]
+1640 [ label="ATOM_EXPR"]
+1650 [ label="EQUAL
+(=)"]
+1660 [ label="NAME
+ (cat)", color = "red", shape="box"]
+1670 [ label="NAME
+ (Cat)", color = "red", shape="box"]
+1680 [ label="STRING
+ (\"Siamese\")", color = "red", shape="box"]
+1690 [ label="ATOM_EXPR"]
+1700 [ label="EQUAL
+(=)"]
+1710 [ label="NAME
+ (print)", color = "red", shape="box"]
+1720 [ label="NAME
+ (dog)", color = "red", shape="box"]
+1730 [ label="."]
+1740 [ label="NAME
+ (speak)", color = "red", shape="box"]
+1760 [ label="ATOM_EXPR"]
+1770 [ label="ATOM_EXPR"]
+1780 [ label="NAME
+ (print)", color = "red", shape="box"]
+1790 [ label="NAME
+ (cat)", color = "red", shape="box"]
+1800 [ label="."]
+1810 [ label="NAME
+ (speak)", color = "red", shape="box"]
+1830 [ label="ATOM_EXPR"]
+1840 [ label="ATOM_EXPR"]
+1850 [ label="MANY_STMT"]
+1860 [ label="MANY_STMT"]
+1870 [ label="MANY_STMT"]
+1880 [ label="FUNCTION"]
+1890 [ label="NAME
+ (main)", color = "red", shape="box"]
+1900 [ label="NAME
+ (__name__)", color = "red", shape="box"]
+1910 [ label="EQUAL_EQUAL
+(==)"]
+1920 [ label="STRING
+ (\"__main__\")", color = "red", shape="box"]
+1930 [ label="NAME
+ (main)", color = "red", shape="box"]
+1950 [ label="ATOM_EXPR"]
+1960 [ label="IF"]
+1970 [ label="SNIPPET"]
+1980 [ label="SNIPPET"]
+1990 [ label="SNIPPET"]
+2000 [ label="SNIPPET"]
+2010 [ label="SNIPPET"]
+30 -> 10[ label=""]
+30 -> 20[ label=""]
+50 -> 40[ label=""]
+50 -> 60[ label=""]
+80 -> 50[ label=""]
+80 -> 70[ label=""]
+90 -> 100[ label=""]
+90 -> 30[ label=""]
+90 -> 80[ label=""]
+130 -> 140[ label=""]
+130 -> 110[ label=""]
+130 -> 120[ label=""]
+150 -> 90[ label=""]
+150 -> 130[ label=""]
+160 -> 170[ label=""]
+160 -> 150[ label=""]
+210 -> 190[ label=""]
+210 -> 200[ label=""]
+230 -> 210[ label=""]
+230 -> 220[ label=""]
+250 -> 240[ label=""]
+250 -> 260[ label=""]
+290 -> 270[ label="ARG_LIST"]
+290 -> 280[ label="ARG"]
+300 -> 250[ label=""]
+300 -> 290[ label=""]
+320 -> 310[ label=""]
+320 -> 330[ label=""]
+350 -> 320[ label=""]
+350 -> 340[ label=""]
+360 -> 300[ label=""]
+360 -> 350[ label=""]
+370 -> 380[ label=""]
+370 -> 230[ label=""]
+370 -> 360[ label=""]
+420 -> 410[ label=""]
+420 -> 430[ label=""]
+440 -> 400[ label=""]
+440 -> 420[ label=""]
+460 -> 440[ label=""]
+460 -> 450[ label=""]
+480 -> 470[ label=""]
+480 -> 490[ label=""]
+500 -> 460[ label=""]
+500 -> 480[ label=""]
+520 -> 500[ label=""]
+520 -> 510[ label=""]
+530 -> 520[ label=""]
+540 -> 550[ label=""]
+540 -> 390[ label=""]
+540 -> 530[ label=""]
+560 -> 370[ label=""]
+560 -> 540[ label=""]
+570 -> 580[ label=""]
+570 -> 180[ label=""]
+570 -> 560[ label=""]
+620 -> 600[ label=""]
+620 -> 610[ label=""]
+650 -> 630[ label=""]
+650 -> 640[ label=""]
+660 -> 620[ label=""]
+660 -> 650[ label=""]
+680 -> 670[ label=""]
+680 -> 690[ label=""]
+720 -> 700[ label="ARG_LIST"]
+720 -> 710[ label="ARG"]
+740 -> 720[ label="ARG_LIST"]
+740 -> 730[ label="ARG"]
+750 -> 680[ label=""]
+750 -> 740[ label=""]
+770 -> 760[ label=""]
+770 -> 780[ label=""]
+800 -> 770[ label=""]
+800 -> 790[ label=""]
+810 -> 750[ label=""]
+810 -> 800[ label=""]
+820 -> 830[ label=""]
+820 -> 660[ label=""]
+820 -> 810[ label=""]
+870 -> 860[ label=""]
+870 -> 880[ label=""]
+890 -> 850[ label=""]
+890 -> 870[ label=""]
+910 -> 890[ label=""]
+910 -> 900[ label=""]
+930 -> 920[ label=""]
+930 -> 940[ label=""]
+950 -> 910[ label=""]
+950 -> 930[ label=""]
+970 -> 950[ label=""]
+970 -> 960[ label=""]
+990 -> 980[ label=""]
+990 -> 1000[ label=""]
+1010 -> 970[ label=""]
+1010 -> 990[ label=""]
+1030 -> 1010[ label=""]
+1030 -> 1020[ label=""]
+1040 -> 1030[ label=""]
+1050 -> 1060[ label=""]
+1050 -> 840[ label=""]
+1050 -> 1040[ label=""]
+1070 -> 820[ label=""]
+1070 -> 1050[ label=""]
+1080 -> 1090[ label=""]
+1080 -> 590[ label=""]
+1080 -> 1070[ label=""]
+1130 -> 1110[ label=""]
+1130 -> 1120[ label=""]
+1160 -> 1140[ label=""]
+1160 -> 1150[ label=""]
+1170 -> 1130[ label=""]
+1170 -> 1160[ label=""]
+1190 -> 1180[ label=""]
+1190 -> 1200[ label=""]
+1230 -> 1210[ label="ARG_LIST"]
+1230 -> 1220[ label="ARG"]
+1250 -> 1230[ label="ARG_LIST"]
+1250 -> 1240[ label="ARG"]
+1260 -> 1190[ label=""]
+1260 -> 1250[ label=""]
+1280 -> 1270[ label=""]
+1280 -> 1290[ label=""]
+1310 -> 1280[ label=""]
+1310 -> 1300[ label=""]
+1320 -> 1260[ label=""]
+1320 -> 1310[ label=""]
+1330 -> 1340[ label=""]
+1330 -> 1170[ label=""]
+1330 -> 1320[ label=""]
+1380 -> 1370[ label=""]
+1380 -> 1390[ label=""]
+1400 -> 1360[ label=""]
+1400 -> 1380[ label=""]
+1420 -> 1400[ label=""]
+1420 -> 1410[ label=""]
+1440 -> 1430[ label=""]
+1440 -> 1450[ label=""]
+1460 -> 1420[ label=""]
+1460 -> 1440[ label=""]
+1480 -> 1460[ label=""]
+1480 -> 1470[ label=""]
+1500 -> 1490[ label=""]
+1500 -> 1510[ label=""]
+1520 -> 1480[ label=""]
+1520 -> 1500[ label=""]
+1540 -> 1520[ label=""]
+1540 -> 1530[ label=""]
+1550 -> 1540[ label=""]
+1560 -> 1570[ label=""]
+1560 -> 1350[ label=""]
+1560 -> 1550[ label=""]
+1580 -> 1330[ label=""]
+1580 -> 1560[ label=""]
+1590 -> 1600[ label=""]
+1590 -> 1100[ label=""]
+1590 -> 1580[ label=""]
+1640 -> 1620[ label=""]
+1640 -> 1630[ label=""]
+1650 -> 1610[ label=""]
+1650 -> 1640[ label=""]
+1690 -> 1670[ label=""]
+1690 -> 1680[ label=""]
+1700 -> 1660[ label=""]
+1700 -> 1690[ label=""]
+1730 -> 1720[ label=""]
+1730 -> 1740[ label=""]
+1760 -> 1730[ label=""]
+1770 -> 1710[ label=""]
+1770 -> 1760[ label=""]
+1800 -> 1790[ label=""]
+1800 -> 1810[ label=""]
+1830 -> 1800[ label=""]
+1840 -> 1780[ label=""]
+1840 -> 1830[ label=""]
+1850 -> 1770[ label=""]
+1850 -> 1840[ label=""]
+1860 -> 1700[ label=""]
+1860 -> 1850[ label=""]
+1870 -> 1650[ label=""]
+1870 -> 1860[ label=""]
+1880 -> 1890[ label=""]
+1880 -> 1870[ label=""]
+1910 -> 1900[ label=""]
+1910 -> 1920[ label=""]
+1950 -> 1930[ label=""]
+1960 -> 1910[ label="EXPRESSION"]
+1960 -> 1950[ label="SUITE"]
+1970 -> 1880[ label=""]
+1970 -> 1960[ label=""]
+1980 -> 1590[ label=""]
+1980 -> 1970[ label=""]
+1990 -> 1080[ label=""]
+1990 -> 1980[ label=""]
+2000 -> 570[ label=""]
+2000 -> 1990[ label=""]
+2010 -> 160[ label=""]
+2010 -> 2000[ label=""]
+  }

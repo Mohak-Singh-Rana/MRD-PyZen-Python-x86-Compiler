@@ -1,0 +1,119 @@
+
+
+
+digraph ASTVisual {
+ ordering = out ;
+10 [ label="NAME
+ (fruits)", color = "red", shape="box"]
+20 [ label="STRING
+ (\"apple\")", color = "red", shape="box"]
+30 [ label="STRING
+ (\"banana\")", color = "red", shape="box"]
+40 [ label="NAMED_LIST"]
+50 [ label="STRING
+ (\"cherry\")", color = "red", shape="box"]
+60 [ label="NAMED_LIST"]
+70 [ label="EQUAL
+(=)"]
+80 [ label="STRING
+ (\"apple\")", color = "red", shape="box"]
+90 [ label="IN
+(in)"]
+100 [ label="NAME
+ (fruits)", color = "red", shape="box"]
+110 [ label="NAME
+ (print)", color = "red", shape="box"]
+120 [ label="STRING
+ (\"Yes, 'apple' is in the fruits list\")", color = "red", shape="box"]
+130 [ label="ATOM_EXPR"]
+140 [ label="NAME
+ (print)", color = "red", shape="box"]
+150 [ label="STRING
+ (\"No, 'apple' is not in the fruits list\")", color = "red", shape="box"]
+160 [ label="ATOM_EXPR"]
+170 [ label="IF_ELSE"]
+180 [ label="NAME
+ (month_names)", color = "red", shape="box"]
+190 [ label="STRING
+ ('Januari')", color = "red", shape="box"]
+200 [ label="STRING
+ ('Februari')", color = "red", shape="box"]
+210 [ label="NAMED_LIST"]
+220 [ label="STRING
+ ('Maart')", color = "red", shape="box"]
+230 [ label="NAMED_LIST"]
+240 [ label="STRING
+ ('April')", color = "red", shape="box"]
+250 [ label="NAMED_LIST"]
+260 [ label="STRING
+ ('Mei')", color = "red", shape="box"]
+270 [ label="NAMED_LIST"]
+280 [ label="STRING
+ ('Juni')", color = "red", shape="box"]
+290 [ label="NAMED_LIST"]
+300 [ label="STRING
+ ('Juli')", color = "red", shape="box"]
+310 [ label="NAMED_LIST"]
+320 [ label="STRING
+ ('Augustus')", color = "red", shape="box"]
+330 [ label="NAMED_LIST"]
+340 [ label="STRING
+ ('September')", color = "red", shape="box"]
+350 [ label="NAMED_LIST"]
+360 [ label="STRING
+ ('Oktober')", color = "red", shape="box"]
+370 [ label="NAMED_LIST"]
+380 [ label="STRING
+ ('November')", color = "red", shape="box"]
+390 [ label="NAMED_LIST"]
+400 [ label="STRING
+ ('December')", color = "red", shape="box"]
+410 [ label="NAMED_LIST"]
+420 [ label="EQUAL
+(=)"]
+430 [ label="SNIPPET"]
+440 [ label="SNIPPET"]
+40 -> 20[ label=""]
+40 -> 30[ label=""]
+60 -> 40[ label=""]
+60 -> 50[ label=""]
+70 -> 10[ label=""]
+70 -> 60[ label=""]
+90 -> 80[ label=""]
+90 -> 100[ label=""]
+130 -> 110[ label=""]
+130 -> 120[ label=""]
+160 -> 140[ label=""]
+160 -> 150[ label=""]
+170 -> 90[ label="IF_EXPR"]
+170 -> 130[ label="IF_SUITE"]
+170 -> 160[ label="ELSE_SUITE"]
+210 -> 190[ label=""]
+210 -> 200[ label=""]
+230 -> 210[ label=""]
+230 -> 220[ label=""]
+250 -> 230[ label=""]
+250 -> 240[ label=""]
+270 -> 250[ label=""]
+270 -> 260[ label=""]
+290 -> 270[ label=""]
+290 -> 280[ label=""]
+310 -> 290[ label=""]
+310 -> 300[ label=""]
+330 -> 310[ label=""]
+330 -> 320[ label=""]
+350 -> 330[ label=""]
+350 -> 340[ label=""]
+370 -> 350[ label=""]
+370 -> 360[ label=""]
+390 -> 370[ label=""]
+390 -> 380[ label=""]
+410 -> 390[ label=""]
+410 -> 400[ label=""]
+420 -> 180[ label=""]
+420 -> 410[ label=""]
+430 -> 170[ label=""]
+430 -> 420[ label=""]
+440 -> 70[ label=""]
+440 -> 430[ label=""]
+  }

@@ -1,0 +1,936 @@
+digraph ASTVisual {
+ ordering = out ;
+10 [ label="NAME
+ (a)", color = "red", shape="box"]
+20 [ label="NUMBER
+ (5)", color = "red", shape="box"]
+30 [ label="EQUAL
+(=)"]
+40 [ label="NAME
+ (b)", color = "red", shape="box"]
+50 [ label="NUMBER
+ (2)", color = "red", shape="box"]
+60 [ label="EQUAL
+(=)"]
+70 [ label="NAME
+ (c)", color = "red", shape="box"]
+80 [ label="NUMBER
+ (3.5)", color = "red", shape="box"]
+90 [ label="EQUAL
+(=)"]
+100 [ label="NAME
+ (d)", color = "red", shape="box"]
+110 [ label="NAME
+ (a)", color = "red", shape="box"]
+120 [ label="MULTIPLY
+(*)"]
+130 [ label="NAME
+ (b)", color = "red", shape="box"]
+140 [ label="DIVIDE
+(/)"]
+150 [ label="NAME
+ (c)", color = "red", shape="box"]
+160 [ label="NUMBER
+ (7.2)", color = "red", shape="box"]
+170 [ label="PLUS
+(+)"]
+180 [ label="NUMBER
+ (5)", color = "red", shape="box"]
+190 [ label="MULTIPLY
+(*)"]
+200 [ label="NUMBER
+ (3.6)", color = "red", shape="box"]
+210 [ label="MINUS
+(-)"]
+220 [ label="NUMBER
+ (4)", color = "red", shape="box"]
+230 [ label="DIVIDE
+(/)"]
+240 [ label="NUMBER
+ (2.5)", color = "red", shape="box"]
+250 [ label="PLUS
+(+)"]
+260 [ label="EQUAL
+(=)"]
+270 [ label="NAME
+ (e)", color = "red", shape="box"]
+280 [ label="NAME
+ (b)", color = "red", shape="box"]
+290 [ label="NAME
+ (c)", color = "red", shape="box"]
+300 [ label="DIVIDE
+(/)"]
+310 [ label="NAME
+ (a)", color = "red", shape="box"]
+320 [ label="MULTIPLY
+(*)"]
+330 [ label="NUMBER
+ (9.8)", color = "red", shape="box"]
+340 [ label="MINUS
+(-)"]
+350 [ label="NUMBER
+ (6.7)", color = "red", shape="box"]
+360 [ label="DIVIDE
+(/)"]
+370 [ label="NUMBER
+ (4)", color = "red", shape="box"]
+380 [ label="PLUS
+(+)"]
+390 [ label="NUMBER
+ (2.1)", color = "red", shape="box"]
+400 [ label="MINUS
+(-)"]
+410 [ label="EQUAL
+(=)"]
+420 [ label="NAME
+ (f)", color = "red", shape="box"]
+430 [ label="NAME
+ (c)", color = "red", shape="box"]
+440 [ label="NAME
+ (a)", color = "red", shape="box"]
+450 [ label="MULTIPLY
+(*)"]
+460 [ label="NAME
+ (b)", color = "red", shape="box"]
+470 [ label="PLUS
+(+)"]
+480 [ label="NUMBER
+ (5.3)", color = "red", shape="box"]
+490 [ label="DIVIDE
+(/)"]
+500 [ label="NUMBER
+ (2.1)", color = "red", shape="box"]
+510 [ label="MINUS
+(-)"]
+520 [ label="NUMBER
+ (8.9)", color = "red", shape="box"]
+530 [ label="PLUS
+(+)"]
+540 [ label="NUMBER
+ (6.4)", color = "red", shape="box"]
+550 [ label="MINUS
+(-)"]
+560 [ label="EQUAL
+(=)"]
+570 [ label="NAME
+ (g)", color = "red", shape="box"]
+580 [ label="NAME
+ (a)", color = "red", shape="box"]
+590 [ label="DIVIDE
+(/)"]
+600 [ label="NAME
+ (b)", color = "red", shape="box"]
+610 [ label="NAME
+ (c)", color = "red", shape="box"]
+620 [ label="MULTIPLY
+(*)"]
+630 [ label="NUMBER
+ (4.7)", color = "red", shape="box"]
+640 [ label="PLUS
+(+)"]
+650 [ label="NUMBER
+ (8.2)", color = "red", shape="box"]
+660 [ label="DIVIDE
+(/)"]
+670 [ label="NUMBER
+ (3.9)", color = "red", shape="box"]
+680 [ label="MINUS
+(-)"]
+690 [ label="NUMBER
+ (7.4)", color = "red", shape="box"]
+700 [ label="PLUS
+(+)"]
+710 [ label="EQUAL
+(=)"]
+720 [ label="NAME
+ (h)", color = "red", shape="box"]
+730 [ label="NAME
+ (b)", color = "red", shape="box"]
+740 [ label="MULTIPLY
+(*)"]
+750 [ label="NAME
+ (c)", color = "red", shape="box"]
+760 [ label="NAME
+ (a)", color = "red", shape="box"]
+770 [ label="DIVIDE
+(/)"]
+780 [ label="NUMBER
+ (2.3)", color = "red", shape="box"]
+790 [ label="MINUS
+(-)"]
+800 [ label="NUMBER
+ (9.4)", color = "red", shape="box"]
+810 [ label="DIVIDE
+(/)"]
+820 [ label="NUMBER
+ (5.6)", color = "red", shape="box"]
+830 [ label="PLUS
+(+)"]
+840 [ label="NUMBER
+ (3.8)", color = "red", shape="box"]
+850 [ label="MINUS
+(-)"]
+860 [ label="EQUAL
+(=)"]
+870 [ label="NAME
+ (d)", color = "red", shape="box"]
+880 [ label="NAME
+ (a)", color = "red", shape="box"]
+890 [ label="NAME
+ (b)", color = "red", shape="box"]
+900 [ label="PLUS
+(+)"]
+910 [ label="NAME
+ (c)", color = "red", shape="box"]
+920 [ label="MINUS
+(-)"]
+930 [ label="EQUAL
+(=)"]
+940 [ label="NAME
+ (e)", color = "red", shape="box"]
+950 [ label="NAME
+ (a)", color = "red", shape="box"]
+960 [ label="MULTIPLY
+(*)"]
+970 [ label="NAME
+ (b)", color = "red", shape="box"]
+980 [ label="DIVIDE
+(/)"]
+990 [ label="NAME
+ (c)", color = "red", shape="box"]
+1000 [ label="REMAINDER
+(%)"]
+1010 [ label="NUMBER
+ (2)", color = "red", shape="box"]
+1020 [ label="EQUAL
+(=)"]
+1030 [ label="NAME
+ (f)", color = "red", shape="box"]
+1040 [ label="NAME
+ (a)", color = "red", shape="box"]
+1050 [ label="NAME
+ (b)", color = "red", shape="box"]
+1060 [ label="POWER_OP
+(**)"]
+1070 [ label="EQUAL
+(=)"]
+1080 [ label="NAME
+ (g)", color = "red", shape="box"]
+1090 [ label="NAME
+ (b)", color = "red", shape="box"]
+1100 [ label="FLOOR_DIV_OP
+(//)"]
+1110 [ label="NAME
+ (a)", color = "red", shape="box"]
+1120 [ label="EQUAL
+(=)"]
+1130 [ label="NAME
+ (h)", color = "red", shape="box"]
+1140 [ label="NAME
+ (c)", color = "red", shape="box"]
+1150 [ label="MULTIPLY
+(*)"]
+1160 [ label="NAME
+ (a)", color = "red", shape="box"]
+1170 [ label="NAME
+ (b)", color = "red", shape="box"]
+1180 [ label="PLUS
+(+)"]
+1190 [ label="EQUAL
+(=)"]
+1200 [ label="NAME
+ (i)", color = "red", shape="box"]
+1210 [ label="NAME
+ (a)", color = "red", shape="box"]
+1220 [ label="DIVIDE
+(/)"]
+1230 [ label="NAME
+ (b)", color = "red", shape="box"]
+1240 [ label="EQUAL
+(=)"]
+1250 [ label="NAME
+ (j)", color = "red", shape="box"]
+1260 [ label="NAME
+ (a)", color = "red", shape="box"]
+1270 [ label="REMAINDER
+(%)"]
+1280 [ label="NAME
+ (b)", color = "red", shape="box"]
+1290 [ label="EQUAL
+(=)"]
+1300 [ label="NAME
+ (d)", color = "red", shape="box"]
+1310 [ label="ASSIGN_OP
+ (+=)"]
+1320 [ label="NAME
+ (e)", color = "red", shape="box"]
+1330 [ label="NAME
+ (e)", color = "red", shape="box"]
+1340 [ label="ASSIGN_OP
+ (-=)"]
+1350 [ label="NAME
+ (f)", color = "red", shape="box"]
+1360 [ label="NAME
+ (f)", color = "red", shape="box"]
+1370 [ label="ASSIGN_OP
+ (*=)"]
+1380 [ label="NAME
+ (g)", color = "red", shape="box"]
+1390 [ label="NAME
+ (g)", color = "red", shape="box"]
+1400 [ label="ASSIGN_OP
+ (/=)"]
+1410 [ label="NAME
+ (h)", color = "red", shape="box"]
+1420 [ label="NAME
+ (h)", color = "red", shape="box"]
+1430 [ label="ASSIGN_OP
+ (**=)"]
+1440 [ label="NAME
+ (i)", color = "red", shape="box"]
+1450 [ label="NAME
+ (i)", color = "red", shape="box"]
+1460 [ label="ASSIGN_OP
+ (//=)"]
+1470 [ label="NAME
+ (j)", color = "red", shape="box"]
+1480 [ label="NAME
+ (j)", color = "red", shape="box"]
+1490 [ label="ASSIGN_OP
+ (%=)"]
+1500 [ label="NAME
+ (a)", color = "red", shape="box"]
+1510 [ label="NAME
+ (k)", color = "red", shape="box"]
+1520 [ label="ATOM_KEYWORD
+ (True)", color = "red", shape="box"]
+1530 [ label="EQUAL
+(=)"]
+1540 [ label="NAME
+ (l)", color = "red", shape="box"]
+1550 [ label="ATOM_KEYWORD
+ (False)", color = "red", shape="box"]
+1560 [ label="EQUAL
+(=)"]
+1570 [ label="NAME
+ (m)", color = "red", shape="box"]
+1580 [ label="NAME
+ (k)", color = "red", shape="box"]
+1590 [ label="NOT
+(not)"]
+1600 [ label="EQUAL
+(=)"]
+1610 [ label="NAME
+ (n)", color = "red", shape="box"]
+1620 [ label="NAME
+ (k)", color = "red", shape="box"]
+1630 [ label="NAME
+ (l)", color = "red", shape="box"]
+1640 [ label="AND
+(and)"]
+1650 [ label="EQUAL
+(=)"]
+1660 [ label="NAME
+ (o)", color = "red", shape="box"]
+1670 [ label="NAME
+ (k)", color = "red", shape="box"]
+1680 [ label="NAME
+ (l)", color = "red", shape="box"]
+1690 [ label="OR
+(or)"]
+1700 [ label="EQUAL
+(=)"]
+1710 [ label="NAME
+ (p)", color = "red", shape="box"]
+1720 [ label="NAME
+ (k)", color = "red", shape="box"]
+1730 [ label="IS_NOT
+(is not)"]
+1740 [ label="NAME
+ (l)", color = "red", shape="box"]
+1750 [ label="EQUAL
+(=)"]
+1760 [ label="NAME
+ (q)", color = "red", shape="box"]
+1770 [ label="NAME
+ (k)", color = "red", shape="box"]
+1780 [ label="IS
+(is)"]
+1790 [ label="NAME
+ (l)", color = "red", shape="box"]
+1800 [ label="EQUAL
+(=)"]
+1810 [ label="NAME
+ (r)", color = "red", shape="box"]
+1820 [ label="NAME
+ (k)", color = "red", shape="box"]
+1830 [ label="IN
+(in)"]
+1840 [ label="NAME
+ (a)", color = "red", shape="box"]
+1850 [ label="NAME
+ (b)", color = "red", shape="box"]
+1860 [ label="NAMED_LIST"]
+1870 [ label="NAME
+ (c)", color = "red", shape="box"]
+1880 [ label="NAMED_LIST"]
+1890 [ label="EQUAL
+(=)"]
+1900 [ label="NAME
+ (s)", color = "red", shape="box"]
+1910 [ label="NAME
+ (a)", color = "red", shape="box"]
+1920 [ label="GREATER_THAN
+(>)"]
+1930 [ label="NAME
+ (b)", color = "red", shape="box"]
+1940 [ label="EQUAL
+(=)"]
+1950 [ label="NAME
+ (t)", color = "red", shape="box"]
+1960 [ label="NAME
+ (b)", color = "red", shape="box"]
+1970 [ label="LESS_THAN
+(<)"]
+1980 [ label="NAME
+ (c)", color = "red", shape="box"]
+1990 [ label="EQUAL
+(=)"]
+2000 [ label="NAME
+ (u)", color = "red", shape="box"]
+2010 [ label="NAME
+ (c)", color = "red", shape="box"]
+2020 [ label="EQUAL_EQUAL
+(==)"]
+2030 [ label="NAME
+ (a)", color = "red", shape="box"]
+2040 [ label="EQUAL
+(=)"]
+2050 [ label="NAME
+ (v)", color = "red", shape="box"]
+2060 [ label="NAME
+ (a)", color = "red", shape="box"]
+2070 [ label="NOT_EQUAL
+(!=)"]
+2080 [ label="NAME
+ (b)", color = "red", shape="box"]
+2090 [ label="EQUAL
+(=)"]
+2100 [ label="NAME
+ (w)", color = "red", shape="box"]
+2110 [ label="NAME
+ (b)", color = "red", shape="box"]
+2120 [ label="GREATER_THAN_EQUAL
+(>=)"]
+2130 [ label="NAME
+ (c)", color = "red", shape="box"]
+2140 [ label="EQUAL
+(=)"]
+2150 [ label="NAME
+ (x)", color = "red", shape="box"]
+2160 [ label="NAME
+ (c)", color = "red", shape="box"]
+2170 [ label="LESS_THAN_EQUAL
+(<=)"]
+2180 [ label="NAME
+ (a)", color = "red", shape="box"]
+2190 [ label="EQUAL
+(=)"]
+2200 [ label="NAME
+ (s)", color = "red", shape="box"]
+2210 [ label="ASSIGN_OP
+ (&=)"]
+2220 [ label="NAME
+ (t)", color = "red", shape="box"]
+2230 [ label="NAME
+ (t)", color = "red", shape="box"]
+2240 [ label="ASSIGN_OP
+ (|=)"]
+2250 [ label="NAME
+ (u)", color = "red", shape="box"]
+2260 [ label="NAME
+ (u)", color = "red", shape="box"]
+2270 [ label="ASSIGN_OP
+ (^=)"]
+2280 [ label="NAME
+ (v)", color = "red", shape="box"]
+2290 [ label="NAME
+ (v)", color = "red", shape="box"]
+2300 [ label="ASSIGN_OP
+ (<<=)"]
+2310 [ label="NAME
+ (w)", color = "red", shape="box"]
+2320 [ label="NAME
+ (w)", color = "red", shape="box"]
+2330 [ label="ASSIGN_OP
+ (>>=)"]
+2340 [ label="NAME
+ (x)", color = "red", shape="box"]
+2350 [ label="NAME
+ (result)", color = "red", shape="box"]
+2360 [ label="NAME
+ (a)", color = "red", shape="box"]
+2370 [ label="NAME
+ (b)", color = "red", shape="box"]
+2380 [ label="PLUS
+(+)"]
+2390 [ label="MULTIPLY
+(*)"]
+2400 [ label="NAME
+ (c)", color = "red", shape="box"]
+2410 [ label="DIVIDE
+(/)"]
+2420 [ label="NUMBER
+ (2)", color = "red", shape="box"]
+2430 [ label="NAME
+ (a)", color = "red", shape="box"]
+2440 [ label="NAME
+ (b)", color = "red", shape="box"]
+2450 [ label="POWER_OP
+(**)"]
+2460 [ label="PLUS
+(+)"]
+2470 [ label="NAME
+ (a)", color = "red", shape="box"]
+2480 [ label="FLOOR_DIV_OP
+(//)"]
+2490 [ label="NAME
+ (b)", color = "red", shape="box"]
+2500 [ label="REMAINDER
+(%)"]
+2510 [ label="NAME
+ (c)", color = "red", shape="box"]
+2520 [ label="MINUS
+(-)"]
+2530 [ label="EQUAL
+(=)"]
+2540 [ label="NAME
+ (result2)", color = "red", shape="box"]
+2550 [ label="NAME
+ (a)", color = "red", shape="box"]
+2560 [ label="NAME
+ (b)", color = "red", shape="box"]
+2570 [ label="PLUS
+(+)"]
+2580 [ label="MULTIPLY
+(*)"]
+2590 [ label="NAME
+ (c)", color = "red", shape="box"]
+2600 [ label="NUMBER
+ (2)", color = "red", shape="box"]
+2610 [ label="POWER_OP
+(**)"]
+2620 [ label="DIVIDE
+(/)"]
+2630 [ label="NAME
+ (a)", color = "red", shape="box"]
+2640 [ label="REMAINDER
+(%)"]
+2650 [ label="NAME
+ (b)", color = "red", shape="box"]
+2660 [ label="NAME
+ (b)", color = "red", shape="box"]
+2670 [ label="NAME
+ (c)", color = "red", shape="box"]
+2680 [ label="MINUS
+(-)"]
+2690 [ label="PLUS
+(+)"]
+2700 [ label="NAME
+ (a)", color = "red", shape="box"]
+2710 [ label="MULTIPLY
+(*)"]
+2720 [ label="NAME
+ (b)", color = "red", shape="box"]
+2730 [ label="DIVIDE
+(/)"]
+2740 [ label="NAME
+ (c)", color = "red", shape="box"]
+2750 [ label="NUMBER
+ (2)", color = "red", shape="box"]
+2760 [ label="POWER_OP
+(**)"]
+2770 [ label="PLUS
+(+)"]
+2780 [ label="NAME
+ (a)", color = "red", shape="box"]
+2790 [ label="FLOOR_DIV_OP
+(//)"]
+2800 [ label="NAME
+ (b)", color = "red", shape="box"]
+2810 [ label="REMAINDER
+(%)"]
+2820 [ label="NAME
+ (c)", color = "red", shape="box"]
+2830 [ label="MINUS
+(-)"]
+2840 [ label="EQUAL
+(=)"]
+2850 [ label="SNIPPET"]
+2860 [ label="SNIPPET"]
+2870 [ label="SNIPPET"]
+2880 [ label="SNIPPET"]
+2890 [ label="SNIPPET"]
+2900 [ label="SNIPPET"]
+2910 [ label="SNIPPET"]
+2920 [ label="SNIPPET"]
+2930 [ label="SNIPPET"]
+2940 [ label="SNIPPET"]
+2950 [ label="SNIPPET"]
+2960 [ label="SNIPPET"]
+2970 [ label="SNIPPET"]
+2980 [ label="SNIPPET"]
+2990 [ label="SNIPPET"]
+3000 [ label="SNIPPET"]
+3010 [ label="SNIPPET"]
+3020 [ label="SNIPPET"]
+3030 [ label="SNIPPET"]
+3040 [ label="SNIPPET"]
+3050 [ label="SNIPPET"]
+3060 [ label="SNIPPET"]
+3070 [ label="SNIPPET"]
+3080 [ label="SNIPPET"]
+3090 [ label="SNIPPET"]
+3100 [ label="SNIPPET"]
+3110 [ label="SNIPPET"]
+3120 [ label="SNIPPET"]
+3130 [ label="SNIPPET"]
+3140 [ label="SNIPPET"]
+3150 [ label="SNIPPET"]
+3160 [ label="SNIPPET"]
+3170 [ label="SNIPPET"]
+3180 [ label="SNIPPET"]
+3190 [ label="SNIPPET"]
+3200 [ label="SNIPPET"]
+3210 [ label="SNIPPET"]
+3220 [ label="SNIPPET"]
+3230 [ label="SNIPPET"]
+3240 [ label="SNIPPET"]
+3250 [ label="SNIPPET"]
+3260 [ label="SNIPPET"]
+30 -> 10[ label=""]
+30 -> 20[ label=""]
+60 -> 40[ label=""]
+60 -> 50[ label=""]
+90 -> 70[ label=""]
+90 -> 80[ label=""]
+120 -> 110[ label=""]
+120 -> 130[ label=""]
+140 -> 120[ label=""]
+140 -> 150[ label=""]
+170 -> 140[ label=""]
+170 -> 160[ label=""]
+190 -> 180[ label=""]
+190 -> 200[ label=""]
+210 -> 170[ label=""]
+210 -> 190[ label=""]
+230 -> 220[ label=""]
+230 -> 240[ label=""]
+250 -> 210[ label=""]
+250 -> 230[ label=""]
+260 -> 100[ label=""]
+260 -> 250[ label=""]
+300 -> 290[ label=""]
+300 -> 310[ label=""]
+320 -> 300[ label=""]
+320 -> 330[ label=""]
+340 -> 280[ label=""]
+340 -> 320[ label=""]
+360 -> 350[ label=""]
+360 -> 370[ label=""]
+380 -> 340[ label=""]
+380 -> 360[ label=""]
+400 -> 380[ label=""]
+400 -> 390[ label=""]
+410 -> 270[ label=""]
+410 -> 400[ label=""]
+450 -> 440[ label=""]
+450 -> 460[ label=""]
+470 -> 430[ label=""]
+470 -> 450[ label=""]
+490 -> 480[ label=""]
+490 -> 500[ label=""]
+510 -> 470[ label=""]
+510 -> 490[ label=""]
+530 -> 510[ label=""]
+530 -> 520[ label=""]
+550 -> 530[ label=""]
+550 -> 540[ label=""]
+560 -> 420[ label=""]
+560 -> 550[ label=""]
+590 -> 580[ label=""]
+590 -> 600[ label=""]
+620 -> 610[ label=""]
+620 -> 630[ label=""]
+640 -> 590[ label=""]
+640 -> 620[ label=""]
+660 -> 650[ label=""]
+660 -> 670[ label=""]
+680 -> 640[ label=""]
+680 -> 660[ label=""]
+700 -> 680[ label=""]
+700 -> 690[ label=""]
+710 -> 570[ label=""]
+710 -> 700[ label=""]
+740 -> 730[ label=""]
+740 -> 750[ label=""]
+770 -> 760[ label=""]
+770 -> 780[ label=""]
+790 -> 740[ label=""]
+790 -> 770[ label=""]
+810 -> 800[ label=""]
+810 -> 820[ label=""]
+830 -> 790[ label=""]
+830 -> 810[ label=""]
+850 -> 830[ label=""]
+850 -> 840[ label=""]
+860 -> 720[ label=""]
+860 -> 850[ label=""]
+900 -> 880[ label=""]
+900 -> 890[ label=""]
+920 -> 900[ label=""]
+920 -> 910[ label=""]
+930 -> 870[ label=""]
+930 -> 920[ label=""]
+960 -> 950[ label=""]
+960 -> 970[ label=""]
+980 -> 960[ label=""]
+980 -> 990[ label=""]
+1000 -> 980[ label=""]
+1000 -> 1010[ label=""]
+1020 -> 940[ label=""]
+1020 -> 1000[ label=""]
+1060 -> 1040[ label=""]
+1060 -> 1050[ label=""]
+1070 -> 1030[ label=""]
+1070 -> 1060[ label=""]
+1100 -> 1090[ label=""]
+1100 -> 1110[ label=""]
+1120 -> 1080[ label=""]
+1120 -> 1100[ label=""]
+1180 -> 1160[ label=""]
+1180 -> 1170[ label=""]
+1150 -> 1140[ label=""]
+1150 -> 1180[ label=""]
+1190 -> 1130[ label=""]
+1190 -> 1150[ label=""]
+1220 -> 1210[ label=""]
+1220 -> 1230[ label=""]
+1240 -> 1200[ label=""]
+1240 -> 1220[ label=""]
+1270 -> 1260[ label=""]
+1270 -> 1280[ label=""]
+1290 -> 1250[ label=""]
+1290 -> 1270[ label=""]
+1310 -> 1300[ label=""]
+1310 -> 1320[ label=""]
+1340 -> 1330[ label=""]
+1340 -> 1350[ label=""]
+1370 -> 1360[ label=""]
+1370 -> 1380[ label=""]
+1400 -> 1390[ label=""]
+1400 -> 1410[ label=""]
+1430 -> 1420[ label=""]
+1430 -> 1440[ label=""]
+1460 -> 1450[ label=""]
+1460 -> 1470[ label=""]
+1490 -> 1480[ label=""]
+1490 -> 1500[ label=""]
+1530 -> 1510[ label=""]
+1530 -> 1520[ label=""]
+1560 -> 1540[ label=""]
+1560 -> 1550[ label=""]
+1590 -> 1580[ label=""]
+1600 -> 1570[ label=""]
+1600 -> 1590[ label=""]
+1640 -> 1620[ label=""]
+1640 -> 1630[ label=""]
+1650 -> 1610[ label=""]
+1650 -> 1640[ label=""]
+1690 -> 1670[ label=""]
+1690 -> 1680[ label=""]
+1700 -> 1660[ label=""]
+1700 -> 1690[ label=""]
+1730 -> 1720[ label=""]
+1730 -> 1740[ label=""]
+1750 -> 1710[ label=""]
+1750 -> 1730[ label=""]
+1780 -> 1770[ label=""]
+1780 -> 1790[ label=""]
+1800 -> 1760[ label=""]
+1800 -> 1780[ label=""]
+1860 -> 1840[ label=""]
+1860 -> 1850[ label=""]
+1880 -> 1860[ label=""]
+1880 -> 1870[ label=""]
+1830 -> 1820[ label=""]
+1830 -> 1880[ label=""]
+1890 -> 1810[ label=""]
+1890 -> 1830[ label=""]
+1920 -> 1910[ label=""]
+1920 -> 1930[ label=""]
+1940 -> 1900[ label=""]
+1940 -> 1920[ label=""]
+1970 -> 1960[ label=""]
+1970 -> 1980[ label=""]
+1990 -> 1950[ label=""]
+1990 -> 1970[ label=""]
+2020 -> 2010[ label=""]
+2020 -> 2030[ label=""]
+2040 -> 2000[ label=""]
+2040 -> 2020[ label=""]
+2070 -> 2060[ label=""]
+2070 -> 2080[ label=""]
+2090 -> 2050[ label=""]
+2090 -> 2070[ label=""]
+2120 -> 2110[ label=""]
+2120 -> 2130[ label=""]
+2140 -> 2100[ label=""]
+2140 -> 2120[ label=""]
+2170 -> 2160[ label=""]
+2170 -> 2180[ label=""]
+2190 -> 2150[ label=""]
+2190 -> 2170[ label=""]
+2210 -> 2200[ label=""]
+2210 -> 2220[ label=""]
+2240 -> 2230[ label=""]
+2240 -> 2250[ label=""]
+2270 -> 2260[ label=""]
+2270 -> 2280[ label=""]
+2300 -> 2290[ label=""]
+2300 -> 2310[ label=""]
+2330 -> 2320[ label=""]
+2330 -> 2340[ label=""]
+2380 -> 2360[ label=""]
+2380 -> 2370[ label=""]
+2390 -> 2380[ label=""]
+2390 -> 2400[ label=""]
+2410 -> 2390[ label=""]
+2410 -> 2420[ label=""]
+2450 -> 2430[ label=""]
+2450 -> 2440[ label=""]
+2460 -> 2410[ label=""]
+2460 -> 2450[ label=""]
+2480 -> 2470[ label=""]
+2480 -> 2490[ label=""]
+2500 -> 2480[ label=""]
+2500 -> 2510[ label=""]
+2520 -> 2460[ label=""]
+2520 -> 2500[ label=""]
+2530 -> 2350[ label=""]
+2530 -> 2520[ label=""]
+2570 -> 2550[ label=""]
+2570 -> 2560[ label=""]
+2580 -> 2570[ label=""]
+2580 -> 2590[ label=""]
+2610 -> 2580[ label=""]
+2610 -> 2600[ label=""]
+2640 -> 2630[ label=""]
+2640 -> 2650[ label=""]
+2620 -> 2610[ label=""]
+2620 -> 2640[ label=""]
+2680 -> 2660[ label=""]
+2680 -> 2670[ label=""]
+2690 -> 2620[ label=""]
+2690 -> 2680[ label=""]
+2710 -> 2700[ label=""]
+2710 -> 2720[ label=""]
+2760 -> 2740[ label=""]
+2760 -> 2750[ label=""]
+2730 -> 2710[ label=""]
+2730 -> 2760[ label=""]
+2770 -> 2690[ label=""]
+2770 -> 2730[ label=""]
+2790 -> 2780[ label=""]
+2790 -> 2800[ label=""]
+2810 -> 2790[ label=""]
+2810 -> 2820[ label=""]
+2830 -> 2770[ label=""]
+2830 -> 2810[ label=""]
+2840 -> 2540[ label=""]
+2840 -> 2830[ label=""]
+2850 -> 2530[ label=""]
+2850 -> 2840[ label=""]
+2860 -> 2330[ label=""]
+2860 -> 2850[ label=""]
+2870 -> 2300[ label=""]
+2870 -> 2860[ label=""]
+2880 -> 2270[ label=""]
+2880 -> 2870[ label=""]
+2890 -> 2240[ label=""]
+2890 -> 2880[ label=""]
+2900 -> 2210[ label=""]
+2900 -> 2890[ label=""]
+2910 -> 2190[ label=""]
+2910 -> 2900[ label=""]
+2920 -> 2140[ label=""]
+2920 -> 2910[ label=""]
+2930 -> 2090[ label=""]
+2930 -> 2920[ label=""]
+2940 -> 2040[ label=""]
+2940 -> 2930[ label=""]
+2950 -> 1990[ label=""]
+2950 -> 2940[ label=""]
+2960 -> 1940[ label=""]
+2960 -> 2950[ label=""]
+2970 -> 1890[ label=""]
+2970 -> 2960[ label=""]
+2980 -> 1800[ label=""]
+2980 -> 2970[ label=""]
+2990 -> 1750[ label=""]
+2990 -> 2980[ label=""]
+3000 -> 1700[ label=""]
+3000 -> 2990[ label=""]
+3010 -> 1650[ label=""]
+3010 -> 3000[ label=""]
+3020 -> 1600[ label=""]
+3020 -> 3010[ label=""]
+3030 -> 1560[ label=""]
+3030 -> 3020[ label=""]
+3040 -> 1530[ label=""]
+3040 -> 3030[ label=""]
+3050 -> 1490[ label=""]
+3050 -> 3040[ label=""]
+3060 -> 1460[ label=""]
+3060 -> 3050[ label=""]
+3070 -> 1430[ label=""]
+3070 -> 3060[ label=""]
+3080 -> 1400[ label=""]
+3080 -> 3070[ label=""]
+3090 -> 1370[ label=""]
+3090 -> 3080[ label=""]
+3100 -> 1340[ label=""]
+3100 -> 3090[ label=""]
+3110 -> 1310[ label=""]
+3110 -> 3100[ label=""]
+3120 -> 1290[ label=""]
+3120 -> 3110[ label=""]
+3130 -> 1240[ label=""]
+3130 -> 3120[ label=""]
+3140 -> 1190[ label=""]
+3140 -> 3130[ label=""]
+3150 -> 1120[ label=""]
+3150 -> 3140[ label=""]
+3160 -> 1070[ label=""]
+3160 -> 3150[ label=""]
+3170 -> 1020[ label=""]
+3170 -> 3160[ label=""]
+3180 -> 930[ label=""]
+3180 -> 3170[ label=""]
+3190 -> 860[ label=""]
+3190 -> 3180[ label=""]
+3200 -> 710[ label=""]
+3200 -> 3190[ label=""]
+3210 -> 560[ label=""]
+3210 -> 3200[ label=""]
+3220 -> 410[ label=""]
+3220 -> 3210[ label=""]
+3230 -> 260[ label=""]
+3230 -> 3220[ label=""]
+3240 -> 90[ label=""]
+3240 -> 3230[ label=""]
+3250 -> 60[ label=""]
+3250 -> 3240[ label=""]
+3260 -> 30[ label=""]
+3260 -> 3250[ label=""]
+  }
