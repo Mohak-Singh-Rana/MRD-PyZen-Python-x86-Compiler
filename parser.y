@@ -112,9 +112,12 @@
 
 %union{
     char* val;
+    struct node* treenode;
 }
+
 %start file
-%type<val> file file_input snippet stmt simple_stmt small_stmt_list small_stmt expr_stmt annassign eq_testlist_star_expr_plus flow_stmt break_stmt continue_stmt return_stmt global_stmt nonlocal_stmt assert_stmt compound_stmt funcdef parameters typedargslist typedarg tfpdef if_stmt while_stmt for_stmt suite nts_star namedexpr_test test or_test and_test not_test comparison comp_op star_expr expr xor_expr and_expr shift_expr arith_expr term term_choice factor factor_choice power atom_expr atom STRING_PLUS testlist_comp named_or_star_list named_or_star trailer subscriptlist subscriptlist_list subscript exprlist expr_or_star_expr_list expr_or_star_expr dictorsetmaker A A_list B B_list classdef arglist argument_list argument testlist testlist_list testlist_star_expr expr_choice_list expr_choice augassign comma_name_star async_stmt async_choice and_test_star not_test_star comp_iter sync_comp_for comp_for comp_if func_body_suite stmt_plus comma_test
+
+%type<treenode> file snippet stmt simple_stmt small_stmt_list small_stmt expr_stmt annassign eq_testlist_star_expr_plus flow_stmt break_stmt continue_stmt return_stmt global_stmt nonlocal_stmt assert_stmt compound_stmt funcdef parameters typedargslist typedarg tfpdef if_stmt while_stmt for_stmt suite nts_star test or_test and_test not_test comparison comp_op star_expr expr xor_expr and_expr shift_expr arith_expr term term_choice factor factor_choice power atom_expr atom STRING_PLUS testlist_comp named_or_star_list named_or_star trailer subscriptlist subscriptlist_list subscript exprlist expr_or_star_expr_list expr_or_star_expr dictorsetmaker A A_list B B_list classdef arglist argument_list argument testlist testlist_list testlist_star_expr expr_choice_list expr_choice augassign comma_name_star async_stmt async_choice and_test_star not_test_star comp_iter sync_comp_for comp_for comp_if func_body_suite stmt_plus comma_test
 %token<val> NEWLINE
 %token<val> ASYNC 
 %token<val> INDENT 
@@ -177,350 +180,1606 @@
 %token<val> IS
 %%
 
-file: file_input {$$=$1; }
-        ;
 
-file_input: snippet {$$=$1; }
+file: snippet {
+    node* tempnode;
+    $$ = new node("file");
+    $$->add_child($1);
+ }
          ;
 
-snippet: NEWLINE 
-    | stmt  { $$=$1; }
-    | NEWLINE snippet  { $$=$2; }
-    | stmt snippet { $$ = addlabel("SNIPPET"); addedge($$,$1); addedge($$,$2); }
+snippet: NEWLINE {
+        $$= new node("snippet");
+        node* tempnode;
+        tempnode= new node("newline",true,"newline");
+        $$->add_child(tempnode);
+    }
+    | stmt  { 
+        node* tempnode;
+        $$ = new node("snippet");
+        $$->add_child($1);
+    }
+    | NEWLINE snippet  { 
+        $$= new node("snippet");
+        node* tempnode;
+        tempnode= new node("newline",true,"newline");
+        $$->add_child(tempnode);
+        $$->add_child($2);
+    }
+    | stmt snippet {  
+        $$= new node("snippet");
+        $$->add_child($1);
+        $$->add_child($2);
+    }
     ; 
 
-funcdef: DEF NAME parameters COLON func_body_suite  { $$ = addlabel("FUNCTION"); $2 = addlabel(string("NAME\n (")+chartostring($2) + string(")"),true); addedge($$,$2); addedge($$,$3); addedge($$,$5); }
-        | DEF NAME parameters ARROW_OPER TYPE_HINT COLON func_body_suite { $$ = addlabel("FUNCTION"); $2 = addlabel(string("NAME\n (")+chartostring($2) + string(")"),true); addedge($$,$2); addedge($$,$3); $5 = addlabel(string("TYPE\n (")+chartostring($5) + string(")"),true); addedge($$,$5);  addedge($$,$7); }
-        | DEF NAME OPEN_BRACKET CLOSE_BRACKET ARROW_OPER TYPE_HINT COLON func_body_suite { $$ = addlabel("FUNCTION"); $2 = addlabel(string("NAME\n (")+chartostring($2) + string(")"),true); addedge($$,$2); $6 = addlabel(string("TYPE\n (")+chartostring($6) + string(")"),true); addedge($$,$6);  addedge($$,$8); }
-        | DEF NAME OPEN_BRACKET CLOSE_BRACKET COLON func_body_suite { $$ = addlabel("FUNCTION"); $2 = addlabel(string("NAME\n (")+chartostring($2) + string(")"),true); addedge($$,$2); addedge($$,$6); }
+funcdef: DEF NAME parameters COLON func_body_suite  {  
+            $$ = new node("funcdef");
+            node* tempnode;
+            tempnode= new node("def",true,"Keyword");
+            $$->add_child(tempnode);
+            string s($2);
+            tempnode= new node(s,true,"ID");
+            $$->add_child(tempnode);
+            $$->add_child($3);
+            tempnode= new node(":",true,"DELIMITER");
+            $$->add_child(tempnode);
+            $$->add_child($5);
+
+        }
+        | DEF NAME parameters ARROW_OPER TYPE_HINT COLON func_body_suite {  
+            $$ = new node("funcdef");
+            node* tempnode;
+            tempnode= new node("def",true,"KEYWORD");
+            $$->add_child(tempnode);
+            string s($2);
+            tempnode= new node(s,true,"ID");
+            $$->add_child(tempnode);
+            $$->add_child($3);
+            tempnode= new node("->",true,"DELIMITER");
+            $$->add_child(tempnode);
+            string s($5);
+            tempnode= new node(s,true,"TYPE_HINT");
+            $$->add_child(tempnode);
+            tempnode= new node(":",true,"DELIMITER");
+            $$->add_child(tempnode);
+            $$->add_child($7);
+        }
+        | DEF NAME OPEN_BRACKET CLOSE_BRACKET ARROW_OPER TYPE_HINT COLON func_body_suite {  
+            $$ = new node("funcdef");
+            node* tempnode;
+            tempnode= new node("def",true,"KEYWORD");
+            $$->add_child(tempnode);
+            string s($2);
+            tempnode= new node(s,true,"ID");
+            $$->add_child(tempnode);
+            tempnode= new node("(",true,"DELIMITER");
+            $$->add_child(tempnode);
+            tempnode= new node(")",true,"DELIMITER");
+            $$->add_child(tempnode);
+            tempnode= new node("->",true,"DELIMITER");
+            $$->add_child(tempnode);
+            string s($6);
+            tempnode= new node(s,true,"TYPE_HINT");
+            $$->add_child(tempnode);
+            tempnode= new node(":",true,"DELIMITER");
+            $$->add_child(tempnode);
+            $$->add_child($8);
+        }
+        | DEF NAME OPEN_BRACKET CLOSE_BRACKET COLON func_body_suite {
+            $$ = new node("funcdef");
+            node* tempnode;
+            tempnode= new node("def",true,"KEYWORD");
+            $$->add_child(tempnode);
+            string s($2);
+            tempnode= new node(s,true,"ID");
+            $$->add_child(tempnode);
+            tempnode= new node("(",true,"DELIMITER");
+            $$->add_child(tempnode);
+            tempnode= new node(")",true,"DELIMITER");
+            $$->add_child(tempnode);
+            tempnode= new node(":",true,"DELIMITER");
+            $$->add_child(tempnode);
+            $$->add_child($6);
+        }
         ;
 
-parameters: OPEN_BRACKET typedargslist CLOSE_BRACKET { $$ = $2; }
-          ;
-
-typedargslist:  typedarg    { $$=$1; }
-    | typedargslist COMMA  typedarg  { $$ = addlabel("ARGUMENTS"); addedge($$,$1); addedge($$,$3); }
-    ;
-
-typedarg: tfpdef   { $$=$1; }
-        | tfpdef EQUAL test  { $$ = addlabel(string("EQUAL\n")+"(=)"); addedge($$,$1); addedge($$,$3); }
+parameters: OPEN_BRACKET typedargslist CLOSE_BRACKET {  
+            $$ = new node("parameters");
+            node* tempnode;
+            tempnode= new node("(",true,"DELIMITER");
+            $$->add_child(tempnode);
+            $$->add_child($2);
+            tempnode= new node(")",true,"DELIMITER");
+            $$->add_child(tempnode);
+            
+        }
         ;
 
-tfpdef: NAME { $$ = addlabel(string("NAME\n (")+chartostring($1) + string(")"),true); }
-        | NAME COLON TYPE_HINT  {  $$ = addlabel("PARAMETER"); $1 = addlabel(string("NAME\n (")+chartostring($1) + string(")"),true); addedge($$,$1); $3 = addlabel(string("TYPE\n (")+chartostring($3) + string(")"),true); addedge($$,$3); }
-        ; 
-
-stmt: simple_stmt       {$$=$1; }
-    | compound_stmt  {$$=$1; }
-    ;      
-
-simple_stmt: small_stmt_list SEMI_COLON NEWLINE { $$ = $1; }
-                | small_stmt_list  NEWLINE { $$=$1; }
-            ; 
-
-small_stmt_list: small_stmt     { $$=$1;  }
-               | small_stmt_list SEMI_COLON small_stmt      { $$ = addlabel("SMALL_STMT_LIST"); addedge($$,$1); addedge($$,$3); }
-               ;
-
-small_stmt: expr_stmt       {$$=$1;  }
-            | flow_stmt     { $$=$1; } 
-            | global_stmt       { $$=$1; }
-            | nonlocal_stmt     { $$=$1; }
-            | assert_stmt       {$$=$1;  }
-            ; 
-
-expr_stmt:  testlist_star_expr annassign {  $$ = addlabel("EXPRESSION_STMT"); addedge($$,$1); addedge($$,$2); }
-              | testlist_star_expr augassign testlist { $$ = $2; addedge($$,$1);  addedge($$,$3); }
-              | eq_testlist_star_expr_plus {$$=$1; }
-        ; 
-
-eq_testlist_star_expr_plus: testlist_star_expr { $$=$1; }
-                                | testlist_star_expr EQUAL eq_testlist_star_expr_plus     { $$ = addlabel(string("EQUAL\n")+"(=)"); addedge($$,$1); addedge($$,$3); }
+typedargslist:  typedarg    {  
+            $$ = new node("typedargslist");
+            $$->add_child($1);
+        }
+        | typedargslist COMMA  typedarg  {  
+            $$ = new node("typedargslist");
+            $$->add_child($1);
+            node* tempnode;
+            tempnode= new node(",",true,"DELIMITER");
+            $$->add_child(tempnode);
+            $$->add_child($3);
+        }
         ;
 
-annassign: COLON test   { $$=$2; }
-            | COLON test EQUAL testlist_star_expr   { $$ = addlabel(string("EQUAL\n")+"(=)");  addedge($$,$2); addedge($$,$4); }
-            ;
+typedarg: tfpdef   {  
+            $$ = new node("typedarg");
+            $$->add_child($1);
+        }
+        | tfpdef COLON test {  
+            $$ = new node("typedarg");
+            $$->add_child($1);
+            node* tempnode;
+            tempnode= new node(":",true,"DELIMITER");
+            $$->add_child(tempnode);
+            $$->add_child($3);
+        }
+        ;
 
-testlist_star_expr: expr_choice_list { $$=$1; }
-                        | expr_choice_list COMMA  {  $$=$1; }
-                    ;
+tfpdef: NAME {  
+            $$ = new node("tfpdef");
+            string s($1);
+            node* tempnode;
+            tempnode= new node(s,true,"ID");
+            $$->add_child(tempnode);
+        }
+        | NAME COLON TYPE_HINT {  
+            $$ = new node("tfpdef");
+            string s($1);
+            node* tempnode;
+            tempnode= new node(s,true,"ID");
+            $$->add_child(tempnode);
+            tempnode= new node(":",true,"DELIMITER");
+            $$->add_child(tempnode);
+            string s($3);
+            tempnode= new node(s,true,"TYPE_HINT");
+            $$->add_child(tempnode);
+        }
+        ;
 
-expr_choice_list : expr_choice  { $$=$1; }
-                    | expr_choice_list COMMA expr_choice    { $$ = addlabel("EXPR_CHOICE"); addedge($$,$1); addedge($$,$3); }
-                    ;
+stmt: simple_stmt       { 
+            $$ = new node("stmt");
+            $$->add_child($1);
+        }
+        | compound_stmt     { 
+            $$ = new node("stmt");
+            $$->add_child($1);
+        }
+        ;
 
-expr_choice : test  { $$=$1; }
-                |star_expr  { $$=$1; }
-                ;
-
-augassign: ASSIGN_OPERATOR  { $$ = addlabel(string("ASSIGN_OP\n (")+chartostring($1)+string(")")); }
-            ;
-
-flow_stmt: break_stmt   { $$=$1; }
-            | continue_stmt     {$$=$1; }
-            | return_stmt    { $$=$1; }
-            ;   
-break_stmt: BREAK   { $$ = addlabel(string("BREAK\n")+"(break)",true); }
-            ;
-continue_stmt: CONTINUE     { $$ = addlabel(string("CONTINUE\n")+"(continue)",true); }
-                ;
-return_stmt: RETURN     { $$ = addlabel(string("RETURN\n")+"(return)",true); }
-            | RETURN testlist_star_expr     { $$ = addlabel("RETURN"); addedge($$,$2); }
-            ;
-
-global_stmt: GLOBAL NAME    { $$ = addlabel("GLOBAL_NAME"); $2 = addlabel(string("NAME\n (")+chartostring($2) + string(")"),true); addedge($$,$2,"GLOBAL") ; }
-            | GLOBAL NAME comma_name_star {  $$ = addlabel("GLOBAL_NAME"); $2 = addlabel(string("NAME\n (")+chartostring($2) + string(")"),true); addedge($$,$2,"GLOBAL") ; addedge($$,$3); }
-            ;
-nonlocal_stmt: NONLOCAL NAME     { $$ = addlabel("NONLOCAL_NAME"); $2 = addlabel(string("NAME\n (")+chartostring($2) + string(")"),true); addedge($$,$2,"NONLOCAL") ; }
-            | NONLOCAL NAME comma_name_star { $$ = addlabel("NONLOCAL_NAME"); $2 = addlabel(string("NAME\n (")+chartostring($2) + string(")"),true); addedge($$,$2,"NONLOCAL") ; addedge($$,$3); }
-            ;    
+simple_stmt: small_stmt_list SEMI_COLON NEWLINE {  
+            $$ = new node("simple_stmt");
+            $$->add_child($1);
+            node* tempnode;
+            tempnode= new node(";",true,"DELIMITER");
+            $$->add_child(tempnode);
+            tempnode= new node("newline",true,"newline");
+            $$->add_child(tempnode);
         
-assert_stmt: ASSERT test  { $$ = addlabel(string("ASSERT\n") + "(assert)"); addedge($$,$2); }
-                | ASSERT test comma_test  { $$ = addlabel("ASSERT"); addedge($$,$2); addedge($$,$3);  }
-            ;
-comma_name_star: COMMA NAME    { $$ = addlabel(string("NAME\n (")+chartostring($2) + string(")"),true); }
-                | COMMA NAME comma_name_star    { $$ = addlabel("NAME_LIST"); $2 = addlabel(string("NAME\n (")+chartostring($2) + string(")"),true); addedge($$,$2); addedge($$,$3); }
-                ;
-compound_stmt: if_stmt      { $$=$1; }
-                | while_stmt    { $$=$1; }
-                | for_stmt  { $$=$1; }
-                | funcdef   { $$=$1; }
-                | classdef  { $$=$1; }
-                | async_stmt    {$$=$1; }
-                ;
-async_stmt: ASYNC async_choice  { $$ = addlabel("ASYNC"); addedge($$,$2); }
-            ;
-async_choice : funcdef  { $$=$1; }
-            | for_stmt  { $$=$1;  }
-            ;
+        }
+        | small_stmt_list  NEWLINE {  
+            $$ = new node("simple_stmt");
+            $$->add_child($1);
+            node* tempnode;
+            tempnode= new node("newline",true,"newline");
+            $$->add_child(tempnode);
+        }
+        ; 
 
-if_stmt: IF namedexpr_test COLON suite     { $$ = addlabel("IF"); addedge($$,$2,"EXPRESSION"); addedge($$,$4,"SUITE"); }
-            | IF namedexpr_test COLON suite ELSE COLON suite   { $$ = addlabel("IF_ELSE"); addedge($$,$2,"IF_EXPR"); addedge($$,$4,"IF_SUITE"); addedge($$,$7,"ELSE_SUITE"); }
-            | IF namedexpr_test COLON suite nts_star    { $$ = addlabel("IF_ELIF"); addedge($$,$2,"EXPRESSION"); addedge($$,$4,"IF_SUITE"); addedge($$,$5,"ELIF"); }
-            | IF namedexpr_test COLON suite nts_star ELSE COLON suite   {$$ = addlabel("IF_ELIF_ELSE"); addedge($$,$2,"IF_EXPR"); addedge($$,$4,"IF_SUITE"); addedge($$,$5,"ELIF"); addedge($$,$8,"ELSE_SUITE");}
-        ;
-while_stmt: WHILE namedexpr_test COLON suite   { $$ = addlabel("WHILE"); addedge($$,$2,"EPRESSION"); addedge($$,$4,"SUITE"); }
-                | WHILE namedexpr_test COLON suite ELSE COLON suite  { $$ = addlabel("WHILE"); addedge($$,$2,"EPRESSION"); addedge($$,$4,"SUITE"); addedge($$,$7,"SUITE");  }
-            ;
-for_stmt: FOR exprlist IN testlist COLON suite    {$$ = addlabel("FOR_IN"); addedge($$,$2,"EPRESSION_LS"); addedge($$,$4,"TEST_LS"); addedge($$,$6,"SUITE"); }
-                | FOR exprlist IN testlist COLON suite ELSE COLON suite   {$$ = addlabel("FOR_IN_ELSE"); addedge($$,$2,"EPRESSION_LS"); addedge($$,$4,"TEST_LS"); addedge($$,$6,"SUITE"); addedge($$,$9,"SUITE"); }
-            ;
-suite: simple_stmt  { $$=$1; }
-            | NEWLINE INDENT stmt_plus DEDENT   { $$=$3; }
-            | NEWLINE INDENT stmt_plus NEWLINE DEDENT   { $$=$3; }
-            ;
-
-nts_star : ELIF namedexpr_test COLON suite  { $$=addlabel("ELIF"); addedge($$,$2,"EXPRESSION"); addedge($$,$4,"SUITE"); }
-            | ELIF namedexpr_test COLON suite nts_star  {$$=addlabel("ELIF"); addedge($$,$2,"EXPRESSION"); addedge($$,$4,"SUITE"); addedge($$,$5);}
-            ;
-namedexpr_test: test    { $$=$1; }
-                ;
-test: or_test   { $$=$1;  }
-        | or_test IF or_test ELSE test  { $$=addlabel("IF_ELSE"); addedge($$,$1,"OR_TEST"); addedge($$,$3,"OR_TEST"); addedge($$,$5,"TEST"); }
-        ;
-or_test: and_test    { $$=$1; }
-        | and_test_star OR and_test    { $$ = addlabel(string("OR\n")+"(or)"); addedge($$,$1); addedge($$,$3); }
-        ;
-and_test_star : and_test_star OR and_test { $$ = addlabel(string("OR\n")+"(or)"); addedge($$,$1); addedge($$,$3); }
-                | and_test   { $$=$1; }
+small_stmt_list: small_stmt     {   
+            $$ = new node("small_stmt_list");
+            $$->add_child($1);
+        }
+        | small_stmt_list SEMI_COLON small_stmt      {  
+            $$ = new node("small_stmt_list");
+            $$->add_child($1);
+            node* tempnode;
+            tempnode= new node(";",true,"DELIMITER");
+            $$->add_child(tempnode);
+            $$->add_child($3);
+        }
         ;
 
-and_test: not_test  { $$=$1; }
-        | not_test_star AND not_test    { $$ = addlabel(string("AND\n")+"(and)"); addedge($$,$1); addedge($$,$3); }
+small_stmt: expr_stmt       {  
+            $$ = new node("small_stmt");
+            $$->add_child($1);
+        }
+        | flow_stmt     {  
+            $$ = new node("small_stmt");
+            $$->add_child($1);
+        }
+        | global_stmt       {  
+            $$ = new node("small_stmt");
+            $$->add_child($1);
+        }
+        | nonlocal_stmt     {  
+            $$ = new node("small_stmt");
+            $$->add_child($1);
+        }
+        | assert_stmt       {  
+            $$ = new node("small_stmt");
+            $$->add_child($1);
+        }
         ;
-not_test_star : not_test_star AND not_test  { $$ = addlabel(string("AND\n")+"(and)"); addedge($$,$1); addedge($$,$3); }
-            | not_test   { $$=$1; }
-            ;
 
-not_test: NOT not_test   { $$ = addlabel(string("NOT\n")+"(not)"); addedge($$,$2); }
-            | comparison    { $$=$1;  }
-            ;
+expr_stmt:  testlist_star_expr annassign {   
+            $$ = new node("expr_stmt");
+            $$->add_child($1);
+            $$->add_child($2);
+        }
+        | testlist_star_expr augassign testlist {  
+            $$ = new node("expr_stmt");
+            $$->add_child($1);
+            $$->add_child($2);
+            $$->add_child($3);
+        }
+        | eq_testlist_star_expr_plus { 
+            $$ = new node("expr_stmt");
+            $$->add_child($1);
+        }
+        ; 
 
-comparison: expr  { $$=$1; }
-            | expr comp_op comparison  { $$ = $2; addedge($$,$1); addedge($$,$3); }
+eq_testlist_star_expr_plus: testlist_star_expr {  
+            $$ = new node("eq_testlist_star_expr_plus");
+            $$->add_child($1);
+        }
+        | testlist_star_expr EQUAL eq_testlist_star_expr_plus {  
+            $$ = new node("eq_testlist_star_expr_plus");
+            $$->add_child($1);
+            node* tempnode;
+            tempnode= new node("=",true,"DELIMITER");
+            $$->add_child(tempnode);
+            $$->add_child($3);
+        }
+        ;
 
-comp_op: LESS_THAN  { $$ = addlabel(string("LESS_THAN\n")+"(<)"); }
-    | GREATER_THAN  { $$ = addlabel(string("GREATER_THAN\n")+"(>)"); }
-    | EQUAL_EQUAL   { $$ = addlabel(string("EQUAL_EQUAL\n")+"(==)"); }
-    | GREATER_THAN_EQUAL    { $$ = addlabel(string("GREATER_THAN_EQUAL\n")+"(>=)"); }
-    | LESS_THAN_EQUAL   { $$ = addlabel(string("LESS_THAN_EQUAL\n")+"(<=)"); }
-    | NOT_EQUAL_ARROW   { $$ = addlabel(string("NOT_EQUAL_ARROW\n")+"(!=)"); }
-    | NOT_EQUAL    { $$ = addlabel(string("NOT_EQUAL\n")+"(!=)"); }
-    | IN    { $$ = addlabel(string("IN\n")+"(in)"); }
-    | NOT IN    { $$ = addlabel(string("NOT_IN\n")+"(not in)"); }
-    | IS    { $$ = addlabel(string("IS\n")+"(is)"); }
-    | IS NOT    { $$ = addlabel(string("IS_NOT\n")+"(is not)"); }
+annassign: COLON test   {  
+            $$ = new node("annassign");
+            node* tempnode;
+            tempnode= new node(":",true,"DELIMITER");
+            $$->add_child(tempnode);
+            $$->add_child($2);
+        }
+        | COLON test EQUAL testlist_star_expr   {  
+            $$ = new node("annassign");
+            node* tempnode;
+            tempnode= new node(":",true,"DELIMITER");
+            $$->add_child(tempnode);
+            $$->add_child($2);
+            tempnode= new node("=",true,"DELIMITER");
+            $$->add_child(tempnode);
+            $$->add_child($4);
+        }
+        ;
+
+testlist_star_expr: expr_choice_list {  
+            $$ = new node("testlist_star_expr");
+            $$->add_child($1);
+        }
+        | expr_choice_list COMMA  {   
+            $$ = new node("testlist_star_expr");
+            $$->add_child($1);
+            node* tempnode;
+            tempnode= new node(",",true,"DELIMITER");
+            $$->add_child(tempnode);
+        }
+        ;
+
+expr_choice_list : expr_choice  { 
+            $$ = new node("expr_choice_list");
+            $$->add_child($1);
+        }
+        | expr_choice_list COMMA expr_choice    { 
+            $$ = new node("expr_choice_list");
+            $$->add_child($1);
+            node* tempnode;
+            tempnode= new node(",",true,"DELIMITER");
+            $$->add_child(tempnode);
+            $$->add_child($3);
+        }
+        ;
+
+expr_choice : test  {  
+            $$ = new node("expr_choice");
+            $$->add_child($1);
+        }
+        | star_expr   {  
+            $$ = new node("expr_choice");
+            $$->add_child($1);
+        }
+        ;
+
+augassign: ASSIGN_OPERATOR  {  
+            $$ = new node("augassign");
+            node* tempnode;
+            string s($1);
+            tempnode= new node(s,true,"DELIMITER");
+            $$->add_child(tempnode);
+        }
+        ;
+
+flow_stmt: break_stmt   {  
+            $$ = new node("flow_stmt");
+            $$->add_child($1);
+        }
+        | continue_stmt     {  
+            $$ = new node("flow_stmt");
+            $$->add_child($1);
+        }
+        | return_stmt    {  
+            $$ = new node("flow_stmt");
+            $$->add_child($1);
+        }
+        ;
+
+break_stmt: BREAK   {  
+            $$ = new node("break_stmt");
+            node* tempnode;
+            tempnode= new node("break",true,"KEYWORD");
+            $$->add_child(tempnode);
+        }
+        ;
+continue_stmt: CONTINUE     {  
+            $$ = new node("continue_stmt");
+            node* tempnode;
+            tempnode= new node("continue",true,"KEYWORD");
+            $$->add_child(tempnode);
+        }
+        ;
+return_stmt: RETURN     {  
+            $$ = new node("return_stmt");
+            node* tempnode;
+            tempnode= new node("return",true,"KEYWORD");
+            $$->add_child(tempnode);
+        }
+        | RETURN testlist_star_expr     {  
+            $$ = new node("return_stmt");
+            node* tempnode;
+            tempnode= new node("return",true,"KEYWORD");
+            $$->add_child(tempnode);
+            $$->add_child($2);
+        }
+        ;   
+
+global_stmt: GLOBAL NAME    {  
+            $$ = new node("global_stmt");
+            node* tempnode;
+            tempnode= new node("global",true,"KEYWORD");
+            $$->add_child(tempnode);
+            string s($2);
+            tempnode= new node(s,true,"ID");
+            $$->add_child(tempnode);
+        }
+        | GLOBAL NAME comma_name_star {   
+            $$ = new node("global_stmt");
+            node* tempnode;
+            tempnode= new node("global",true,"KEYWORD");
+            $$->add_child(tempnode);
+            string s($2);
+            tempnode= new node(s,true,"ID");
+            $$->add_child(tempnode);
+            $$->add_child($3);
+        }
+        ;
+nonlocal_stmt: NONLOCAL NAME     { 
+            $$ = new node("nonlocal_stmt");
+            node* tempnode;
+            tempnode= new node("nonlocal",true,"KEYWORD");
+            $$->add_child(tempnode);
+            string s($2);
+            tempnode= new node(s,true,"ID");
+            $$->add_child(tempnode);
+            
+        }
+        | NONLOCAL NAME comma_name_star {  
+            $$ = new node("nonlocal_stmt");
+            node* tempnode;
+            tempnode= new node("nonlocal",true,"KEYWORD");
+            $$->add_child(tempnode);
+            string s($2);
+            tempnode= new node(s,true,"ID");
+            $$->add_child(tempnode);
+            $$->add_child($3);
+        }
+        ;    
+        
+assert_stmt: ASSERT test  {  
+            $$ = new node("assert_stmt");
+            node* tempnode;
+            tempnode= new node("assert",true,"KEYWORD");
+            $$->add_child(tempnode);
+            $$->add_child($2);
+        }
+        | ASSERT test comma_test  {  
+            $$ = new node("assert_stmt");
+            node* tempnode;
+            tempnode= new node("assert",true,"KEYWORD");
+            $$->add_child(tempnode);
+            $$->add_child($2);
+            $$->add_child($3);
+        }
+        ;
+comma_name_star: COMMA NAME    {  
+            $$ = new node("comma_name_star");
+            node* tempnode;
+            tempnode= new node(",",true,"DELIMITER");
+            $$->add_child(tempnode);
+            string s($2);
+            tempnode= new node(s,true,"ID");
+            $$->add_child(tempnode);
+        }
+        | COMMA NAME comma_name_star    {  
+            $$ = new node("comma_name_star");
+            node* tempnode;
+            tempnode= new node(",",true,"DELIMITER");
+            $$->add_child(tempnode);
+            string s($2);
+            tempnode= new node(s,true,"ID");
+            $$->add_child(tempnode);
+            $$->add_child($3);
+        }
+        ;
+compound_stmt: if_stmt      { 
+            $$ = new node("compound_stmt");
+            $$->add_child($1);
+        }
+        | while_stmt   {  
+            $$ = new node("compound_stmt");
+            $$->add_child($1);
+        }
+        | for_stmt     {  
+            $$ = new node("compound_stmt");
+            $$->add_child($1);
+        }
+        | funcdef      {  
+            $$ = new node("compound_stmt");
+            $$->add_child($1);
+        }
+        | classdef     {  
+            $$ = new node("compound_stmt");
+            $$->add_child($1);
+        }
+        | async_stmt   {  
+            $$ = new node("compound_stmt");
+            $$->add_child($1);
+        }
+        ;
+async_stmt: ASYNC async_choice  {  
+            $$ = new node("async_stmt");
+            node* tempnode;
+            tempnode= new node("async",true,"KEYWORD");
+            $$->add_child(tempnode);
+            $$->add_child($2);
+        }
+        ;
+async_choice : funcdef  { 
+            $$ = new node("async_choice");
+            $$->add_child($1);
+        }
+        | for_stmt  {  
+            $$ = new node("async_choice");
+            $$->add_child($1);
+        }
+        ;   
+
+if_stmt: IF test COLON suite     {  
+            $$ = new node("if_stmt");
+            node* tempnode;
+            tempnode= new node("if",true,"KEYWORD");
+            $$->add_child(tempnode);
+            $$->add_child($2);
+            tempnode= new node(":",true,"DELIMITER");
+            $$->add_child(tempnode);
+            $$->add_child($4);
+        }
+        | IF test COLON suite ELSE COLON suite   {  
+            $$ = new node("if_stmt");
+            node* tempnode;
+            tempnode= new node("if",true,"KEYWORD");
+            $$->add_child(tempnode);
+            $$->add_child($2);
+            tempnode= new node(":",true,"DELIMITER");
+            $$->add_child(tempnode);
+            $$->add_child($4);
+            tempnode= new node("else",true,"KEYWORD");
+            $$->add_child(tempnode);
+            tempnode= new node(":",true,"DELIMITER");
+            $$->add_child(tempnode);
+            $$->add_child($7);
+        }
+        | IF test COLON suite nts_star    {  
+            $$ = new node("if_stmt");
+            node* tempnode;
+            tempnode= new node("if",true,"KEYWORD");
+            $$->add_child(tempnode);
+            $$->add_child($2);
+            tempnode= new node(":",true,"DELIMITER");
+            $$->add_child(tempnode);
+            $$->add_child($4);
+            $$->add_child($5);
+        }
+        | IF test COLON suite nts_star ELSE COLON suite   {
+            $$ = new node("if_stmt");
+            node* tempnode;
+            tempnode= new node("if",true,"KEYWORD");
+            $$->add_child(tempnode);
+            $$->add_child($2);
+            tempnode= new node(":",true,"DELIMITER");
+            $$->add_child(tempnode);
+            $$->add_child($4);
+            $$->add_child($5);
+            tempnode= new node("else",true,"KEYWORD");
+            $$->add_child(tempnode);
+            tempnode= new node(":",true,"DELIMITER");
+            $$->add_child(tempnode);
+            $$->add_child($8);
+        }
+        ;
+while_stmt: WHILE test COLON suite   {  
+            $$ = new node("while_stmt");
+            node* tempnode;
+            tempnode= new node("while",true,"KEYWORD");
+            $$->add_child(tempnode);
+            $$->add_child($2);
+            tempnode= new node(":",true,"DELIMITER");
+            $$->add_child(tempnode);
+            $$->add_child($4);
+        }
+        | WHILE test COLON suite ELSE COLON suite  {   
+            $$ = new node("while_stmt");
+            node* tempnode;
+            tempnode= new node("while",true,"KEYWORD");
+            $$->add_child(tempnode);
+            $$->add_child($2);
+            tempnode= new node(":",true,"DELIMITER");
+            $$->add_child(tempnode);
+            $$->add_child($4);
+            tempnode= new node("else",true,"KEYWORD");
+            $$->add_child(tempnode);
+            tempnode= new node(":",true,"DELIMITER");
+            $$->add_child(tempnode);
+            $$->add_child($7);
+        }
+        ;
+for_stmt: FOR exprlist IN testlist COLON suite    { 
+            $$ = new node("for_stmt");
+            node* tempnode;
+            tempnode= new node("for",true,"KEYWORD");
+            $$->add_child(tempnode);
+            $$->add_child($2);
+            tempnode= new node("in",true,"KEYWORD");
+            $$->add_child(tempnode);
+            $$->add_child($4);
+            tempnode= new node(":",true,"DELIMITER");
+            $$->add_child(tempnode);
+            $$->add_child($6);
+        }
+        | FOR exprlist IN testlist COLON suite ELSE COLON suite   { 
+            $$ = new node("for_stmt");
+            node* tempnode;
+            tempnode= new node("for",true,"KEYWORD");
+            $$->add_child(tempnode);
+            $$->add_child($2);
+            tempnode= new node("in",true,"KEYWORD");
+            $$->add_child(tempnode);
+            $$->add_child($4);
+            tempnode= new node(":",true,"DELIMITER");
+            $$->add_child(tempnode);
+            $$->add_child($6);
+            tempnode= new node("else",true,"KEYWORD");
+            $$->add_child(tempnode);
+            tempnode= new node(":",true,"DELIMITER");
+            $$->add_child(tempnode);
+            $$->add_child($9);
+        }
+        ;
+suite: simple_stmt  { 
+            $$ = new node("suite");
+            $$->add_child($1);
+        }
+        | NEWLINE INDENT stmt_plus DEDENT   { 
+            $$ = new node("suite");
+            node* tempnode;
+            tempnode= new node("newline",true,"newline");
+            $$->add_child(tempnode);
+            tempnode= new node("indent",true,"indent");
+            $$->add_child(tempnode);
+            $$->add_child($3);
+            tempnode= new node("dedent",true,"dedent");
+            $$->add_child(tempnode);
+        }
+        | NEWLINE INDENT stmt_plus NEWLINE DEDENT   { 
+            $$ = new node("suite");
+            node* tempnode;
+            tempnode= new node("newline",true,"newline");
+            $$->add_child(tempnode);
+            tempnode= new node("indent",true,"indent");
+            $$->add_child(tempnode);
+            $$->add_child($3);
+            tempnode= new node("newline",true,"newline");
+            $$->add_child(tempnode);
+            tempnode= new node("dedent",true,"dedent");
+            $$->add_child(tempnode);
+        }
+        ;
+
+nts_star : ELIF test COLON suite  {  
+            $$ = new node("nts_star");
+            node* tempnode;
+            tempnode= new node("elif",true,"KEYWORD");
+            $$->add_child(tempnode);
+            $$->add_child($2);
+            tempnode= new node(":",true,"DELIMITER");
+            $$->add_child(tempnode);
+            $$->add_child($4);
+        }
+        | ELIF test COLON suite nts_star  {  
+            $$ = new node("nts_star");
+            node* tempnode;
+            tempnode= new node("elif",true,"KEYWORD");
+            $$->add_child(tempnode);
+            $$->add_child($2);
+            tempnode= new node(":",true,"DELIMITER");
+            $$->add_child(tempnode);
+            $$->add_child($4);
+            $$->add_child($5);
+        }
+        ;
+test: or_test   { 
+            $$ = new node("test");
+            $$->add_child($1);
+        }
+        | or_test IF or_test ELSE test  {  
+            $$ = new node("test");
+            $$->add_child($1);
+            node* tempnode;
+            tempnode= new node("if",true,"KEYWORD");
+            $$->add_child(tempnode);
+            $$->add_child($3);
+            tempnode= new node("else",true,"KEYWORD");
+            $$->add_child(tempnode);
+            $$->add_child($5);
+        }
+        ;
+or_test: and_test    { 
+            $$ = new node("or_test");
+            $$->add_child($1);
+        }
+        | and_test_star OR and_test    {  
+            $$ = new node("or_test");
+            $$->add_child($1);
+            node* tempnode;
+            tempnode= new node("or",true,"KEYWORD");
+            $$->add_child(tempnode);
+            $$->add_child($3);
+        }
+        ;
+and_test_star : and_test_star OR and_test {
+            $$ = new node("and_test_star");
+            $$->add_child($1);
+            node* tempnode;
+            tempnode= new node("or",true,"KEYWORD");
+            $$->add_child(tempnode);
+            $$->add_child($3);
+        }
+        | and_test   { 
+            $$ = new node("and_test_star");
+            $$->add_child($1);
+        }
+        ;
+
+and_test: not_test  {
+            $$ = new node("and_test");
+            $$->add_child($1);
+        }
+        | not_test_star AND not_test    {  
+            $$ = new node("and_test");
+            $$->add_child($1);
+            node* tempnode;
+            tempnode= new node("and",true,"KEYWORD");
+            $$->add_child(tempnode);
+            $$->add_child($3);
+        }
+        ;
+not_test_star : not_test_star AND not_test  { 
+            $$ = new node("not_test_star");
+            $$->add_child($1);
+            node* tempnode;
+            tempnode= new node("and",true,"KEYWORD");
+            $$->add_child(tempnode);
+            $$->add_child($3);
+        }
+        | not_test   { 
+            $$ = new node("not_test_star");
+            $$->add_child($1);
+        }
+        ;
+
+not_test: NOT not_test   { 
+            $$ = new node("not_test");
+            node* tempnode;
+            tempnode= new node("not",true,"KEYWORD");
+            $$->add_child(tempnode);
+            $$->add_child($2);
+        }
+        | comparison    { 
+            $$ = new node("not_test");
+            $$->add_child($1);
+        }
+        ;
+
+comparison: expr  {
+            $$ = new node("comparison");
+            $$->add_child($1);
+        }
+        | expr comp_op comparison  { 
+            $$ = new node("comparison");
+            $$->add_child($1);
+            $$->add_child($2);
+            $$->add_child($3);
+        }
+        ;
+
+comp_op: LESS_THAN  {
+        $$ = new node("comp_op");
+        node* tempnode;
+        tempnode= new node("<",true,"DELIMITER");
+        $$->add_child(tempnode);
+    }
+    | GREATER_THAN  { 
+        $$ = new node("comp_op");
+        node* tempnode;
+        tempnode= new node(">",true,"DELIMITER");
+        $$->add_child(tempnode);
+     }
+    | EQUAL_EQUAL   { 
+        $$ = new node("comp_op");
+        node* tempnode;
+        tempnode= new node("==",true,"DELIMITER");
+        $$->add_child(tempnode);
+     }
+    | GREATER_THAN_EQUAL    { 
+        $$ = new node("comp_op");
+        node* tempnode;
+        tempnode= new node(">=",true,"DELIMITER");
+        $$->add_child(tempnode);
+     }
+    | LESS_THAN_EQUAL   {
+        $$ = new node("comp_op");
+        node* tempnode;
+        tempnode= new node("<=",true,"DELIMITER");
+        $$->add_child(tempnode);
+     }
+    | NOT_EQUAL_ARROW   {
+        $$ = new node("comp_op");
+        node* tempnode;
+        tempnode= new node("<>",true,"DELIMITER");
+        $$->add_child(tempnode);
+      }
+    | NOT_EQUAL    {
+        $$ = new node("comp_op");
+        node* tempnode;
+        tempnode= new node("!=",true,"DELIMITER");
+        $$->add_child(tempnode);
+     }
+    | IN    {  
+        $$ = new node("comp_op");
+        node* tempnode;
+        tempnode= new node("in",true,"KEYWORD");
+        $$->add_child(tempnode);
+    }
+    | NOT IN    { 
+        $$ = new node("comp_op");
+        node* tempnode;
+        tempnode= new node("not",true,"KEYWORD");
+        $$->add_child(tempnode);
+        tempnode= new node("in",true,"KEYWORD");
+        $$->add_child(tempnode);
+     }
+    | IS    { 
+        $$ = new node("comp_op");
+        node* tempnode;
+        tempnode= new node("is",true,"KEYWORD");
+        $$->add_child(tempnode);
+     }
+    | IS NOT    { 
+        $$ = new node("comp_op");
+        node* tempnode;
+        tempnode= new node("is",true,"KEYWORD");
+        $$->add_child(tempnode);
+        tempnode= new node("not",true,"KEYWORD");
+        $$->add_child(tempnode);
+     }
     ;
 
-star_expr: MULTIPLY expr    { $$ = addlabel("STAR_EXPR"); $1 = addlabel(string("MULTIPLY\n")+"(*)"); addedge($$,$1); addedge($$,$2); }
-            ;
-
-expr: xor_expr    { $$=$1; }
-        | xor_expr BIT_OR expr    { $$ = addlabel(string("BIT_OR\n")+"(|)"); addedge($$,$1); addedge($$,$3); }
+star_expr: MULTIPLY expr    { 
+            $$ = new node("star_expr");
+            node* tempnode;
+            tempnode= new node("*",true,"DELIMITER");
+            $$->add_child(tempnode);
+            $$->add_child($2);
+        }
         ;
 
-xor_expr: and_expr { $$=$1; }
-          | and_expr BIT_XOR xor_expr { $$ = addlabel(string("BIT_XOR\n")+"(^)"); addedge($$,$1); addedge($$,$3); }
+expr: xor_expr    { 
+            $$ = new node("expr");
+            $$->add_child($1);
+        }
+        | xor_expr BIT_OR expr    {  
+            $$ = new node("expr");
+            $$->add_child($1);
+            node* tempnode;
+            tempnode= new node("|",true,"DELIMITER");
+            $$->add_child(tempnode);
+            $$->add_child($3);
+        }
         ;
 
-and_expr: shift_expr   { $$=$1; }
-         | shift_expr BIT_AND and_expr   { $$ = addlabel(string("BIT_AND\n")+"(&)"); addedge($$,$1); addedge($$,$3); }    
+xor_expr: and_expr { 
+            $$ = new node("xor_expr");
+            $$->add_child($1);
+        }
+        | and_expr BIT_XOR xor_expr    {  
+            $$ = new node("xor_expr");
+            $$->add_child($1);
+            node* tempnode;
+            tempnode= new node("^",true,"DELIMITER");
+            $$->add_child(tempnode);
+            $$->add_child($3);
+        }
         ;
 
-shift_expr: arith_expr   { $$=$1; }
-            | arith_expr SHIFT_OPER shift_expr   { $$ = addlabel(string("SHIFT_OPER\n (")+ chartostring($2) + string(")")); addedge($$,$1); addedge($$,$3); }
+and_expr: shift_expr   { 
+            $$ = new node("and_expr");
+            $$->add_child($1);
+        }
+        | shift_expr BIT_AND and_expr   {  
+            $$ = new node("and_expr");
+            $$->add_child($1);
+            node* tempnode;
+            tempnode= new node("&",true,"DELIMITER");
+            $$->add_child(tempnode);
+            $$->add_child($3);
+        }
         ;
 
-arith_expr: term { $$=$1; }
-            | arith_expr PLUS term { $$ = addlabel(string("PLUS\n")+"(+)"); addedge($$,$1); addedge($$,$3); }
-            | arith_expr MINUS term { $$ = addlabel(string("MINUS\n")+"(-)"); addedge($$,$1); addedge($$,$3); }
-        ;
-term: factor {$$=$1;}
-        | term term_choice factor { $$ = $2; addedge($$,$1); addedge($$,$3); }
-        ;
-
-term_choice : MULTIPLY      { $$ = addlabel(string("MULTIPLY\n")+"(*)"); }
-            |ATTHERATE      { $$ = addlabel(string("ATTHERATE\n")+"(@)");}
-            |DIVIDE         { $$ = addlabel(string("DIVIDE\n")+"(/)");}
-            |REMAINDER      { $$ = addlabel(string("REMAINDER\n")+"(%)");}
-            |FLOOR_DIV_OPER    { $$ = addlabel(string("FLOOR_DIV_OP\n")+"(//)");}
-            ;
-
-factor: factor_choice factor        { $$ = $1; addedge($$,$2); }
-        | power     { $$=$1; }
-        ;
-factor_choice : PLUS        {$$ = addlabel(string("PLUS\n")+"(+)",true); }   
-                |MINUS      {$$ = addlabel(string("MINUS\n")+"(-)",true);  } 
-                |NEGATION   {$$ = addlabel(string("NEGATION\n")+"(~)",true); }
-                ; 
-power: atom_expr        { $$=$1; }
-        | atom_expr POWER_OPERATOR factor   { $$ = addlabel(string("POWER_OP\n")+"(**)"); addedge($$,$1); addedge($$,$3); }
+shift_expr: arith_expr   { 
+                $$ = new node("shift_expr");
+                $$->add_child($1);
+            }
+            | arith_expr SHIFT_OPER shift_expr   { 
+                $$ = new node("shift_expr");
+                $$->add_child($1);
+                node* tempnode;
+                string s($2);
+                tempnode= new node(s,true,"DELIMITER");
+                $$->add_child(tempnode);
+                $$->add_child($3);
+             }
         ;
 
-atom_expr: atom { $$=$1; }
-        | atom_expr trailer { $$ = addlabel("ATOM_EXPR"); addedge($$,$1); addedge($$,$2); }
-        | atom_expr DOT NAME {$$=addlabel("."); addedge($$,$1); $3=addlabel(string("NAME\n (")+chartostring($3) + string(")"),true); addedge($$,$3); }
+arith_expr: term { 
+                $$ = new node("arith_expr");
+                $$->add_child($1);
+            }
+            | arith_expr PLUS term { 
+                $$ = new node("arith_expr");
+                $$->add_child($1);
+                node* tempnode;
+                tempnode= new node("+",true,"DELIMITER");
+                $$->add_child(tempnode);
+                $$->add_child($3);
+            }
+            | arith_expr MINUS term { 
+                $$ = new node("arith_expr");
+                $$->add_child($1);
+                node* tempnode;
+                tempnode= new node("-",true,"DELIMITER");
+                $$->add_child(tempnode);
+                $$->add_child($3);
+             }
+        ;
+term: factor {
+            $$ = new node("term");
+            $$->add_child($1);
+        }
+        | term term_choice factor {
+            $$ = new node("term");
+            $$->add_child($1);
+            $$->add_child($2);
+            $$->add_child($3);
+         }
         ;
 
-atom: OPEN_BRACKET testlist_comp CLOSE_BRACKET  { $$=$2; }
-    | OPEN_BRACKET CLOSE_BRACKET    {$$=addlabel("ATOM1"); }
-    | SQUARE_OPEN testlist_comp SQUARE_CLOSE    {$$=$2; }
-    | SQUARE_OPEN SQUARE_CLOSE  {$$=addlabel("ATOM1"); }
-    | CURLY_OPEN dictorsetmaker CURLY_CLOSE     {$$=$2; }
-    | CURLY_OPEN CURLY_CLOSE    {$$=addlabel("ATOM1");  }
-    | NAME      {$$=addlabel(string("NAME\n (")+chartostring($1) + string(")"),true);  }
-    | NUMBER        {$$=addlabel(string("NUMBER\n (")+chartostring($1) + string(")"),true); }
-    | STRING_PLUS       {$$=$1; }
-    | ATOM_KEYWORDS     {$$=addlabel(string("ATOM_KEYWORD\n (")+chartostring($1) + string(")"),true); }
-    | TYPE_HINT     {$$=addlabel(string("TYPE\n (")+chartostring($1) + string(")"),true);  }
+term_choice : MULTIPLY      { 
+            $$ = new node("term_choice");
+            node* tempnode;
+            tempnode= new node("*",true,"DELIMITER");
+            $$->add_child(tempnode);
+        }
+        |ATTHERATE      { 
+            $$ = new node("term_choice");
+            node* tempnode;
+            tempnode= new node("@",true,"DELIMITER");
+            $$->add_child(tempnode);
+        }
+        |DIVIDE         { 
+            $$ = new node("term_choice");
+            node* tempnode;
+            tempnode= new node("/",true,"DELIMITER");
+            $$->add_child(tempnode);
+        }
+        |REMAINDER      { 
+            $$ = new node("term_choice");
+            node* tempnode;
+            tempnode= new node("%",true,"DELIMITER");
+            $$->add_child(tempnode);
+        }
+        |FLOOR_DIV_OPER    { 
+            $$ = new node("term_choice");
+            node* tempnode;
+            tempnode= new node("//",true,"DELIMITER");
+            $$->add_child(tempnode);
+        }
+        ;
+
+factor: factor_choice factor        {  
+            $$ = new node("factor");
+            $$->add_child($1);
+            $$->add_child($2);
+        }
+        | power     { 
+            $$ = new node("factor");
+            $$->add_child($1);
+        }
+        ;
+factor_choice : PLUS        {
+            $$ = new node("factor_choice");
+            node* tempnode;
+            tempnode= new node("+",true,"DELIMITER");
+            $$->add_child(tempnode);
+        }
+        | MINUS      { 
+            $$ = new node("factor_choice");
+            node* tempnode;
+            tempnode= new node("-",true,"DELIMITER");
+            $$->add_child(tempnode);
+        }
+        | NEGATION   { 
+            $$ = new node("factor_choice");
+            node* tempnode;
+            tempnode= new node("~",true,"DELIMITER");
+            $$->add_child(tempnode);
+        }
+        ;
+power: atom_expr        { 
+            $$ = new node("power");
+            $$->add_child($1);
+        }
+        | atom_expr POWER_OPERATOR factor   { 
+            $$ = new node("power");
+            $$->add_child($1);
+            node* tempnode;
+            tempnode= new node("**",true,"DELIMITER");
+            $$->add_child(tempnode);
+            $$->add_child($3);
+        }
+        ;
+
+atom_expr: atom {  
+            $$ = new node("atom_expr");
+            $$->add_child($1);
+        }
+        | atom_expr trailer {  
+            $$ = new node("atom_expr");
+            $$->add_child($1);
+            $$->add_child($2);
+        }
+        | atom_expr DOT NAME { 
+            $$ = new node("atom_expr");
+            $$->add_child($1);
+            node* tempnode;
+            tempnode= new node(".",true,"DELIMITER");
+            $$->add_child(tempnode);
+            string s($3);
+            tempnode= new node(s,true,"ID");
+            $$->add_child(tempnode);
+        }
+        ;
+
+atom: OPEN_BRACKET testlist_comp CLOSE_BRACKET  { 
+        $$ = new node("atom");
+        node* tempnode;
+        tempnode= new node("(",true,"DELIMITER");
+        $$->add_child(tempnode);
+        $$->add_child($2);
+        tempnode= new node(")",true,"DELIMITER");
+        $$->add_child(tempnode);
+    }
+    | OPEN_BRACKET CLOSE_BRACKET    {
+        $$ = new node("atom");
+        node* tempnode;
+        tempnode= new node("(",true,"DELIMITER");
+        $$->add_child(tempnode);
+        tempnode= new node(")",true,"DELIMITER");
+        $$->add_child(tempnode);
+    }
+    | SQUARE_OPEN testlist_comp SQUARE_CLOSE    { 
+        $$ = new node("atom");
+        node* tempnode;
+        tempnode= new node("[",true,"DELIMITER");
+        $$->add_child(tempnode);
+        $$->add_child($2);
+        tempnode= new node("]",true,"DELIMITER");
+        $$->add_child(tempnode);
+    }
+    | SQUARE_OPEN SQUARE_CLOSE  {
+        $$ = new node("atom");
+        node* tempnode;
+        tempnode= new node("[",true,"DELIMITER");
+        $$->add_child(tempnode);
+        tempnode= new node("]",true,"DELIMITER");
+        $$->add_child(tempnode);
+     }
+    | CURLY_OPEN dictorsetmaker CURLY_CLOSE     { 
+        $$ = new node("atom");
+        node* tempnode;
+        tempnode= new node("{",true,"DELIMITER");
+        $$->add_child(tempnode);
+        $$->add_child($2);
+        tempnode= new node("}",true,"DELIMITER");
+        $$->add_child(tempnode);
+    }
+    | CURLY_OPEN CURLY_CLOSE    { 
+        $$ = new node("atom");
+        node* tempnode;
+        tempnode= new node("{",true,"DELIMITER");
+        $$->add_child(tempnode);
+        tempnode= new node("}",true,"DELIMITER");
+        $$->add_child(tempnode);
+     }
+    | NAME      {
+        $$ = new node("atom");
+        node* tempnode;
+        string s($1);
+        tempnode= new node(s,true,"ID");
+        $$->add_child(tempnode);
+     }
+    | NUMBER        { 
+        $$ = new node("atom");
+        node* tempnode;
+        string s($1);
+        tempnode= new node(s,true,"NUMBER");
+        $$->add_child(tempnode);
+    }
+    | STRING_PLUS       { 
+        $$ = new node("atom");
+        $$->add_child($1);
+    }
+    | ATOM_KEYWORDS     { 
+        $$ = new node("atom");
+        node* tempnode;
+        string s($1);
+        tempnode= new node(s,true,"KEYWORD");
+        $$->add_child(tempnode);
+    }
+    | TYPE_HINT     { 
+        $$ = new node("atom");
+        node* tempnode;
+        string s($1);
+        tempnode= new node(s,true,"TYPE_HINT");
+        $$->add_child(tempnode);
+     }
     ;
-STRING_PLUS: STRING     {$$=addlabel(string("STRING\n (")+chartostring($1) + string(")"),true); }   
-            | STRING STRING_PLUS    { $$=addlabel("STRING_PLUS"); $1=addlabel(string("STRING\n (")+chartostring($1) + string(")"),true); addedge($$,$1); addedge($$,$2,"STR_PLUS"); }
-            ;
-
-testlist_comp: named_or_star comp_for       { $$ = addlabel("TESTLIST_COMP"); addedge($$,$1); addedge($$,$2); }
-        | named_or_star_list                { $$=$1; }
-        | named_or_star_list COMMA          { $$=$1; }
-        ;
-named_or_star_list : named_or_star      { $$=$1; }
-                    | named_or_star_list COMMA named_or_star    { $$ = addlabel("NAMED_LIST"); addedge($$,$1); addedge($$,$3); }
-                    ;
-named_or_star : namedexpr_test    { $$=$1; }
-                | star_expr     { $$=$1; }
-                ;
-
-trailer: OPEN_BRACKET CLOSE_BRACKET  {  $$ = addlabel("TRAILER1");  }
-        | OPEN_BRACKET arglist CLOSE_BRACKET  {  $$ = $2; }
-        | SQUARE_OPEN subscriptlist SQUARE_CLOSE        { $$ = $2; }
+STRING_PLUS: STRING     {
+            $$ = new node("STRING_PLUS");
+            node* tempnode;
+            string s($1);
+            tempnode= new node(s,true,"STRING");
+            $$->add_child(tempnode);
+        }
+        | STRING STRING_PLUS    { 
+            $$ = new node("STRING_PLUS");
+            node* tempnode;
+            string s($1);
+            tempnode= new node(s,true,"STRING");
+            $$->add_child(tempnode);
+            $$->add_child($2);
+        }
         ;
 
-subscriptlist: subscriptlist_list      { $$=$1; }
-                | subscriptlist_list COMMA     { $$=$1; }
-            ;
-subscriptlist_list: subscript       {$$=$1; }
-                    | subscriptlist_list COMMA subscript    { $$ = addlabel("SUBSCRIPT_LIST"); addedge($$,$1); addedge($$,$3); }
-                    ;
-subscript: test     {$$=$1; }
-        | COLON     {$$=addlabel("DELIM\n(:)",true);  }
-        | COLON test     { $$=$2; }
-        | test COLON     {$$=$1; }
-        | test COLON test     {$$=addlabel("SUBSCRIPT"); addedge($$,$1,"TEST"); addedge($$,$3,"TEST"); }
+testlist_comp: named_or_star comp_for       { 
+            $$ = new node("testlist_comp");
+            $$->add_child($1);
+            $$->add_child($2);
+        }
+        | named_or_star_list    { 
+            $$ = new node("testlist_comp");
+            $$->add_child($1);
+        }
+        | named_or_star_list COMMA      { 
+            $$ = new node("testlist_comp");
+            $$->add_child($1);
+            node* tempnode;
+            tempnode= new node(",",true,"DELIMITER");
+            $$->add_child(tempnode);
+        }
         ;
-exprlist: expr_or_star_expr_list   {$$=$1; }
-        | expr_or_star_expr_list COMMA  {$$=$1; }
+named_or_star_list : named_or_star      { 
+            $$ = new node("named_or_star_list");
+            $$->add_child($1);
+        }
+        | named_or_star_list COMMA named_or_star    { 
+            $$ = new node("named_or_star_list");
+            $$->add_child($1);
+            node* tempnode;
+            tempnode= new node(",",true,"DELIMITER");
+            $$->add_child(tempnode);
+            $$->add_child($3);
+        }
+        ; 
+named_or_star : test    { 
+            $$ = new node("named_or_star");
+            $$->add_child($1);
+        }
+        | star_expr     { 
+            $$ = new node("named_or_star");
+            $$->add_child($1);
+        }
         ;
-expr_or_star_expr_list: expr_or_star_expr   {$$=$1; } 
-                        | expr_or_star_expr_list COMMA expr_or_star_expr    {$$=addlabel("EXPR_OR_STAR_LIST"); addedge($$,$1,"EXPR_OR_STAR_list"); addedge($$,$3,"EXPR_OR_STAR"); }
-                        ;
-expr_or_star_expr: expr         {$$=$1; }
-                | star_expr     {$$=$1; }
-                ;
-testlist: testlist_list    {$$=$1; }
-        | testlist_list COMMA   {$$= $1; }
-        ;
-testlist_list: test         {$$=$1; }
-            | testlist_list COMMA test  {$$=addlabel("TESTLIST_LIST"); addedge($$,$1,"TESTLIST_list"); addedge($$,$3,"TEST"); }
-            ;
-dictorsetmaker: A comp_for   {$$=addlabel("DICTORSETMAKER"); addedge($$,$1,"A"); addedge($$,$2,"COMP_FOR"); }
-            | A_list      {$$=$1; }
-            | A_list COMMA      {$$=$1; }
-            | B comp_for       {$$=addlabel("DICTORSETMAKER"); addedge($$,$1,"B"); addedge($$,$2,"COMP_FOR"); }
-            | B_list       {$$=$1; }
-            | B_list COMMA      {$$=$1; }
-            ;
 
-A: test COLON test  { $$=addlabel("A"); addedge($$,$1,"TEST"); addedge($$,$3,"TEST"); }
-    | POWER_OPERATOR expr   {$$=addlabel(string("POWER_OP\n")+"(**)"); addedge($$,$2); }
+trailer: OPEN_BRACKET CLOSE_BRACKET  { 
+            $$ = new node("trailer");
+            node* tempnode;
+            tempnode= new node("(",true,"DELIMITER");
+            $$->add_child(tempnode);
+            tempnode= new node(")",true,"DELIMITER");
+            $$->add_child(tempnode);
+        }
+        | OPEN_BRACKET arglist CLOSE_BRACKET  {
+            $$ = new node("trailer");
+            node* tempnode;
+            tempnode= new node("(",true,"DELIMITER");
+            $$->add_child(tempnode);
+            $$->add_child($2);
+            tempnode= new node(")",true,"DELIMITER");
+            $$->add_child(tempnode);
+         }
+        | SQUARE_OPEN subscriptlist SQUARE_CLOSE        {
+            $$ = new node("trailer");
+            node* tempnode;
+            tempnode= new node("[",true,"DELIMITER");
+            $$->add_child(tempnode);
+            $$->add_child($2);
+            tempnode= new node("]",true,"DELIMITER");
+            $$->add_child(tempnode);
+         }
+        ;
+
+subscriptlist: subscriptlist_list      {
+            $$ = new node("subscriptlist");
+            $$->add_child($1);
+        }
+        | subscriptlist_list COMMA     { 
+            $$ = new node("subscriptlist");
+            $$->add_child($1);
+            node* tempnode;
+            tempnode= new node(",",true,"DELIMITER");
+            $$->add_child(tempnode);
+        }
+        ;
+subscriptlist_list: subscript       { 
+            $$ = new node("subscriptlist_list");
+            $$->add_child($1);
+        }
+        | subscriptlist_list COMMA subscript    { 
+            $$ = new node("subscriptlist_list");
+            $$->add_child($1);
+            node* tempnode;
+            tempnode= new node(",",true,"DELIMITER");
+            $$->add_child(tempnode);
+            $$->add_child($3);
+        }
+        ;
+subscript: test     { 
+            $$ = new node("subscript");
+            $$->add_child($1);
+        }
+        | COLON     {  
+            $$ = new node("subscript");
+            node* tempnode;
+            tempnode= new node(":",true,"DELIMITER");
+            $$->add_child(tempnode);
+        }
+        | COLON test     { 
+            $$ = new node("subscript");
+            node* tempnode;
+            tempnode= new node(":",true,"DELIMITER");
+            $$->add_child(tempnode);
+            $$->add_child($2);
+        }
+        | test COLON     { 
+            $$ = new node("subscript");
+            $$->add_child($1);
+            node* tempnode;
+            tempnode= new node(":",true,"DELIMITER");
+            $$->add_child(tempnode);
+        }
+        | test COLON test     {
+            $$ = new node("subscript");
+            $$->add_child($1);
+            node* tempnode;
+            tempnode= new node(":",true,"DELIMITER");
+            $$->add_child(tempnode);
+            $$->add_child($3);
+        }
+        ;
+exprlist: expr_or_star_expr_list   {
+            $$ = new node("exprlist");
+            $$->add_child($1);
+        }
+        | expr_or_star_expr_list COMMA  { 
+            $$ = new node("exprlist");
+            $$->add_child($1);
+            node* tempnode;
+            tempnode= new node(",",true,"DELIMITER");
+            $$->add_child(tempnode);
+        }
+        ;
+expr_or_star_expr_list: expr_or_star_expr   { 
+            $$ = new node("expr_or_star_expr_list");
+            $$->add_child($1);
+        }
+        | expr_or_star_expr_list COMMA expr_or_star_expr    { 
+            $$ = new node("expr_or_star_expr_list");
+            $$->add_child($1);
+            node* tempnode;
+            tempnode= new node(",",true,"DELIMITER");
+            $$->add_child(tempnode);
+            $$->add_child($3);
+        }
+        ;
+expr_or_star_expr: expr         { 
+            $$ = new node("expr_or_star_expr");
+            $$->add_child($1);
+        }
+        | star_expr     { 
+            $$ = new node("expr_or_star_expr");
+            $$->add_child($1);
+        }
+        ;
+testlist: testlist_list    { 
+            $$ = new node("testlist");
+            $$->add_child($1);
+        }
+        | testlist_list COMMA   {
+            $$ = new node("testlist");
+            $$->add_child($1);
+            node* tempnode;
+            tempnode= new node(",",true,"DELIMITER");
+            $$->add_child(tempnode);
+         }
+        ;
+testlist_list: test         {
+            $$ = new node("testlist_list");
+            $$->add_child($1);
+        }
+        | testlist_list COMMA test  { 
+            $$ = new node("testlist_list");
+            $$->add_child($1);
+            node* tempnode;
+            tempnode= new node(",",true,"DELIMITER");
+            $$->add_child(tempnode);
+            $$->add_child($3);
+        }
+        ;   
+dictorsetmaker: A comp_for   {
+            $$ = new node("dictorsetmaker");
+            $$->add_child($1);
+            $$->add_child($2);
+        }
+        | A_list    { 
+            $$ = new node("dictorsetmaker");
+            $$->add_child($1);
+        }
+        | A_list COMMA    { 
+            $$ = new node("dictorsetmaker");
+            $$->add_child($1);
+            node* tempnode;
+            tempnode= new node(",",true,"DELIMITER");
+            $$->add_child(tempnode);
+        }
+        | B comp_for       {
+            $$ = new node("dictorsetmaker");
+            $$->add_child($1);
+            $$->add_child($2);
+        }
+        | B_list       {
+            $$ = new node("dictorsetmaker");
+            $$->add_child($1);
+         }
+        | B_list COMMA      { 
+            $$ = new node("dictorsetmaker");
+            $$->add_child($1);
+            node* tempnode;
+            tempnode= new node(",",true,"DELIMITER");
+            $$->add_child(tempnode);
+        }
+        ;
+
+A: test COLON test  { 
+            $$ = new node("A");
+            $$->add_child($1);
+            node* tempnode;
+            tempnode= new node(":",true,"DELIMITER");
+            $$->add_child(tempnode);
+            $$->add_child($3);
+        }
+    | POWER_OPERATOR expr   { 
+            $$ = new node("A");
+            node* tempnode;
+            tempnode= new node("**",true,"DELIMITER");
+            $$->add_child(tempnode);
+            $$->add_child($2);
+        }
     ;
-A_list: A    {$$=$1; }
-        | A_list COMMA A    {$$=addlabel("A_LIST"); addedge($$,$1,"A_list"); addedge($$,$3,"A");}
+A_list: A    { 
+            $$ = new node("A_list");
+            $$->add_child($1);
+        }
+        | A_list COMMA A    { 
+            $$ = new node("A_list");
+            $$->add_child($1);
+            node* tempnode;
+            tempnode= new node(",",true,"DELIMITER");
+            $$->add_child(tempnode);
+            $$->add_child($3);
+        }
         ;
-B: test  {$$=$1; }
-    | star_expr     {$$=$1; }
-    ;
-B_list: B   {$$=$1; }
-        | B_list COMMA B    {$$=addlabel("B_LIST"); addedge($$,$1,"B_list"); addedge($$,$3,"B"); }
+B: test  {
+            $$ = new node("B");
+            $$->add_child($1);     
+        }
+        | star_expr     { 
+            $$ = new node("B");
+            $$->add_child($1);    
+        }
+        ;
+B_list: B   { 
+            $$ = new node("B_list");
+            $$->add_child($1);
+        }
+        | B_list COMMA B    { 
+            $$ = new node("B_list");
+            $$->add_child($1);
+            node* tempnode;
+            tempnode= new node(",",true,"DELIMITER");
+            $$->add_child(tempnode);
+            $$->add_child($3);
+        }
         ;
 
-classdef: CLASS NAME COLON suite      {$$=addlabel("CLASS"); $2=addlabel(string("NAME\n (")+chartostring($2) + string(")"),true); addedge($$,$2); addedge($$,$4); }
-        | CLASS NAME OPEN_BRACKET CLOSE_BRACKET COLON suite      {$$=addlabel("CLASS"); $2=addlabel(string("NAME\n (")+chartostring($2) + string(")"),true); addedge($$,$2); addedge($$,$6); }
-        | CLASS NAME OPEN_BRACKET arglist CLOSE_BRACKET COLON suite      {$$=addlabel("CLASS"); $2=addlabel(string("NAME\n (")+chartostring($2) + string(")"),true); addedge($$,$2); addedge($$,$4); addedge($$,$7);}
+classdef: CLASS NAME COLON suite      { 
+            $$ = new node("classdef");
+            node* tempnode;
+            tempnode= new node("class",true,"KEYWORD");
+            $$->add_child(tempnode);
+            string s($2);
+            tempnode= new node(s,true,"ID");
+            $$->add_child(tempnode);
+            tempnode= new node(":",true,"DELIMITER");
+            $$->add_child(tempnode);
+            $$->add_child($4);
+        }
+        | CLASS NAME OPEN_BRACKET CLOSE_BRACKET COLON suite      { 
+            $$ = new node("classdef");
+            node* tempnode;
+            tempnode= new node("class",true,"KEYWORD");
+            $$->add_child(tempnode);
+            string s($2);
+            tempnode= new node(s,true,"ID");
+            $$->add_child(tempnode);
+            tempnode= new node("(",true,"DELIMITER");
+            $$->add_child(tempnode);
+            tempnode= new node(")",true,"DELIMITER");
+            $$->add_child(tempnode);
+            tempnode= new node(":",true,"DELIMITER");
+            $$->add_child(tempnode);
+            $$->add_child($6);
+        }
+        | CLASS NAME OPEN_BRACKET arglist CLOSE_BRACKET COLON suite      { 
+            $$ = new node("classdef");
+            node* tempnode;
+            tempnode= new node("class",true,"KEYWORD");
+            $$->add_child(tempnode);
+            string s($2);
+            tempnode= new node(s,true,"ID");
+            $$->add_child(tempnode);
+            tempnode= new node("(",true,"DELIMITER");
+            $$->add_child(tempnode);
+            $$->add_child($4);
+            tempnode= new node(")",true,"DELIMITER");
+            $$->add_child(tempnode);
+            tempnode= new node(":",true,"DELIMITER");
+            $$->add_child(tempnode);
+            $$->add_child($7);
+        }
         ;
 
-arglist: argument_list     {$$=$1; }
-        | argument_list  COMMA   {$$=$1; }
+arglist: argument_list     { 
+            $$ = new node("arglist");
+            $$->add_child($1);
+        }
+        | argument_list COMMA    { 
+            $$ = new node("arglist");
+            $$->add_child($1);
+            node* tempnode;
+            tempnode= new node(",",true,"DELIMITER");
+            $$->add_child(tempnode);
+        }
         ;
-argument_list: argument     {$$=$1; }
-            | argument_list COMMA argument  { $$=addlabel("ARGUMENT_LIST"); addedge($$,$1,"ARG_LIST"); addedge($$,$3,"ARG"); }
-argument: test  {$$=$1; }
-    | test comp_for     {$$=addlabel("ARGUEMENT"); addedge($$,$1); addedge($$,$2); }
-    | test EQUAL test   { $$=addlabel(string("EQUAL\n")+"(=)"); addedge($$,$1); addedge($$,$3); }
-    | POWER_OPERATOR test   { $$=addlabel(string("POWER_OPER\n")+"(**)"); addedge($$,$2); }
-    | MULTIPLY test     { $$=addlabel(string("MULTIPLY\n")+"(*)"); addedge($$,$2); }
-    ;
-
-comp_iter: comp_for     {$$=$1; }
-            | comp_if   {$$=$1; }
-            ;
-sync_comp_for: FOR exprlist IN or_test      {$$=addlabel("FOR_IN"); addedge($$,$2); addedge($$,$4); }
-                | FOR exprlist IN or_test comp_iter     {$$=addlabel("FOR_IN"); addedge($$,$2); addedge($$,$4); addedge($$,$5); }
-                ;
-comp_for: sync_comp_for     {$$=$1; }
-        | ASYNC sync_comp_for   {$$=addlabel("ASYNC"); addedge($$,$2); }
+argument_list: argument     { 
+            $$ = new node("argument_list");
+            $$->add_child($1);
+        }
+        | argument_list COMMA argument  { 
+            $$ = new node("argument_list");
+            $$->add_child($1);
+            node* tempnode;
+            tempnode= new node(",",true,"DELIMITER");
+            $$->add_child(tempnode);
+            $$->add_child($3);
+        }
         ;
-comp_if: IF or_test         {$$=addlabel("IF"); addedge($$,$2,"OR_TEST"); }
-        | IF or_test comp_iter  {$$=addlabel("IF"); addedge($$,$2); addedge($$,$3); }
+
+argument: test  {
+            $$ = new node("argument");
+            $$->add_child($1);    
+        }
+        | test comp_for     {
+            $$ = new node("argument");
+            $$->add_child($1);
+            $$->add_child($2);
+        }
+        | test EQUAL test   { 
+            $$ = new node("argument");
+            $$->add_child($1);
+            node* tempnode;
+            tempnode= new node("=",true,"DELIMITER");
+            $$->add_child(tempnode);
+            $$->add_child($3);
+        }
+        | POWER_OPERATOR test   { 
+            $$ = new node("argument");
+            node* tempnode;
+            tempnode= new node("**",true,"DELIMITER");
+            $$->add_child(tempnode);
+            $$->add_child($2);
+        }
+        | MULTIPLY test     {  
+            $$ = new node("argument");
+            node* tempnode;
+            tempnode= new node("*",true,"DELIMITER");
+            $$->add_child(tempnode);
+            $$->add_child($2);
+        }
         ;
-func_body_suite: simple_stmt    {$$=$1; }
-                | NEWLINE INDENT stmt_plus DEDENT   {$$=$3; }
-                | NEWLINE INDENT stmt_plus NEWLINE DEDENT   {$$=$3; }
-                ;
 
-stmt_plus: stmt     {$$=$1; }
-        | stmt stmt_plus    {$$=addlabel("MANY_STMT"); addedge($$,$1); addedge($$,$2); }
+comp_iter: comp_for     { 
+            $$ = new node("comp_iter");
+            $$->add_child($1);
+        }
+        | comp_if   { 
+            $$ = new node("comp_iter");
+            $$->add_child($1);
+        }
+        ;
+sync_comp_for: FOR exprlist IN or_test      {
+            $$ = new node("sync_comp_for");
+            node* tempnode;
+            tempnode= new node("for",true,"KEYWORD");
+            $$->add_child(tempnode);
+            $$->add_child($2);
+            tempnode= new node("in",true,"KEYWORD");
+            $$->add_child(tempnode);
+            $$->add_child($4);
+        }
+        | FOR exprlist IN or_test comp_iter     { 
+            $$ = new node("sync_comp_for");
+            node* tempnode;
+            tempnode= new node("for",true,"KEYWORD");
+            $$->add_child(tempnode);
+            $$->add_child($2);
+            tempnode= new node("in",true,"KEYWORD");
+            $$->add_child(tempnode);
+            $$->add_child($4);
+            $$->add_child($5);
+        }
+        ;
+comp_for: sync_comp_for     {
+            $$ = new node("comp_for");
+            $$->add_child($1);
+        }
+        | ASYNC sync_comp_for   { 
+            $$ = new node("comp_for");
+            node* tempnode;
+            tempnode= new node("async",true,"KEYWORD");
+            $$->add_child(tempnode);
+            $$->add_child($2);
+        }
+        ;
+comp_if: IF or_test         {
+            $$ = new node("comp_if");
+            node* tempnode;
+            tempnode= new node("if",true,"KEYWORD");
+            $$->add_child(tempnode);
+            $$->add_child($2);
+        }
+        | IF or_test comp_iter  { 
+            $$ = new node("comp_if");
+            node* tempnode;
+            tempnode= new node("if",true,"KEYWORD");
+            $$->add_child(tempnode);
+            $$->add_child($2);
+            $$->add_child($3);
+        }
+        ;
+func_body_suite: simple_stmt    { 
+            $$ = new node("func_body_suite");
+            $$->add_child($1);
+        }
+        | NEWLINE INDENT stmt_plus DEDENT   { 
+            $$ = new node("func_body_suite");
+            node* tempnode;
+            tempnode= new node("newline",true,"newline");
+            $$->add_child(tempnode);
+            tempnode= new node("indent",true,"indent");
+            $$->add_child(tempnode);
+            $$->add_child($3);
+            tempnode= new node("dedent",true,"dedent");
+            $$->add_child(tempnode);
+        }
+        | NEWLINE INDENT stmt_plus NEWLINE DEDENT   { 
+            $$ = new node("func_body_suite");
+            node* tempnode;
+            tempnode= new node("newline",true,"newline");
+            $$->add_child(tempnode);
+            tempnode= new node("indent",true,"indent");
+            $$->add_child(tempnode);
+            $$->add_child($3);
+            tempnode= new node("newline",true,"newline");
+            $$->add_child(tempnode);
+            tempnode= new node("dedent",true,"dedent");
+            $$->add_child(tempnode);
+        }
+        ;
 
-comma_test: COMMA test  {$$=$2; }
+stmt_plus: stmt     {
+            $$ = new node("stmt_plus");
+            $$->add_child($1);
+        
+        }
+        | stmt stmt_plus    { 
+            $$ = new node("stmt_plus");
+            $$->add_child($1);
+            $$->add_child($2);
+        }
+
+comma_test: COMMA test  {
+            $$ = new node("comma_test");
+            node* tempnode;
+            tempnode= new node(",",true,"DELIMITER");
+            $$->add_child(tempnode);
+            $$->add_child($2);
+        }
         ;
 %%
 
