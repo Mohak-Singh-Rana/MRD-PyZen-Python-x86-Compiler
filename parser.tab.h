@@ -116,9 +116,9 @@ extern int yydebug;
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 113 "parser.y"
+#line 53 "parser.y"
 
-    char* val;
+    struct node *elem;
 
 #line 124 "parser.tab.h"
 

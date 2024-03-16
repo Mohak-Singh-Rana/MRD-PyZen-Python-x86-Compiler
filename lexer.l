@@ -10,8 +10,6 @@
     int newline_return=0;
     int dedent_count = 0;
     int line_joining_counter = 0;
-    extern char* addlabel(string c);
-    extern void print_ast();
     
 %}
 
@@ -151,7 +149,7 @@ NAME      {ID_START}{ID_CONTINUE}*
             }
             if(indent%2==1){
                 fprintf(stderr, "IndentationError: unindent does not match any outer indentation level\n");
-                print_ast();
+                // print_ast();
                 exit(1);
             }
             else{
@@ -164,14 +162,14 @@ NAME      {ID_START}{ID_CONTINUE}*
                         indent_stack.pop();
                         if (indent_stack.empty()) {
                             fprintf(stderr, "IndentationError: unexpected indent\n");
-                            print_ast();
+                            // print_ast();
                             exit(1);
                         }
                         dedent_count++;
                     }
                     if (indent != indent_stack.top()) {
                         fprintf(stderr, "IndentationError: unindent does not match any outer indentation level\n");
-                        print_ast();
+                        // print_ast();
                         exit(1);
                     }
                     unput('\n');
@@ -202,9 +200,9 @@ NAME      {ID_START}{ID_CONTINUE}*
 <INITIAL,IMPLICIT_LINE_JOINING>{IS}              {return IS; }
 <INITIAL,IMPLICIT_LINE_JOINING>{IN}    { return IN;}
 <INITIAL,IMPLICIT_LINE_JOINING>{NOT}  { return NOT;}
-<INITIAL,IMPLICIT_LINE_JOINING>{ASSIGN_OPERATOR}   { yylval.val=strdup(yytext);return ASSIGN_OPERATOR;}
+<INITIAL,IMPLICIT_LINE_JOINING>{ASSIGN_OPERATOR}   { return ASSIGN_OPERATOR;}
 <INITIAL,IMPLICIT_LINE_JOINING>{POWER_OPERATOR}    {return POWER_OPERATOR; }
-<INITIAL,IMPLICIT_LINE_JOINING>{SHIFT_OPER}       { yylval.val=strdup(yytext);return SHIFT_OPER; }
+<INITIAL,IMPLICIT_LINE_JOINING>{SHIFT_OPER}       { return SHIFT_OPER; }
 <INITIAL,IMPLICIT_LINE_JOINING>{FLOOR_DIV_OPER}    { return FLOOR_DIV_OPER; }
 <INITIAL,IMPLICIT_LINE_JOINING>{ARROW_OPER}        { return ARROW_OPER;}
 <INITIAL,IMPLICIT_LINE_JOINING>{PLUS}            { return PLUS;}
@@ -228,8 +226,8 @@ NAME      {ID_START}{ID_CONTINUE}*
 <INITIAL,IMPLICIT_LINE_JOINING>{CURLY_CLOSE}           {line_joining_counter--; if(line_joining_counter==0)BEGIN(INITIAL);return CURLY_CLOSE;}
 <INITIAL,IMPLICIT_LINE_JOINING>{SQUARE_OPEN}           {line_joining_counter++; BEGIN(IMPLICIT_LINE_JOINING);return SQUARE_OPEN;}
 <INITIAL,IMPLICIT_LINE_JOINING>{SQUARE_CLOSE}         {line_joining_counter--; if(line_joining_counter==0)BEGIN(INITIAL);return SQUARE_CLOSE;}
-<INITIAL,IMPLICIT_LINE_JOINING>{STRING} {yylval.val=strdup(yytext); return STRING;}
-<INITIAL,IMPLICIT_LINE_JOINING>{TYPE_HINT}         { yylval.val=strdup(yytext); return TYPE_HINT; }
+<INITIAL,IMPLICIT_LINE_JOINING>{STRING} { return STRING;}
+<INITIAL,IMPLICIT_LINE_JOINING>{TYPE_HINT}         {  return TYPE_HINT; }
 <INITIAL>\\[\n\t\ ]+  { /* ignore */ } 
 
 <INITIAL,IMPLICIT_LINE_JOINING>{IF}        { return IF;}
@@ -247,9 +245,9 @@ NAME      {ID_START}{ID_CONTINUE}*
 <INITIAL,IMPLICIT_LINE_JOINING>{GLOBAL}  { return GLOBAL;}
 <INITIAL,IMPLICIT_LINE_JOINING>{NONLOCAL}  { return NONLOCAL;}
 <INITIAL,IMPLICIT_LINE_JOINING>{ASSERT}  { return ASSERT;}
-<INITIAL,IMPLICIT_LINE_JOINING>"..."|"True"|"False"|"None"  {yylval.val=strdup(yytext); return ATOM_KEYWORDS;}
-<INITIAL,IMPLICIT_LINE_JOINING>{NUMBER}    { yylval.val=strdup(yytext); return NUMBER;}
-<INITIAL,IMPLICIT_LINE_JOINING>{NAME}              {yylval.val=strdup(yytext); return NAME;}
+<INITIAL,IMPLICIT_LINE_JOINING>"..."|"True"|"False"|"None"  { return ATOM_KEYWORDS;}
+<INITIAL,IMPLICIT_LINE_JOINING>{NUMBER}    {  return NUMBER;}
+<INITIAL,IMPLICIT_LINE_JOINING>{NAME}              { return NAME;}
 <INITIAL>{NEWLINE}[ ]*/{NEWLINE}   {}
 <INITIAL>{NEWLINE}[ ]*{COMMENT}/{NEWLINE}   { }
 <INITIAL>{NEWLINE}/" "   {return NEWLINE;}
@@ -263,7 +261,7 @@ NAME      {ID_START}{ID_CONTINUE}*
                         indent_stack.pop();
                         if (indent_stack.empty()) {
                             fprintf(stderr, "IndentationError: unexpected indent\n");
-                            print_ast();
+                            // print_ast();
                             exit(1);
                         }
                         dedent_count++;
@@ -293,7 +291,7 @@ NAME      {ID_START}{ID_CONTINUE}*
 
 <INITIAL,IMPLICIT_LINE_JOINING>. { 
                                     fprintf(stderr, "Invalid character %s at line number: %d\n", yytext, yylineno);
-                                    print_ast(); 
+                                    // print_ast(); 
                                     exit(1); 
                                 }
 

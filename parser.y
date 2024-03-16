@@ -11,6 +11,8 @@
     extern FILE* yyin;
     extern int yylineno;
     extern char* yytext;
+    void yyerror(string str);
+    extern stack<int> indent_stack;
 
     char* numtochar( int num){
         string s="0";
@@ -49,7 +51,7 @@
 %}
 
 %union{
-    NODE *elem;
+    struct node *elem;
 }
 
 %start file
@@ -169,7 +171,7 @@ typedargslist:  typedarg    {
 typedarg: tfpdef   {  
             
         }
-        | tfpdef COLON test {  
+        | tfpdef EQUAL test {  
             
         }
         ;
@@ -178,7 +180,7 @@ tfpdef: NAME {
             
         }
         | NAME COLON TYPE_HINT {  
-            
+                
         }
         ;
 
@@ -899,7 +901,6 @@ comma_test: COMMA test  {
 
 void yyerror(string str){
     fprintf(stderr, "Error: %s at line number %d offending token: %s\n", str.c_str(), yylineno, yytext);
-    print_ast();
     exit(1);
 }
 
