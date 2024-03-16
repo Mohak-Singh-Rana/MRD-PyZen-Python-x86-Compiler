@@ -55,65 +55,62 @@ extern int yydebug;
     YYerror = 256,                 /* error  */
     YYUNDEF = 257,                 /* "invalid token"  */
     NEWLINE = 258,                 /* NEWLINE  */
-    ASYNC = 259,                   /* ASYNC  */
-    INDENT = 260,                  /* INDENT  */
-    DEDENT = 261,                  /* DEDENT  */
-    ASSIGN_OPERATOR = 262,         /* ASSIGN_OPERATOR  */
-    POWER_OPERATOR = 263,          /* POWER_OPERATOR  */
-    SHIFT_OPER = 264,              /* SHIFT_OPER  */
-    FLOOR_DIV_OPER = 265,          /* FLOOR_DIV_OPER  */
-    ARROW_OPER = 266,              /* ARROW_OPER  */
-    TYPE_HINT = 267,               /* TYPE_HINT  */
-    NAME = 268,                    /* NAME  */
-    IF = 269,                      /* IF  */
-    ELSE = 270,                    /* ELSE  */
-    ELIF = 271,                    /* ELIF  */
-    WHILE = 272,                   /* WHILE  */
-    FOR = 273,                     /* FOR  */
-    IN = 274,                      /* IN  */
-    AND = 275,                     /* AND  */
-    OR = 276,                      /* OR  */
-    NOT = 277,                     /* NOT  */
-    BREAK = 278,                   /* BREAK  */
-    CONTINUE = 279,                /* CONTINUE  */
-    RETURN = 280,                  /* RETURN  */
-    CLASS = 281,                   /* CLASS  */
-    DEF = 282,                     /* DEF  */
-    GLOBAL = 283,                  /* GLOBAL  */
-    NONLOCAL = 284,                /* NONLOCAL  */
-    ASSERT = 285,                  /* ASSERT  */
-    ATOM_KEYWORDS = 286,           /* ATOM_KEYWORDS  */
-    STRING = 287,                  /* STRING  */
-    NUMBER = 288,                  /* NUMBER  */
-    OPEN_BRACKET = 289,            /* OPEN_BRACKET  */
-    CLOSE_BRACKET = 290,           /* CLOSE_BRACKET  */
-    EQUAL = 291,                   /* EQUAL  */
-    SEMI_COLON = 292,              /* SEMI_COLON  */
-    COLON = 293,                   /* COLON  */
-    COMMA = 294,                   /* COMMA  */
-    PLUS = 295,                    /* PLUS  */
-    MINUS = 296,                   /* MINUS  */
-    MULTIPLY = 297,                /* MULTIPLY  */
-    DIVIDE = 298,                  /* DIVIDE  */
-    REMAINDER = 299,               /* REMAINDER  */
-    ATTHERATE = 300,               /* ATTHERATE  */
-    NEGATION = 301,                /* NEGATION  */
-    BIT_AND = 302,                 /* BIT_AND  */
-    BIT_OR = 303,                  /* BIT_OR  */
-    BIT_XOR = 304,                 /* BIT_XOR  */
-    DOT = 305,                     /* DOT  */
-    CURLY_OPEN = 306,              /* CURLY_OPEN  */
-    CURLY_CLOSE = 307,             /* CURLY_CLOSE  */
-    SQUARE_OPEN = 308,             /* SQUARE_OPEN  */
-    SQUARE_CLOSE = 309,            /* SQUARE_CLOSE  */
-    LESS_THAN = 310,               /* LESS_THAN  */
-    GREATER_THAN = 311,            /* GREATER_THAN  */
-    EQUAL_EQUAL = 312,             /* EQUAL_EQUAL  */
-    GREATER_THAN_EQUAL = 313,      /* GREATER_THAN_EQUAL  */
-    LESS_THAN_EQUAL = 314,         /* LESS_THAN_EQUAL  */
-    NOT_EQUAL_ARROW = 315,         /* NOT_EQUAL_ARROW  */
-    NOT_EQUAL = 316,               /* NOT_EQUAL  */
-    IS = 317                       /* IS  */
+    INDENT = 259,                  /* INDENT  */
+    DEDENT = 260,                  /* DEDENT  */
+    ASSIGN_OPERATOR = 261,         /* ASSIGN_OPERATOR  */
+    POWER_OPERATOR = 262,          /* POWER_OPERATOR  */
+    SHIFT_OPER = 263,              /* SHIFT_OPER  */
+    FLOOR_DIV_OPER = 264,          /* FLOOR_DIV_OPER  */
+    ARROW_OPER = 265,              /* ARROW_OPER  */
+    TYPE_HINT = 266,               /* TYPE_HINT  */
+    NAME = 267,                    /* NAME  */
+    IF = 268,                      /* IF  */
+    ELSE = 269,                    /* ELSE  */
+    ELIF = 270,                    /* ELIF  */
+    WHILE = 271,                   /* WHILE  */
+    FOR = 272,                     /* FOR  */
+    IN = 273,                      /* IN  */
+    AND = 274,                     /* AND  */
+    OR = 275,                      /* OR  */
+    NOT = 276,                     /* NOT  */
+    BREAK = 277,                   /* BREAK  */
+    CONTINUE = 278,                /* CONTINUE  */
+    RETURN = 279,                  /* RETURN  */
+    CLASS = 280,                   /* CLASS  */
+    DEF = 281,                     /* DEF  */
+    GLOBAL = 282,                  /* GLOBAL  */
+    ATOM_KEYWORDS = 283,           /* ATOM_KEYWORDS  */
+    STRING = 284,                  /* STRING  */
+    NUMBER = 285,                  /* NUMBER  */
+    OPEN_BRACKET = 286,            /* OPEN_BRACKET  */
+    CLOSE_BRACKET = 287,           /* CLOSE_BRACKET  */
+    EQUAL = 288,                   /* EQUAL  */
+    SEMI_COLON = 289,              /* SEMI_COLON  */
+    COLON = 290,                   /* COLON  */
+    COMMA = 291,                   /* COMMA  */
+    PLUS = 292,                    /* PLUS  */
+    MINUS = 293,                   /* MINUS  */
+    MULTIPLY = 294,                /* MULTIPLY  */
+    DIVIDE = 295,                  /* DIVIDE  */
+    REMAINDER = 296,               /* REMAINDER  */
+    ATTHERATE = 297,               /* ATTHERATE  */
+    NEGATION = 298,                /* NEGATION  */
+    BIT_AND = 299,                 /* BIT_AND  */
+    BIT_OR = 300,                  /* BIT_OR  */
+    BIT_XOR = 301,                 /* BIT_XOR  */
+    DOT = 302,                     /* DOT  */
+    CURLY_OPEN = 303,              /* CURLY_OPEN  */
+    CURLY_CLOSE = 304,             /* CURLY_CLOSE  */
+    SQUARE_OPEN = 305,             /* SQUARE_OPEN  */
+    SQUARE_CLOSE = 306,            /* SQUARE_CLOSE  */
+    LESS_THAN = 307,               /* LESS_THAN  */
+    GREATER_THAN = 308,            /* GREATER_THAN  */
+    EQUAL_EQUAL = 309,             /* EQUAL_EQUAL  */
+    GREATER_THAN_EQUAL = 310,      /* GREATER_THAN_EQUAL  */
+    LESS_THAN_EQUAL = 311,         /* LESS_THAN_EQUAL  */
+    NOT_EQUAL_ARROW = 312,         /* NOT_EQUAL_ARROW  */
+    NOT_EQUAL = 313,               /* NOT_EQUAL  */
+    IS = 314                       /* IS  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif
@@ -126,7 +123,7 @@ union YYSTYPE
 
     struct node *elem;
 
-#line 130 "parser.tab.h"
+#line 127 "parser.tab.h"
 
 };
 typedef union YYSTYPE YYSTYPE;
