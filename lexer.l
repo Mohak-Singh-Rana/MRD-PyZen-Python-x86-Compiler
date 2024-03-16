@@ -3,6 +3,10 @@
 
 %{
     #include <bits/stdc++.h>
+    // #include "data.h"
+    // #include "data.cpp"
+    // #include "symbol_table.h"
+    #include "data.cpp"
     using namespace std;
     #include "parser.tab.h"
 
@@ -10,6 +14,11 @@
     int newline_return=0;
     int dedent_count = 0;
     int line_joining_counter = 0;
+
+    void noding(char* yytext){
+        yylval.elem = create_node(1, strdup(yytext));
+        yylval.elem->lineno = yylineno;
+    }
     
 %}
 
@@ -139,7 +148,7 @@ NAME      {ID_START}{ID_CONTINUE}*
 
 %%
 
-<INITIAL,IMPLICIT_LINE_JOINING>{ASYNC}             {return ASYNC;}
+<INITIAL,IMPLICIT_LINE_JOINING>{ASYNC}             {noding(yytext); return ASYNC;}
 <INITIAL>^[ ]*   {
             int indent = 0;
             for (int i = 0; i < strlen(yytext); i++) {
@@ -190,64 +199,64 @@ NAME      {ID_START}{ID_CONTINUE}*
                 }
 
 <INITIAL,IMPLICIT_LINE_JOINING>{COMMENT}         {/* ignore */ }
-<INITIAL,IMPLICIT_LINE_JOINING>{LESS_THAN}       {return LESS_THAN; }
-<INITIAL,IMPLICIT_LINE_JOINING>{GREATER_THAN}    {return GREATER_THAN; }
-<INITIAL,IMPLICIT_LINE_JOINING>{EQUAL_EQUAL}     {return EQUAL_EQUAL; }
-<INITIAL,IMPLICIT_LINE_JOINING>{GREATER_THAN_EQUAL}  {return GREATER_THAN_EQUAL; }
-<INITIAL,IMPLICIT_LINE_JOINING>{LESS_THAN_EQUAL}     {return LESS_THAN_EQUAL; }
-<INITIAL,IMPLICIT_LINE_JOINING>{NOT_EQUAL}       {return NOT_EQUAL; }
-<INITIAL,IMPLICIT_LINE_JOINING>{NOT_EQUAL_ARROW}  {return NOT_EQUAL_ARROW; }
-<INITIAL,IMPLICIT_LINE_JOINING>{IS}              {return IS; }
-<INITIAL,IMPLICIT_LINE_JOINING>{IN}    { return IN;}
-<INITIAL,IMPLICIT_LINE_JOINING>{NOT}  { return NOT;}
-<INITIAL,IMPLICIT_LINE_JOINING>{ASSIGN_OPERATOR}   { return ASSIGN_OPERATOR;}
-<INITIAL,IMPLICIT_LINE_JOINING>{POWER_OPERATOR}    {return POWER_OPERATOR; }
-<INITIAL,IMPLICIT_LINE_JOINING>{SHIFT_OPER}       { return SHIFT_OPER; }
-<INITIAL,IMPLICIT_LINE_JOINING>{FLOOR_DIV_OPER}    { return FLOOR_DIV_OPER; }
-<INITIAL,IMPLICIT_LINE_JOINING>{ARROW_OPER}        { return ARROW_OPER;}
-<INITIAL,IMPLICIT_LINE_JOINING>{PLUS}            { return PLUS;}
-<INITIAL,IMPLICIT_LINE_JOINING>{MINUS}           {return MINUS;}
-<INITIAL,IMPLICIT_LINE_JOINING>{MULTIPLY}        {return MULTIPLY;}
-<INITIAL,IMPLICIT_LINE_JOINING>{DIVIDE}          {return DIVIDE;}
-<INITIAL,IMPLICIT_LINE_JOINING>{REMAINDER}       {return REMAINDER;}
-<INITIAL,IMPLICIT_LINE_JOINING>{ATTHERATE}       {return ATTHERATE;}
-<INITIAL,IMPLICIT_LINE_JOINING>{NEGATION}        {return NEGATION;}
-<INITIAL,IMPLICIT_LINE_JOINING>{BIT_AND}         {return BIT_AND;}
-<INITIAL,IMPLICIT_LINE_JOINING>{BIT_XOR}         {return BIT_XOR;}
-<INITIAL,IMPLICIT_LINE_JOINING>{BIT_OR}          {return BIT_OR;}
-<INITIAL,IMPLICIT_LINE_JOINING>{DOT}             {return DOT;}
-<INITIAL,IMPLICIT_LINE_JOINING>{COMMA}            {return COMMA;}
-<INITIAL,IMPLICIT_LINE_JOINING>{COLON}            {return COLON;}
-<INITIAL,IMPLICIT_LINE_JOINING>{SEMI_COLON}           {return SEMI_COLON;}
-<INITIAL,IMPLICIT_LINE_JOINING>{OPEN_BRACKET}         {line_joining_counter++; BEGIN(IMPLICIT_LINE_JOINING);return OPEN_BRACKET;}
-<INITIAL,IMPLICIT_LINE_JOINING>{CLOSE_BRACKET}          {line_joining_counter--; if(line_joining_counter==0)BEGIN(INITIAL); return CLOSE_BRACKET;}
-<INITIAL,IMPLICIT_LINE_JOINING>{EQUAL}                  {return EQUAL;}
-<INITIAL,IMPLICIT_LINE_JOINING>{CURLY_OPEN}             {line_joining_counter++; BEGIN(IMPLICIT_LINE_JOINING); return CURLY_OPEN;}
-<INITIAL,IMPLICIT_LINE_JOINING>{CURLY_CLOSE}           {line_joining_counter--; if(line_joining_counter==0)BEGIN(INITIAL);return CURLY_CLOSE;}
-<INITIAL,IMPLICIT_LINE_JOINING>{SQUARE_OPEN}           {line_joining_counter++; BEGIN(IMPLICIT_LINE_JOINING);return SQUARE_OPEN;}
-<INITIAL,IMPLICIT_LINE_JOINING>{SQUARE_CLOSE}         {line_joining_counter--; if(line_joining_counter==0)BEGIN(INITIAL);return SQUARE_CLOSE;}
-<INITIAL,IMPLICIT_LINE_JOINING>{STRING} { return STRING;}
-<INITIAL,IMPLICIT_LINE_JOINING>{TYPE_HINT}         {  return TYPE_HINT; }
+<INITIAL,IMPLICIT_LINE_JOINING>{LESS_THAN}       {noding(yytext);return LESS_THAN; }
+<INITIAL,IMPLICIT_LINE_JOINING>{GREATER_THAN}    {noding(yytext); return GREATER_THAN; }
+<INITIAL,IMPLICIT_LINE_JOINING>{EQUAL_EQUAL}     {noding(yytext); return EQUAL_EQUAL; }
+<INITIAL,IMPLICIT_LINE_JOINING>{GREATER_THAN_EQUAL}  {noding(yytext); return GREATER_THAN_EQUAL; }
+<INITIAL,IMPLICIT_LINE_JOINING>{LESS_THAN_EQUAL}     {noding(yytext); return LESS_THAN_EQUAL; }
+<INITIAL,IMPLICIT_LINE_JOINING>{NOT_EQUAL}       {noding(yytext); return NOT_EQUAL; }
+<INITIAL,IMPLICIT_LINE_JOINING>{NOT_EQUAL_ARROW}  {noding(yytext); return NOT_EQUAL_ARROW; }
+<INITIAL,IMPLICIT_LINE_JOINING>{IS}              {noding(yytext); return IS; }
+<INITIAL,IMPLICIT_LINE_JOINING>{IN}    { noding(yytext); return IN;}
+<INITIAL,IMPLICIT_LINE_JOINING>{NOT}  { noding(yytext); return NOT;}
+<INITIAL,IMPLICIT_LINE_JOINING>{ASSIGN_OPERATOR}   { noding(yytext); return ASSIGN_OPERATOR;}
+<INITIAL,IMPLICIT_LINE_JOINING>{POWER_OPERATOR}    {noding(yytext); return POWER_OPERATOR; }
+<INITIAL,IMPLICIT_LINE_JOINING>{SHIFT_OPER}       { noding(yytext); return SHIFT_OPER; }
+<INITIAL,IMPLICIT_LINE_JOINING>{FLOOR_DIV_OPER}    { noding(yytext); return FLOOR_DIV_OPER; }
+<INITIAL,IMPLICIT_LINE_JOINING>{ARROW_OPER}        { noding(yytext); return ARROW_OPER;}
+<INITIAL,IMPLICIT_LINE_JOINING>{PLUS}            { noding(yytext); return PLUS;}
+<INITIAL,IMPLICIT_LINE_JOINING>{MINUS}           {noding(yytext); return MINUS;}
+<INITIAL,IMPLICIT_LINE_JOINING>{MULTIPLY}        {noding(yytext); return MULTIPLY;}
+<INITIAL,IMPLICIT_LINE_JOINING>{DIVIDE}          {noding(yytext); return DIVIDE;}
+<INITIAL,IMPLICIT_LINE_JOINING>{REMAINDER}       {noding(yytext); return REMAINDER;}
+<INITIAL,IMPLICIT_LINE_JOINING>{ATTHERATE}       {noding(yytext); return ATTHERATE;}
+<INITIAL,IMPLICIT_LINE_JOINING>{NEGATION}        {noding(yytext); return NEGATION;}
+<INITIAL,IMPLICIT_LINE_JOINING>{BIT_AND}         {noding(yytext); return BIT_AND;}
+<INITIAL,IMPLICIT_LINE_JOINING>{BIT_XOR}         {noding(yytext); return BIT_XOR;}
+<INITIAL,IMPLICIT_LINE_JOINING>{BIT_OR}          {noding(yytext); return BIT_OR;}
+<INITIAL,IMPLICIT_LINE_JOINING>{DOT}             {noding(yytext); return DOT;}
+<INITIAL,IMPLICIT_LINE_JOINING>{COMMA}            {noding(yytext); return COMMA;}
+<INITIAL,IMPLICIT_LINE_JOINING>{COLON}            {noding(yytext); return COLON;}
+<INITIAL,IMPLICIT_LINE_JOINING>{SEMI_COLON}           {noding(yytext); return SEMI_COLON;}
+<INITIAL,IMPLICIT_LINE_JOINING>{OPEN_BRACKET}         {line_joining_counter++; BEGIN(IMPLICIT_LINE_JOINING); noding(yytext); return OPEN_BRACKET;}
+<INITIAL,IMPLICIT_LINE_JOINING>{CLOSE_BRACKET}          {line_joining_counter--; if(line_joining_counter==0)BEGIN(INITIAL); noding(yytext); return CLOSE_BRACKET;}
+<INITIAL,IMPLICIT_LINE_JOINING>{EQUAL}                  {noding(yytext); return EQUAL;}
+<INITIAL,IMPLICIT_LINE_JOINING>{CURLY_OPEN}             {line_joining_counter++; BEGIN(IMPLICIT_LINE_JOINING); noding(yytext); return CURLY_OPEN;}
+<INITIAL,IMPLICIT_LINE_JOINING>{CURLY_CLOSE}           {line_joining_counter--; if(line_joining_counter==0)BEGIN(INITIAL); noding(yytext); return CURLY_CLOSE;}
+<INITIAL,IMPLICIT_LINE_JOINING>{SQUARE_OPEN}           {line_joining_counter++; BEGIN(IMPLICIT_LINE_JOINING); noding(yytext); return SQUARE_OPEN;}
+<INITIAL,IMPLICIT_LINE_JOINING>{SQUARE_CLOSE}         {line_joining_counter--; if(line_joining_counter==0)BEGIN(INITIAL); noding(yytext); return SQUARE_CLOSE;}
+<INITIAL,IMPLICIT_LINE_JOINING>{STRING} {noding(yytext);  return STRING;}
+<INITIAL,IMPLICIT_LINE_JOINING>{TYPE_HINT}         {noding(yytext);   return TYPE_HINT; }
 <INITIAL>\\[\n\t\ ]+  { /* ignore */ } 
 
-<INITIAL,IMPLICIT_LINE_JOINING>{IF}        { return IF;}
-<INITIAL,IMPLICIT_LINE_JOINING>{ELSE}    { return ELSE;}
-<INITIAL,IMPLICIT_LINE_JOINING>{ELIF}  { return ELIF;}
-<INITIAL,IMPLICIT_LINE_JOINING>{WHILE}  { return WHILE;}
-<INITIAL,IMPLICIT_LINE_JOINING>{FOR}    { return FOR;}
-<INITIAL,IMPLICIT_LINE_JOINING>{AND}  { return AND;}
-<INITIAL,IMPLICIT_LINE_JOINING>{OR}    { return OR;}
-<INITIAL,IMPLICIT_LINE_JOINING>{BREAK}  { return BREAK;}
-<INITIAL,IMPLICIT_LINE_JOINING>{CONTINUE}  { return CONTINUE;}
-<INITIAL,IMPLICIT_LINE_JOINING>{RETURN}  { return RETURN;}
-<INITIAL,IMPLICIT_LINE_JOINING>{CLASS}  { return CLASS;}
-<INITIAL,IMPLICIT_LINE_JOINING>{DEF}    { return DEF;}
-<INITIAL,IMPLICIT_LINE_JOINING>{GLOBAL}  { return GLOBAL;}
-<INITIAL,IMPLICIT_LINE_JOINING>{NONLOCAL}  { return NONLOCAL;}
-<INITIAL,IMPLICIT_LINE_JOINING>{ASSERT}  { return ASSERT;}
-<INITIAL,IMPLICIT_LINE_JOINING>"..."|"True"|"False"|"None"  { return ATOM_KEYWORDS;}
-<INITIAL,IMPLICIT_LINE_JOINING>{NUMBER}    {  return NUMBER;}
-<INITIAL,IMPLICIT_LINE_JOINING>{NAME}              { return NAME;}
+<INITIAL,IMPLICIT_LINE_JOINING>{IF}        { noding(yytext); return IF;}
+<INITIAL,IMPLICIT_LINE_JOINING>{ELSE}    {noding(yytext);  return ELSE;}
+<INITIAL,IMPLICIT_LINE_JOINING>{ELIF}  {noding(yytext);  return ELIF;}
+<INITIAL,IMPLICIT_LINE_JOINING>{WHILE}  { noding(yytext); return WHILE;}
+<INITIAL,IMPLICIT_LINE_JOINING>{FOR}    {noding(yytext);  return FOR;}
+<INITIAL,IMPLICIT_LINE_JOINING>{AND}  {noding(yytext);  return AND;}
+<INITIAL,IMPLICIT_LINE_JOINING>{OR}    {noding(yytext);  return OR;}
+<INITIAL,IMPLICIT_LINE_JOINING>{BREAK}  { noding(yytext); return BREAK;}
+<INITIAL,IMPLICIT_LINE_JOINING>{CONTINUE}  {noding(yytext);  return CONTINUE;}
+<INITIAL,IMPLICIT_LINE_JOINING>{RETURN}  {noding(yytext);  return RETURN;}
+<INITIAL,IMPLICIT_LINE_JOINING>{CLASS}  {noding(yytext);  return CLASS;}
+<INITIAL,IMPLICIT_LINE_JOINING>{DEF}    {noding(yytext);  return DEF;}
+<INITIAL,IMPLICIT_LINE_JOINING>{GLOBAL}  { noding(yytext); return GLOBAL;}
+<INITIAL,IMPLICIT_LINE_JOINING>{NONLOCAL}  {noding(yytext);  return NONLOCAL;}
+<INITIAL,IMPLICIT_LINE_JOINING>{ASSERT}  {noding(yytext);  return ASSERT;}
+<INITIAL,IMPLICIT_LINE_JOINING>"..."|"True"|"False"|"None"  {noding(yytext);  return ATOM_KEYWORDS;}
+<INITIAL,IMPLICIT_LINE_JOINING>{NUMBER}    { noding(yytext);  return NUMBER;}
+<INITIAL,IMPLICIT_LINE_JOINING>{NAME}      { noding(yytext); return NAME;}
 <INITIAL>{NEWLINE}[ ]*/{NEWLINE}   {}
 <INITIAL>{NEWLINE}[ ]*{COMMENT}/{NEWLINE}   { }
 <INITIAL>{NEWLINE}/" "   {return NEWLINE;}

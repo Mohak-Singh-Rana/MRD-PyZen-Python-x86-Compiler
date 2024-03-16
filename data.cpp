@@ -15,8 +15,8 @@ NODE* create_node(int n_args, ...)
     NODE*child;
     va_list valist;
     va_start(valist, n_args); 
-    element->val = strdup(va_arg(valist, const char*));
-    element->addr = element->val;
+    element->addr = strdup(va_arg(valist, const char*));
+    // element->addr = element->val;
     for (int i = 1; i < n_args; i++) {
         child = va_arg(valist, NODE*);
         element->children.push_back(child);
@@ -24,4 +24,16 @@ NODE* create_node(int n_args, ...)
     va_end(valist);
 
     return element;
+}
+
+void add_children(NODE* parent, int n_args, ...)
+{
+    NODE*child;
+    va_list valist;
+    va_start(valist, n_args); 
+    for (int i = 0; i < n_args; i++) {
+        child = va_arg(valist, NODE*);
+        parent->children.push_back(child);
+    }
+    va_end(valist);
 }

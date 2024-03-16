@@ -2,7 +2,9 @@
     /*definitions*/
     #include <bits/stdc++.h>
     #include "data.h"
-	#include "symbol_table.cpp"
+//     #include "data.cpp"
+//     #include "symbol_table.h"
+    #include "symbol_table.cpp"
     using namespace std;
 
     extern int yylex();
@@ -14,12 +16,23 @@
     void yyerror(string str);
     extern stack<int> indent_stack;
 
-    char* numtochar( int num){
-        string s="0";
+    int instCount;
+    vector<vector<string>> instructions;
+    vector<int> makelist(int i);
+    void backpatch(vector<int> p, int i);
+    void create_ins(int type,string i,string op,string arg1,string arg2);
+    vector<int> merge(vector<int> p1, vector<int> p2);
+    string newTemp();
+    char* str_to_ch(string s);
+    int tempCount;
+    fstream code_out;
+
+    char* numtochar( int num){  
+        string s="0";   
         while(num>0){
-            s.push_back(num%10+'0');
+            s.push_back(num%10+'0');    
             num/=10;
-        }
+        }       
         reverse(s.begin(),s.end());
         int n=s.size();
         char* c= (char*)malloc(sizeof(char)*(n+1));
@@ -56,7 +69,7 @@
 
 %start file
 
-%type<elem> file snippet stmt simple_stmt small_stmt_list small_stmt expr_stmt annassign eq_testlist_star_expr_plus flow_stmt break_stmt continue_stmt return_stmt global_stmt nonlocal_stmt assert_stmt compound_stmt funcdef parameters typedargslist typedarg tfpdef if_stmt while_stmt for_stmt suite nts_star test or_test and_test not_test comparison comp_op star_expr expr xor_expr and_expr shift_expr arith_expr term term_choice factor factor_choice power atom_expr atom STRING_PLUS testlist_comp named_or_star_list named_or_star trailer subscriptlist subscriptlist_list subscript exprlist expr_or_star_expr_list expr_or_star_expr dictorsetmaker A A_list B B_list classdef arglist argument_list argument testlist testlist_list testlist_star_expr expr_choice_list expr_choice augassign comma_name_star async_stmt async_choice and_test_star not_test_star comp_iter sync_comp_for comp_for comp_if func_body_suite stmt_plus comma_test
+%type<elem> M N file snippet stmt simple_stmt small_stmt_list small_stmt expr_stmt annassign eq_testlist_star_expr_plus flow_stmt break_stmt continue_stmt return_stmt global_stmt nonlocal_stmt assert_stmt compound_stmt funcdef parameters typedargslist typedarg tfpdef if_stmt while_stmt for_stmt suite nts_star test or_test and_test not_test comparison comp_op star_expr expr xor_expr and_expr shift_expr arith_expr term term_choice factor factor_choice power atom_expr atom STRING_PLUS testlist_comp named_or_star_list named_or_star trailer subscriptlist subscriptlist_list subscript exprlist expr_or_star_expr_list expr_or_star_expr dictorsetmaker A A_list B B_list classdef arglist argument_list argument testlist testlist_list testlist_star_expr expr_choice_list expr_choice augassign comma_name_star async_stmt async_choice and_test_star not_test_star comp_iter sync_comp_for comp_for comp_if func_body_suite stmt_plus comma_test
 %token<elem> NEWLINE
 %token<elem> ASYNC 
 %token<elem> INDENT 
@@ -120,8 +133,21 @@
 %%
 
 
+M: %empty{
+        $$ = create_node(1, "Marker Non-terminal M");
+        $$->ins = instCount+1;
+}
+;
+
+N: %empty{
+        $$ = create_node(1, "Marker Non-terminal N");
+        $$->nextlist = makelist(instCount+1);
+        create_ins(0, "goto", "", "", "");
+}
+;
+
 file: snippet {
-    
+                $$ = $1;
  }
          ;
 
@@ -129,7 +155,7 @@ snippet: NEWLINE {
        
     }
     | stmt  { 
-        
+        $$=$1;
     }
     | NEWLINE snippet  { 
         
@@ -185,24 +211,23 @@ tfpdef: NAME {
         ;
 
 stmt: simple_stmt       { 
-           
+
         }
         | compound_stmt     { 
-            
+             $$=$1; 
         }
         ;
 
 simple_stmt: small_stmt_list SEMI_COLON NEWLINE {  
-            
-        
+            $$=$1;
         }
         | small_stmt_list  NEWLINE {  
-            
+            $$=$1;
         }
         ; 
 
 small_stmt_list: small_stmt     {   
-            
+            $$=$1;
         }
         | small_stmt_list SEMI_COLON small_stmt      {  
            
@@ -210,7 +235,7 @@ small_stmt_list: small_stmt     {
         ;
 
 small_stmt: expr_stmt       {  
-           
+           $$=$1;
         }
         | flow_stmt     {  
            
@@ -233,15 +258,17 @@ expr_stmt:  testlist_star_expr annassign {
             
         }
         | eq_testlist_star_expr_plus { 
-           
+           $$=$1;
         }
         ; 
 
 eq_testlist_star_expr_plus: testlist_star_expr {  
-            
+            $$=$1;
         }
-        | testlist_star_expr EQUAL eq_testlist_star_expr_plus {  
-           
+        |  testlist_star_expr EQUAL eq_testlist_star_expr_plus { 
+			create_node(4, "eq_testlist_star_expr_plus", $1, $2, $3);
+			$$->ins = $1->ins;
+			create_ins(0, $1->addr, $2->addr, $3->addr, "");
         }
         ;
 
@@ -254,15 +281,15 @@ annassign: COLON test   {
         ;
 
 testlist_star_expr: expr_choice_list {  
-          
+          $$=$1;
         }
         | expr_choice_list COMMA  {   
-            
+            $$=$1;
         }
         ;
 
 expr_choice_list : expr_choice  { 
-            
+            $$=$1;
         }
         | expr_choice_list COMMA expr_choice    { 
             
@@ -270,7 +297,7 @@ expr_choice_list : expr_choice  {
         ;
 
 expr_choice : test  {  
-            
+            $$=$1;
         }
         | star_expr   {  
             
@@ -340,7 +367,7 @@ comma_name_star: COMMA NAME    {
         }
         ;
 compound_stmt: if_stmt      { 
-            
+            $$=$1;  
         }
         | while_stmt   {  
            
@@ -370,60 +397,120 @@ async_choice : funcdef  {
         }
         ;   
 
-if_stmt: IF test COLON suite     {  
-           
+if_stmt: /*{ $<elem>$ = create_node(1,"if_stmt"); $<elem>$->ins = instCount+1;}*/ IF test COLON M suite     {  
+           // add_children($$,3,$3,$5,$6);
+           $$=create_node(6, "if_stmt", $1, $2, $3, $4, $5);
+           $$->ins = $2->ins;
+        //    cout<<$$->ins<<endl;
+           backpatch($2->truelist, $4->ins);
+           $$->nextlist = merge($2->falselist, $5->nextlist);
         }
-        | IF test COLON suite ELSE COLON suite   {  
-            
+        | IF test COLON M suite N ELSE COLON M suite   {  
+            $$ = create_node(11, "if_else_stmt", $1, $2, $3, $4, $5, $6, $7, $8, $9, $10);
+            backpatch($2->truelist, $4->ins);
+            backpatch($2->falselist, $9->ins);
+            vector<int> temp = merge($5->nextlist, $6->nextlist);
+            $$->nextlist = merge(temp, $10->nextlist);
         }
-        | IF test COLON suite nts_star    {  
-            
+        | IF test COLON M suite N nts_star    {  
+            $$ = create_node(8, "if_elif_stmt", $1, $2, $3, $4, $5, $6, $7);
+            backpatch($2->truelist, $4->ins);
+            backpatch($2->falselist, $7->ins);      //$7->ins is needed in place of $7->nextlist
+            vector<int> temp = merge($5->nextlist, $6->nextlist);
+            $$->nextlist = merge(temp, $7->nextlist);
         }
-        | IF test COLON suite nts_star ELSE COLON suite   {
-            
-        }
+        /* | IF test COLON M suite N nts_star N ELSE COLON M suite   {
+            $$ = create_node(13, "if_elif_else_stmt", $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12);
+            backpatch($2->truelist, $4->ins);
+            backpatch($2->falselist, $7->ins);
+
+        } */
         ;
-while_stmt: WHILE test COLON suite   {  
-            
+while_stmt: WHILE M test COLON M suite   {  
+            $$ = create_node(7, "while_stmt", $1, $2, $3, $4, $5, $6);
+            $$->ins = $2->ins;
+            // cout<<"check "<<$6->nextlist.size()<<endl;
+            backpatch($6->nextlist, $2->ins);
+            backpatch($3->truelist, $5->ins);
+            $$->nextlist = $3->falselist;
+            create_ins(0, "goto", to_string($2->ins), "", "");
         }
-        | WHILE test COLON suite ELSE COLON suite  {   
-           
+		| WHILE M test COLON M suite N ELSE COLON M suite  {   
+			$$ = create_node(12, "while_else_stmt", $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11);
+			$$->ins = $2->ins;
+			backpatch($7->nextlist, $2->ins);
+			backpatch($6->nextlist, $2->ins);
+			backpatch($3->truelist, $5->ins);
+			backpatch($3->falselist, $10->ins);
+			$$->nextlist = merge($7->nextlist, $11->nextlist); //verify
         }
         ;
 for_stmt: FOR exprlist IN testlist COLON suite    { 
-            
+            $$ = create_node(7, "for_stmt", $1, $2, $3, $4, $5, $6);
+            $$->ins = $2->ins;
+
         }
         | FOR exprlist IN testlist COLON suite ELSE COLON suite   { 
             
         }
         ;
 suite: simple_stmt  { 
-            
+            $$=$1;
         }
         | NEWLINE INDENT stmt_plus DEDENT   { 
-            
+            $$=$3;
         }
         | NEWLINE INDENT stmt_plus NEWLINE DEDENT   { 
-            
+            $$=$3;
         }
         ;
 
-nts_star : ELIF test COLON suite  {  
-            
+ /* nts_star : ELIF test COLON M suite  {  
+            $$=create_node(6, "elif_stmt", $1, $2, $3, $4, $5);
+            $$->ins = $2->ins;
+            backpatch($2->truelist, $4->ins);
+            $$->nextlist = merge($2->falselist, $5->nextlist);
         }
-        | ELIF test COLON suite nts_star  {  
-            
+        | ELIF test COLON M suite N nts_star  {  
+            $$ = create_node(8, "elif_stmt", $1, $2, $3, $4, $5, $6, $7);
+            $$->ins = $2->ins;
+            backpatch($2->truelist, $4->ins);
+            backpatch($2->falselist, $7->ins);
+            $$->nextlist = merge($5->nextlist, merge($6->nextlist, $7->nextlist));
+        }
+        ; */
+
+nts_star : ELIF test COLON M suite  {  
+            $$=create_node(6, "elif_stmt", $1, $2, $3, $4, $5);
+            $$->ins = $2->ins;
+            backpatch($2->truelist, $4->ins);
+            $$->nextlist = merge($2->falselist, $5->nextlist);
+        }
+        | ELIF test COLON M suite N nts_star  {  
+            $$ = create_node(8, "elif_stmt", $1, $2, $3, $4, $5, $6, $7);
+            $$->ins = $2->ins;
+            backpatch($2->truelist, $4->ins);
+            backpatch($2->falselist, $7->ins);
+            $$->nextlist = merge($5->nextlist, merge($6->nextlist, $7->nextlist));
+        }
+        | ELIF test COLON M suite N ELSE COLON M suite  {  
+            $$ = create_node(11, "elif_else_stmt", $1, $2, $3, $4, $5, $6, $7, $8, $9, $10);
+            $$->ins = $2->ins;
+            backpatch($2->truelist, $4->ins);
+            backpatch($2->falselist, $9->ins);
+            $$->nextlist = merge($5->nextlist, merge($6->nextlist,$10->nextlist));
         }
         ;
+
 test: or_test   { 
-            
+            $$=$1;
         }
-        | or_test IF or_test ELSE test  {  
+        /* | or_test IF or_test ELSE test  {  
             
-        }
+        } */
         ;
 or_test: and_test    { 
-            
+            $$=$1;
         }
         | and_test_star OR and_test    {  
             
@@ -433,12 +520,12 @@ and_test_star : and_test_star OR and_test {
             
         }
         | and_test   { 
-            
+                
         }
         ;
 
 and_test: not_test  {
-            
+            $$=$1;
         }
         | not_test_star AND not_test    {  
             
@@ -456,52 +543,64 @@ not_test: NOT not_test   {
             
         }
         | comparison    { 
+            $$=$1;
             
         }
-        ;
+;
 
 comparison: expr  {
+            $$=$1;
+        }
+        | /*{$<elem>$ = create_node(1, "comparison"); $<elem>$->ins = instCount+1;}*/ expr comp_op comparison  { 
+            $$=create_node(4, "comparison", $1, $2, $3);
+            /*add_children($$,3,$2,$3,$4); */
+            $$->ins = $1->ins;
+            $$->addr = str_to_ch(newTemp());
+            create_ins(1, $$->addr, $2->addr, $1->addr, $3->addr);
+            $$->truelist = makelist(instCount+1);
+        //     cout<<$$->truelist.size()+5<<endl;
+            $$->falselist = makelist(instCount+2);
+            create_ins(0, "if", $$->addr, "goto", "");
+            create_ins(0, "goto", "", "", "");
             
         }
-        | expr comp_op comparison  { 
-            
-        }
-        ;
+;
 
 comp_op: LESS_THAN  {
-        
+        $$ = $1;
     }
     | GREATER_THAN  { 
-       
+       $$ = $1;
      }
     | EQUAL_EQUAL   { 
-        
+        $$ = $1;
      }
     | GREATER_THAN_EQUAL    { 
-        
+        $$ = $1;
      }
     | LESS_THAN_EQUAL   {
-        
+        $$ = $1;
      }
     | NOT_EQUAL_ARROW   {
-        
+        $$ = $1;
       }
     | NOT_EQUAL    {
-       
+       $$ = $1;
      }
     | IN    {  
-        
+        $$ = $1;
     }
     | NOT IN    { 
-        
+        $$ = create_node(3, "NOT IN", $1, $2);
      }
     | IS    { 
-        
+        $$ = $1;
      }
     | IS NOT    { 
-        
+        $$ = create_node(3, "IS NOT", $1, $2);
      }
     ;
+
 
 star_expr: MULTIPLY expr    { 
             
@@ -509,7 +608,7 @@ star_expr: MULTIPLY expr    {
         ;
 
 expr: xor_expr    { 
-            
+            $$=$1;
         }
         | xor_expr BIT_OR expr    {  
             
@@ -517,7 +616,7 @@ expr: xor_expr    {
         ;
 
 xor_expr: and_expr { 
-            
+            $$ = $1;
         }
         | and_expr BIT_XOR xor_expr    {  
             
@@ -525,6 +624,7 @@ xor_expr: and_expr {
         ;
 
 and_expr: shift_expr   { 
+            $$ = $1;
             
         }
         | shift_expr BIT_AND and_expr   {  
@@ -533,6 +633,7 @@ and_expr: shift_expr   {
         ;
 
 shift_expr: arith_expr   { 
+            $$ = $1;
                 
             }
             | arith_expr SHIFT_OPER shift_expr   { 
@@ -541,6 +642,7 @@ shift_expr: arith_expr   {
         ;
 
 arith_expr: term { 
+            $$ = $1;
                 
             }
             | arith_expr PLUS term { 
@@ -551,6 +653,7 @@ arith_expr: term {
              }
         ;
 term: factor {
+            $$ = $1;
             
         }
         | term term_choice factor {
@@ -579,6 +682,7 @@ factor: factor_choice factor        {
             
         }
         | power     { 
+            $$ = $1;
             
         }
         ;
@@ -593,6 +697,7 @@ factor_choice : PLUS        {
         }
         ;
 power: atom_expr        { 
+            $$ = $1;
             
         }
         | atom_expr POWER_OPERATOR factor   { 
@@ -601,6 +706,7 @@ power: atom_expr        {
         ;
 
 atom_expr: atom {  
+            $$ = $1;
             
         }
         | atom_expr trailer {  
@@ -612,7 +718,7 @@ atom_expr: atom {
         ;
 
 atom: OPEN_BRACKET testlist_comp CLOSE_BRACKET  { 
-        
+        $$=$2;
     }
     | OPEN_BRACKET CLOSE_BRACKET    {
         
@@ -630,7 +736,8 @@ atom: OPEN_BRACKET testlist_comp CLOSE_BRACKET  {
         
      }
     | NAME      {
-        
+        $$ = $1;
+        $$->ins = instCount+1;
      }
     | NUMBER        { 
         
@@ -657,21 +764,21 @@ testlist_comp: named_or_star comp_for       {
             
         }
         | named_or_star_list    { 
-            
+            $$=$1;
         }
         | named_or_star_list COMMA      { 
             
         }
         ;
 named_or_star_list : named_or_star      { 
-            
+            $$=$1;
         }
         | named_or_star_list COMMA named_or_star    { 
             
         }
         ; 
 named_or_star : test    { 
-            
+            $$=$1;
         }
         | star_expr     { 
             
@@ -886,11 +993,11 @@ func_body_suite: simple_stmt    {
         ;
 
 stmt_plus: stmt     {
-            
-        
+            $$=$1;
         }
         | stmt stmt_plus    { 
-            
+            $$=create_node(3,"stmt_plus",$1,$2);
+			$$->ins = $1 -> ins;
         }
 
 comma_test: COMMA test  {
@@ -904,13 +1011,76 @@ void yyerror(string str){
     exit(1);
 }
 
+char* str_to_ch(string s)
+{
+	char* result_chr = new char[s.size()+1];
+	strcpy(result_chr,s.c_str());
+	return result_chr;
+}
+
+vector<int> makelist(int i){
+	return vector<int>{i};
+}
+
+void create_ins(int type,string i,string op,string arg1,string arg2){
+	vector<string> instruction{to_string(type),i,op,arg1,arg2};
+	instructions.push_back(instruction);
+	instCount++;
+}
+
+void backpatch(vector<int>p, int i){
+	for(int j=0;j<p.size();j++)
+		instructions[p[j]-1].push_back(to_string(i));
+}
+
+vector<int> merge(vector<int> p1, vector<int> p2){
+        vector<int> merged;
+        merged.reserve(p1.size() + p2.size());
+        merged.insert(merged.end(), p1.begin(), p1.end());
+        merged.insert(merged.end(), p2.begin(), p2.end());
+	return merged;
+}
+
+string newTemp(){
+	return "t"+to_string(tempCount++);
+}
+
+void MakeIRFile()
+{
+	int tabs=0;
+	for(int i=0;i<instructions.size();i++)
+	{
+		if(instructions[i][1]=="EndFunc") tabs--;
+		cout << i+1 << "\t" << string(tabs,'\t');
+		code_out << i+1 << "\t" << string(tabs,'\t');
+		if(instructions[i][0]=="0")
+		{
+			for(int j=1;j<instructions[i].size();j++)
+			{
+				cout << instructions[i][j] << (instructions[i][j].length()?" ":"");
+				code_out << instructions[i][j] << (instructions[i][j].length()?" ":"");
+			}
+			if(instructions[i][1]=="BeginFunc") tabs++;
+		}
+		else
+		{
+			cout << instructions[i][1] << " = " << instructions[i][3] << " " << instructions[i][2] << " " << instructions[i][4];
+			code_out << instructions[i][1] << " = " << instructions[i][3] << " " << instructions[i][2] << " " << instructions[i][4];
+		}
+		cout << endl;
+		code_out << endl;
+	}
+}
+
 int main(int argc, char* argv[]){    
-    yydebug=1;
-    FILE* yyin; 
-    bool inset = false, outset = false;
+    /* cout<<"Hello\n"; */
+    FILE* yyin = fopen(argv[1],"r");
+    yyrestart(yyin); 
+
+    /* bool inset = false, outset = false; */
     indent_stack.push(0);
 
-    for (int i=0; i< argc; i++){
+    /* for (int i=0; i< argc; i++){
         if (strcmp(argv[i], "-help") == 0){
             cerr<<"Usage: ./run.sh [-help] [-input <filename>] [-output <filename>] [-verbose]\n";
             cerr<< "Example: ./myASTGenerator -input input.txt -output output.txt\n";
@@ -935,9 +1105,37 @@ int main(int argc, char* argv[]){
     if (!outset){
         cerr<< "Output not set, see help\n";
         return 0;
-    } 
+    }  */
+
+/*--------------------------------------------------------------*/
+
+        // Open the output file
+        /* fout.open(output_file.c_str(),ios::out); */
+        code_out.open("./output/3AC.txt",ios::out);
+        // Get the DOT file template from the file
+        /* ifstream infile("./DOT_Template.txt"); */
+        /* string line; */
+        /* while (getline(infile, line)) */
+                /* fout << line << endl; */
+
+/*--------------------------------------------------------------*/
+
+    instCount=0;
+    tempCount=0;
+    yydebug=1;
+    /* cout<<"Parsing Started\n"; */
     yyparse();
     fclose(yyin); 
+
+/*--------------------------------------------------------------*/
+
+// Create 3AC file
+    MakeIRFile();
+
+// Close the output file
+    code_out.close();
+
+/*--------------------------------------------------------------*/
     return 0;
 
 }
