@@ -69,9 +69,8 @@
 
 %start file
 
-%type<elem> M N file snippet stmt simple_stmt small_stmt_list small_stmt expr_stmt annassign eq_testlist_star_expr_plus flow_stmt break_stmt continue_stmt return_stmt global_stmt nonlocal_stmt assert_stmt compound_stmt funcdef parameters typedargslist typedarg tfpdef if_stmt while_stmt for_stmt suite nts_star test or_test and_test not_test comparison comp_op star_expr expr xor_expr and_expr shift_expr arith_expr term term_choice factor factor_choice power atom_expr atom STRING_PLUS testlist_comp named_or_star_list named_or_star trailer subscriptlist subscriptlist_list subscript exprlist expr_or_star_expr_list expr_or_star_expr dictorsetmaker A A_list B B_list classdef arglist argument_list argument testlist testlist_list testlist_star_expr expr_choice_list expr_choice augassign comma_name_star async_stmt async_choice and_test_star not_test_star comp_iter sync_comp_for comp_for comp_if func_body_suite stmt_plus 
+%type<elem> M N file snippet stmt simple_stmt small_stmt_list small_stmt expr_stmt annassign eq_testlist_star_expr_plus flow_stmt break_stmt continue_stmt return_stmt global_stmt compound_stmt funcdef parameters typedargslist typedarg tfpdef if_stmt while_stmt for_stmt suite nts_star test or_test and_test not_test comparison comp_op expr xor_expr and_expr shift_expr arith_expr term term_choice factor factor_choice power atom_expr atom STRING_PLUS trailer classdef arglist argument_list argument testlist testlist_list comma_name_star and_test_star not_test_star func_body_suite stmt_plus
 %token<elem> NEWLINE
-%token<elem> ASYNC 
 %token<elem> INDENT 
 %token<elem> DEDENT
 %token<elem> ASSIGN_OPERATOR 
@@ -96,8 +95,6 @@
 %token<elem> CLASS 
 %token<elem> DEF 
 %token<elem> GLOBAL 
-%token<elem> NONLOCAL 
-%token<elem> ASSERT 
 %token<elem> ATOM_KEYWORDS 
 %token<elem> STRING 
 %token<elem> NUMBER 
@@ -167,7 +164,6 @@ snippet: NEWLINE {
 
 funcdef: DEF NAME parameters COLON func_body_suite  {  
             
-
         }
         | DEF NAME parameters ARROW_OPER TYPE_HINT COLON func_body_suite {  
             
@@ -243,72 +239,41 @@ small_stmt: expr_stmt       {
         | global_stmt       {  
             
         }
-        | nonlocal_stmt     {  
-            
+        ;
+
+expr_stmt: test annassign {
+
         }
-        | assert_stmt       {  
-            
+        | test ASSIGN_OPERATOR test {
+
+        }
+        | testlist {
+
+        }
+        | test EQUAL eq_testlist_star_expr_plus{
+                create_node(4, "eq_testlist_star_expr_plus", $1, $2, $3);
+		$$->ins = $1->ins;
+		create_ins(0, $1->addr, $2->addr, $3->addr, "");
         }
         ;
 
-expr_stmt:  testlist_star_expr annassign {   
-           
+eq_testlist_star_expr_plus: test {
+                $$=$1;
         }
-        | testlist_star_expr augassign testlist {  
-            
-        }
-        | eq_testlist_star_expr_plus { 
-           $$=$1;
-        }
-        ; 
-
-eq_testlist_star_expr_plus: testlist_star_expr {  
-            $$=$1;
-        }
-        |  testlist_star_expr EQUAL eq_testlist_star_expr_plus { 
-			create_node(4, "eq_testlist_star_expr_plus", $1, $2, $3);
-			$$->ins = $1->ins;
-			create_ins(0, $1->addr, $2->addr, $3->addr, "");
+        | test EQUAL eq_testlist_star_expr_plus{
+                create_node(4, "eq_testlist_star_expr_plus", $1, $2, $3);
+		$$->ins = $1->ins;
+		create_ins(0, $1->addr, $2->addr, $3->addr, "");
         }
         ;
 
-annassign: COLON test   {  
-            
+annassign: COLON test {
+
         }
-        | COLON test EQUAL testlist_star_expr   {  
-            
+        | COLON test EQUAL test{
+                
         }
         ;
-
-testlist_star_expr: expr_choice_list {  
-          $$=$1;
-        }
-        | expr_choice_list COMMA  {   
-            $$=$1;
-        }
-        ;
-
-expr_choice_list : expr_choice  { 
-            $$=$1;
-        }
-        | expr_choice_list COMMA expr_choice    { 
-            
-        }
-        ;
-
-expr_choice : test  {  
-            $$=$1;
-        }
-        | star_expr   {  
-            
-        }
-        ;
-
-augassign: ASSIGN_OPERATOR  {  
-           
-        }
-        ;
-
 flow_stmt: break_stmt   {  
             
         }
@@ -331,7 +296,7 @@ continue_stmt: CONTINUE     {
 return_stmt: RETURN     {  
             
         }
-        | RETURN testlist_star_expr     {  
+        | RETURN test     {  
            
         }
         ;   
@@ -343,22 +308,7 @@ global_stmt: GLOBAL NAME    {
             
         }
         ;
-nonlocal_stmt: NONLOCAL NAME     { 
-            
-            
-        }
-        | NONLOCAL NAME comma_name_star {  
-            
-        }
-        ;    
-        
-assert_stmt: ASSERT test  {  
-            
-        }
-        | ASSERT test comma_test  {  
-           
-        }
-        ;
+
 comma_name_star: COMMA NAME    {  
            
         }
@@ -381,27 +331,11 @@ compound_stmt: if_stmt      {
         | classdef     {  
            
         }
-        | async_stmt   {  
-            
-        }
-        ;
-async_stmt: ASYNC async_choice  {  
-            
-        }
-        ;
-async_choice : funcdef  { 
-            
-        }
-        | for_stmt  {  
-            
-        }
-        ;   
+        ;  
 
-if_stmt: /*{ $<elem>$ = create_node(1,"if_stmt"); $<elem>$->ins = instCount+1;}*/ IF test COLON M suite     {  
-           // add_children($$,3,$3,$5,$6);
+if_stmt: IF test COLON M suite     {  
            $$=create_node(6, "if_stmt", $1, $2, $3, $4, $5);
            $$->ins = $2->ins;
-        //    cout<<$$->ins<<endl;
            backpatch($2->truelist, $4->ins);
            $$->nextlist = merge($2->falselist, $5->nextlist);
         }
@@ -415,21 +349,14 @@ if_stmt: /*{ $<elem>$ = create_node(1,"if_stmt"); $<elem>$->ins = instCount+1;}*
         | IF test COLON M suite N nts_star    {  
             $$ = create_node(8, "if_elif_stmt", $1, $2, $3, $4, $5, $6, $7);
             backpatch($2->truelist, $4->ins);
-            backpatch($2->falselist, $7->ins);      //$7->ins is needed in place of $7->nextlist
+            backpatch($2->falselist, $7->ins);     
             vector<int> temp = merge($5->nextlist, $6->nextlist);
             $$->nextlist = merge(temp, $7->nextlist);
         }
-        /* | IF test COLON M suite N nts_star N ELSE COLON M suite   {
-            $$ = create_node(13, "if_elif_else_stmt", $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12);
-            backpatch($2->truelist, $4->ins);
-            backpatch($2->falselist, $7->ins);
-
-        } */
         ;
 while_stmt: WHILE M test COLON M suite   {  
             $$ = create_node(7, "while_stmt", $1, $2, $3, $4, $5, $6);
             $$->ins = $2->ins;
-            // cout<<"check "<<$6->nextlist.size()<<endl;
             backpatch($6->nextlist, $2->ins);
             backpatch($3->truelist, $5->ins);
             $$->nextlist = $3->falselist;
@@ -445,12 +372,12 @@ while_stmt: WHILE M test COLON M suite   {
 			$$->nextlist = merge($7->nextlist, $11->nextlist); //verify
         }
         ;
-for_stmt: FOR exprlist IN testlist COLON suite    { 
+for_stmt: FOR expr IN testlist COLON suite    { 
             $$ = create_node(7, "for_stmt", $1, $2, $3, $4, $5, $6);
             $$->ins = $2->ins;
 
         }
-        | FOR exprlist IN testlist COLON suite ELSE COLON suite   { 
+        | FOR expr IN testlist COLON suite ELSE COLON suite   { 
             
         }
         ;
@@ -464,21 +391,6 @@ suite: simple_stmt  {
             $$=$3;
         }
         ;
-
- /* nts_star : ELIF test COLON M suite  {  
-            $$=create_node(6, "elif_stmt", $1, $2, $3, $4, $5);
-            $$->ins = $2->ins;
-            backpatch($2->truelist, $4->ins);
-            $$->nextlist = merge($2->falselist, $5->nextlist);
-        }
-        | ELIF test COLON M suite N nts_star  {  
-            $$ = create_node(8, "elif_stmt", $1, $2, $3, $4, $5, $6, $7);
-            $$->ins = $2->ins;
-            backpatch($2->truelist, $4->ins);
-            backpatch($2->falselist, $7->ins);
-            $$->nextlist = merge($5->nextlist, merge($6->nextlist, $7->nextlist));
-        }
-        ; */
 
 nts_star : ELIF test COLON M suite  {  
             $$=create_node(6, "elif_stmt", $1, $2, $3, $4, $5);
@@ -551,14 +463,12 @@ not_test: NOT not_test   {
 comparison: expr  {
             $$=$1;
         }
-        | /*{$<elem>$ = create_node(1, "comparison"); $<elem>$->ins = instCount+1;}*/ expr comp_op comparison  { 
+        | expr comp_op comparison  { 
             $$=create_node(4, "comparison", $1, $2, $3);
-            /*add_children($$,3,$2,$3,$4); */
             $$->ins = $1->ins;
             $$->addr = str_to_ch(newTemp());
             create_ins(1, $$->addr, $2->addr, $1->addr, $3->addr);
             $$->truelist = makelist(instCount+1);
-        //     cout<<$$->truelist.size()+5<<endl;
             $$->falselist = makelist(instCount+2);
             create_ins(0, "if", $$->addr, "goto", "");
             create_ins(0, "goto", "", "", "");
@@ -600,12 +510,6 @@ comp_op: LESS_THAN  {
         $$ = create_node(3, "IS NOT", $1, $2);
      }
     ;
-
-
-star_expr: MULTIPLY expr    { 
-            
-        }
-        ;
 
 expr: xor_expr    { 
             $$=$1;
@@ -717,21 +621,18 @@ atom_expr: atom {
         }
         ;
 
-atom: OPEN_BRACKET testlist_comp CLOSE_BRACKET  { 
+atom: OPEN_BRACKET testlist CLOSE_BRACKET  { 
         $$=$2;
     }
     | OPEN_BRACKET CLOSE_BRACKET    {
         
     }
-    | SQUARE_OPEN testlist_comp SQUARE_CLOSE    { 
+    | SQUARE_OPEN testlist SQUARE_CLOSE    { 
         
     }
     | SQUARE_OPEN SQUARE_CLOSE  {
         
      }
-    | CURLY_OPEN dictorsetmaker CURLY_CLOSE     { 
-        
-    }
     | CURLY_OPEN CURLY_CLOSE    { 
         
      }
@@ -760,93 +661,17 @@ STRING_PLUS: STRING     {
         }
         ;
 
-testlist_comp: named_or_star comp_for       { 
-            
-        }
-        | named_or_star_list    { 
-            $$=$1;
-        }
-        | named_or_star_list COMMA      { 
-            
-        }
-        ;
-named_or_star_list : named_or_star      { 
-            $$=$1;
-        }
-        | named_or_star_list COMMA named_or_star    { 
-            
-        }
-        ; 
-named_or_star : test    { 
-            $$=$1;
-        }
-        | star_expr     { 
-            
-        }
-        ;
-
 trailer: OPEN_BRACKET CLOSE_BRACKET  { 
             
         }
         | OPEN_BRACKET arglist CLOSE_BRACKET  {
             
-         }
-        | SQUARE_OPEN subscriptlist SQUARE_CLOSE        {
-            
-         }
+        }
+        | SQUARE_OPEN test SQUARE_CLOSE{
+
+        }
         ;
 
-subscriptlist: subscriptlist_list      {
-            
-        }
-        | subscriptlist_list COMMA     { 
-            
-        }
-        ;
-subscriptlist_list: subscript       { 
-            
-        }
-        | subscriptlist_list COMMA subscript    { 
-            
-        }
-        ;
-subscript: test     { 
-            
-        }
-        | COLON     {  
-            
-        }
-        | COLON test     { 
-            
-        }
-        | test COLON     { 
-            
-        }
-        | test COLON test     {
-            
-        }
-        ;
-exprlist: expr_or_star_expr_list   {
-            
-        }
-        | expr_or_star_expr_list COMMA  { 
-            
-        }
-        ;
-expr_or_star_expr_list: expr_or_star_expr   { 
-            
-        }
-        | expr_or_star_expr_list COMMA expr_or_star_expr    { 
-            
-        }
-        ;
-expr_or_star_expr: expr         { 
-            
-        }
-        | star_expr     { 
-            
-        }
-        ;
 testlist: testlist_list    { 
             
         }
@@ -861,54 +686,6 @@ testlist_list: test         {
             
         }
         ;   
-dictorsetmaker: A comp_for   {
-            
-        }
-        | A_list    { 
-            
-        }
-        | A_list COMMA    { 
-            
-        }
-        | B comp_for       {
-           
-        }
-        | B_list       {
-            
-         }
-        | B_list COMMA      { 
-            
-        }
-        ;
-
-A: test COLON test  { 
-            
-        }
-    | POWER_OPERATOR expr   { 
-            
-        }
-    ;
-A_list: A    { 
-            
-        }
-        | A_list COMMA A    { 
-            
-        }
-        ;
-B: test  {
-                 
-        }
-        | star_expr     { 
-               
-        }
-        ;
-B_list: B   { 
-            
-        }
-        | B_list COMMA B    { 
-            
-        }
-        ;
 
 classdef: CLASS NAME COLON suite      { 
             
@@ -939,48 +716,11 @@ argument_list: argument     {
 argument: test  {
                
         }
-        | test comp_for     {
-            
-        }
         | test EQUAL test   { 
-            
-        }
-        | POWER_OPERATOR test   { 
-            
-        }
-        | MULTIPLY test     {  
             
         }
         ;
 
-comp_iter: comp_for     { 
-            
-        }
-        | comp_if   { 
-            
-        }
-        ;
-sync_comp_for: FOR exprlist IN or_test      {
-           
-        }
-        | FOR exprlist IN or_test comp_iter     { 
-            
-        }
-        ;
-comp_for: sync_comp_for     {
-            
-        }
-        | ASYNC sync_comp_for   { 
-            
-        }
-        ;
-comp_if: IF or_test         {
-            
-        }
-        | IF or_test comp_iter  { 
-           
-        }
-        ;
 func_body_suite: simple_stmt    { 
             
         }

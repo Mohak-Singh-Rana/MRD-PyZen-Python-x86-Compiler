@@ -3,7 +3,8 @@
 3	goto 
 4	t1 = c < d
 5	if t1 goto 7 
-6	goto 8 
-7	goto 1 
-8	x = z 
-9	goto 1 
+6	goto 9 
+7	x = y 
+8	goto 1 
+9	x = z 
+10	goto 1 

@@ -22,7 +22,6 @@
     
 %}
 
-ASYNC       "async"
 NEWLINE      \n|\r\n 
 WS          [ \t\f\r]
 COMMENT     #[^\n\r\n]*
@@ -81,8 +80,6 @@ RETURN            "return"
 CLASS             "class"
 DEF               "def"
 GLOBAL            "global"
-NONLOCAL          "nonlocal"
-ASSERT            "assert"
 
 stringprefix       "r"|"u"|"R"|"U"|"f"|"F"|"fr"|"Fr"|"fR"|"FR"|"rf"|"rF"|"Rf"|"RF"
 shortstringcharsingle    [^\\\n\']
@@ -148,7 +145,6 @@ NAME      {ID_START}{ID_CONTINUE}*
 
 %%
 
-<INITIAL,IMPLICIT_LINE_JOINING>{ASYNC}             {noding(yytext); return ASYNC;}
 <INITIAL>^[ ]*   {
             int indent = 0;
             for (int i = 0; i < strlen(yytext); i++) {
@@ -252,8 +248,6 @@ NAME      {ID_START}{ID_CONTINUE}*
 <INITIAL,IMPLICIT_LINE_JOINING>{CLASS}  {noding(yytext);  return CLASS;}
 <INITIAL,IMPLICIT_LINE_JOINING>{DEF}    {noding(yytext);  return DEF;}
 <INITIAL,IMPLICIT_LINE_JOINING>{GLOBAL}  { noding(yytext); return GLOBAL;}
-<INITIAL,IMPLICIT_LINE_JOINING>{NONLOCAL}  {noding(yytext);  return NONLOCAL;}
-<INITIAL,IMPLICIT_LINE_JOINING>{ASSERT}  {noding(yytext);  return ASSERT;}
 <INITIAL,IMPLICIT_LINE_JOINING>"..."|"True"|"False"|"None"  {noding(yytext);  return ATOM_KEYWORDS;}
 <INITIAL,IMPLICIT_LINE_JOINING>{NUMBER}    { noding(yytext);  return NUMBER;}
 <INITIAL,IMPLICIT_LINE_JOINING>{NAME}      { noding(yytext); return NAME;}

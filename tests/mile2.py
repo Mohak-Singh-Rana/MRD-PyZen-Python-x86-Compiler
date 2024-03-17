@@ -1,5 +1,5 @@
 while (a < b):
     if (c < d):
-        x
+        x = y
     else:
         x = z
