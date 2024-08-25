@@ -2,12 +2,19 @@ string handle karo ki mkc
 
 a>b==c
 
-len: handle it and also uska stack_width wala dekho
+len: handle it and also uska stack_width wala dekho     //done  
 
-atomexpr DOT NAME me atom type else wale me
+atomexpr DOT NAME me atom type else wale me     //done
 
 bhen ke laude karena hai "in" "is" "not in" to do in "1" type innstruction
 
 array index negative
 
 for else checking
+
+more number of params in class constructor  //done
+
+<< and >> opposite answer
+
+k:bool=True
+e:int =k

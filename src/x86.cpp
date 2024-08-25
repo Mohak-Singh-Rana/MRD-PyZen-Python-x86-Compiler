@@ -3,6 +3,7 @@
 
 extern ste* global_sym_table;
 extern vector<vector<string>> instructions;
+extern map<string,ste*> class_map;
 ste* curr_func_ste;
 vector<vector<string>> x86_code;
 int str_cnt = 0;
@@ -10,6 +11,15 @@ int str_temp=0;
 string str_name="";
 
 map<string,string> str_map;
+map<string,int> str_id;
+
+stack<int> str_arg;
+
+extern map<string,string> obj_class;
+
+ste* obj_class_ste;
+
+string obj_in_constructor;
 
 
 void stack_pos2(string c){  //r12
@@ -27,12 +37,26 @@ void stack_pos2(string c){  //r12
         string s = c.substr(1, c.size() - 2);  //removed the quotes
         str_cnt++;
         str_temp=1;
-        str_name = s;      
+        str_name = s; 
+        x86_code.push_back({"\tmovq", "$string"+to_string(str_cnt), ",", "%r12"});      
     }
     else if(c==""){
         x86_code.push_back({"\tmovq", "$0", ",", "%r12"});
     }
-    else if(c.find('[')!=string::npos){
+    else if(c.find('.')!=string::npos){ 
+        size_t pos = c.find('.');
+        string obj_name = c.substr(0, pos);
+        string attribute = c.substr(pos + 1);
+        if(obj_name=="self"){
+            x86_code.push_back({"\tmovq", to_string(obj_class_ste->class_offset_map[attribute])+"(%r15)", ",", "%r12"});
+        }
+        else{
+            ste* class_ste = class_map[obj_class[obj_name]];
+            x86_code.push_back({"\tmovq", to_string(curr_func_ste->offset_map[obj_name])+"(%rbp)", ",", "%r15"});
+            x86_code.push_back({"\tmovq", to_string(class_ste->class_offset_map[attribute])+"(%r15)", ",", "%r12"});
+        }      
+    }
+    else if(c.find('[')!=string::npos){ //array[3]
         size_t pos = c.find('[');
 
         // Extract the array name and the index
@@ -57,19 +81,37 @@ void stack_pos1(string b){  //r11
         x86_code.push_back({"\tmovq", to_string(curr_func_ste->offset_map[b])+"(%rbp)", ",", "%r11"});
     }
     else if(b=="True"){
-        x86_code.push_back({"\tmovq", "$1", ",", "%r12"});
+        x86_code.push_back({"\tmovq", "$1", ",", "%r11"});
     }
     else if(b=="False"){
-        x86_code.push_back({"\tmovq", "$0", ",", "%r12"});
+        x86_code.push_back({"\tmovq", "$0", ",", "%r11"});
     }
     else if(b==""){
         x86_code.push_back({"\tmovq", "$0", ",", "%r11"});
+    }
+    else if(b.find('.')!=string::npos){ 
+        size_t pos = b.find('.');
+        string obj_name = b.substr(0, pos);
+        string attribute = b.substr(pos + 1);
+        if(obj_name=="self"){
+            // x86_code.push_back({"\tmovq", "0(%r15)", ",", "%r12"});
+            // cerr<<obj_class_ste->class_offset_map[attribute]<<endl;
+            x86_code.push_back({"\tmovq", to_string(obj_class_ste->class_offset_map[attribute])+"(%r15)", ",", "%r11"});
+        }
+        else{
+            ste* class_ste = class_map[obj_class[obj_name]];
+            x86_code.push_back({"\tmovq", to_string(curr_func_ste->offset_map[obj_name])+"(%rbp)", ",", "%r15"});
+            x86_code.push_back({"\tmovq", to_string(class_ste->class_offset_map[attribute])+"(%r15)", ",", "%r11"});
+        }      
     }
     else if(b.find('\"') != string::npos){
         string s = b.substr(1, b.size() - 2);  //removed the quotes
         str_cnt++;
         str_temp=1;
-        str_name = s;      
+        str_name = s;
+        // str_arg.push(str_cnt);
+        x86_code.push_back({"\tlea", "string"+to_string(str_cnt)+"(%rip)", ",", "%r11"}); 
+        // x86_code.push_back({"\tmovq", "string"+to_string(str_cnt), ",", "%r11"});  
     }
     else if(b.find('[')!=string::npos){
         size_t pos = b.find('[');
@@ -91,19 +133,7 @@ void stack_pos1(string b){  //r11
 }
 
 void stack_pos_lhs(string b){   //r13
-    if(b.find(':')!=string::npos){
-        //cerr<<"in stackposlhs of "<<b<<endl;
-        size_t pos = b.find(':');
-
-        // Extract the array name and the index
-        string stringName = b.substr(0, pos);
-
-        stack_pos1(stringName);
-        //cerr<<stringName<<endl;
-        x86_code.push_back({"\tmovq", "%r11", ",", "%r13"});
-    }
-
-    else if(curr_func_ste->offset_map.find(b)!= curr_func_ste->offset_map.end()){
+    if(curr_func_ste->offset_map.find(b)!= curr_func_ste->offset_map.end()){
         //cerr<<"gadbad "<<b<<endl;
         //cerr<<curr_func_ste->offset_map[b]<<" "<<b<<endl;
         x86_code.push_back({"\tmovq", "%rbp", ",", "%r13"}); 
@@ -112,6 +142,23 @@ void stack_pos_lhs(string b){   //r13
         }
         else{
             x86_code.push_back({"\tsubq", "$"+to_string(-1*curr_func_ste->offset_map[b]), ",", "%r13"});
+        }
+    }
+    else if(b.find('.')!=string::npos){ 
+        size_t pos = b.find('.');
+        string obj_name = b.substr(0, pos);
+        string attribute = b.substr(pos + 1);
+        if(obj_name=="self"){
+            // cerr<<obj_class_ste->lexeme<<endl;
+            x86_code.push_back({"\tmovq", "%r15", ",", "%r13"});
+            x86_code.push_back({"\taddq", "$"+to_string(obj_class_ste->class_offset_map[attribute]), ",", "%r13"});
+            // cerr<<"exited"<<endl;
+        }
+        else{
+            ste* class_ste = class_map[obj_class[obj_name]];
+            x86_code.push_back({"\tmovq", to_string(curr_func_ste->offset_map[obj_name])+"(%rbp)", ",", "%r15"});
+            x86_code.push_back({"\tmovq", "%r15", ",", "%r13"});
+            x86_code.push_back({"\taddq", "$"+to_string(class_ste->class_offset_map[attribute]), ",", "%r13"});
         }
     }
     else if(b.find('[')!=string::npos){
@@ -132,6 +179,7 @@ void stack_pos_lhs(string b){   //r13
 }
 
 void create_x86(){    
+
     x86_code.push_back({".section", ".rodata"});
     x86_code.push_back({".note0:"});
     x86_code.push_back({"\t.string", "\"%ld\\n\""});
@@ -141,7 +189,7 @@ void create_x86(){
     for(int i=0; i<instructions.size(); i++){
         if(str_temp){
             x86_code.push_back({".section", ".data"});
-            x86_code.push_back({"string"+to_string(str_cnt)+":", ".string","\""+str_name+"\\n\""});
+            x86_code.push_back({"string"+to_string(str_cnt)+":", ".string","\""+str_name+"\""});
             x86_code.push_back({".section", ".text"});
             str_temp=0;
             str_name="";
@@ -191,13 +239,13 @@ void create_x86(){
                 x86_code.push_back({"\tmovq", "$1", ",", "%rdx"});
                 x86_code.push_back({"\tmovq", "%r12", ",", "%rbx"});
                 x86_code.push_back({"\tcmpq", "$0", ",", "%rbx"});
-                x86_code.push_back({"\tje", "L"+to_string(i)+":M"+to_string(i+2)});
-                x86_code.push_back({"L"+to_string(i)+":M"+to_string(i+1)+":"});
+                x86_code.push_back({"\tje", "L"+to_string(i)+"_M"+to_string(i+2)});
+                x86_code.push_back({"L"+to_string(i)+"_M"+to_string(i+1)+":"});
                 x86_code.push_back({"\timulq", "%r11", ",", "%rdx"});
                 x86_code.push_back({"\tdecq", "%rbx"});
                 x86_code.push_back({"\tcmpq", "$0", ",", "%rbx"});
-                x86_code.push_back({"\tjne", "L"+to_string(i)+":M"+to_string(i+1)});
-                x86_code.push_back({"L"+to_string(i)+":M"+to_string(i+2)+":"});
+                x86_code.push_back({"\tjne", "L"+to_string(i)+"_M"+to_string(i+1)});
+                x86_code.push_back({"L"+to_string(i)+"_M"+to_string(i+2)+":"});
                 x86_code.push_back({"\tmovq", "%rdx", ",", "0(%r13)"});
             }
             else if(op == "<<"){
@@ -205,13 +253,13 @@ void create_x86(){
                 x86_code.push_back({"\tmovq", "%r11", ",", "%rdx"});
                 x86_code.push_back({"\tmovq", "$0", ",", "%r12"});
                 x86_code.push_back({"\tcmpq", "%rbx", ",", "%r12"});
-                x86_code.push_back({"\tje", "L"+to_string(i)+":M"+to_string(i+2)});
-                x86_code.push_back({"L"+to_string(i)+":M"+to_string(i+1)+":"});
+                x86_code.push_back({"\tje", "L"+to_string(i)+"_M"+to_string(i+2)});
+                x86_code.push_back({"L"+to_string(i)+"_M"+to_string(i+1)+":"});
                 x86_code.push_back({"\tshlq", "$1", ",", "%rdx"});
                 x86_code.push_back({"\tincq", "%r12"});
                 x86_code.push_back({"\tcmpq", "%rbx", ",", "%r12"});
-                x86_code.push_back({"\tjne", "L"+to_string(i)+":M"+to_string(i+1)});
-                x86_code.push_back({"L"+to_string(i)+":M"+to_string(i+2)+":"});
+                x86_code.push_back({"\tjne", "L"+to_string(i)+"_M"+to_string(i+1)});
+                x86_code.push_back({"L"+to_string(i)+"_M"+to_string(i+2)+":"});
                 x86_code.push_back({"\tmovq", "%rdx", ",", "0(%r13)"});
             }
             else if(op == ">>"){
@@ -219,13 +267,13 @@ void create_x86(){
                 x86_code.push_back({"\tmovq", "%r11", ",", "%rdx"});
                 x86_code.push_back({"\tmovq", "$0", ",", "%r12"});
                 x86_code.push_back({"\tcmpq", "%rbx", ",", "%r12"});
-                x86_code.push_back({"\tje", "L"+to_string(i)+":M"+to_string(i+2)});
-                x86_code.push_back({"L"+to_string(i)+":M"+to_string(i+1)+":"});
+                x86_code.push_back({"\tje", "L"+to_string(i)+"_M"+to_string(i+2)});
+                x86_code.push_back({"L"+to_string(i)+"_M"+to_string(i+1)+":"});
                 x86_code.push_back({"\tshrq", "$1", ",", "%rdx"});
                 x86_code.push_back({"\tincq", "%r12"});
                 x86_code.push_back({"\tcmpq", "%rbx", ",", "%r12"});
-                x86_code.push_back({"\tjne", "L"+to_string(i)+":M"+to_string(i+1)});
-                x86_code.push_back({"L"+to_string(i)+":M"+to_string(i+2)+":"});
+                x86_code.push_back({"\tjne", "L"+to_string(i)+"_M"+to_string(i+1)});
+                x86_code.push_back({"L"+to_string(i)+"_M"+to_string(i+2)+":"});
                 x86_code.push_back({"\tmovq", "%rdx", ",", "0(%r13)"});
             }
             else if(op == "<"){  // if a<b then see wrt b
@@ -288,12 +336,27 @@ void create_x86(){
             // to get if instruction is a start of function
             // once check here, class ke functions are like class.funcname and here this doesnt work now
             if(instructions[i][1][instructions[i][1].size()-1] == ':'){
+                // cerr<<"entered"<<endl;
                 string func_name="";
-                for(int l=0;l<instructions[i][1].size()-1;l++){
-                    func_name.push_back(instructions[i][1][l]);
-                }   
-                curr_func_ste=single_rev_lookup(global_sym_table,func_name);
-                x86_code.push_back({func_name+":\n"});
+                string s = instructions[i][1];
+                size_t pos = s.find('.'); // Find the position of the first period
+                if (pos != string::npos) {
+                    s = s.substr(pos + 1); // Get the substring after the first period
+                    for(int l=0;l<s.size()-1;l++){
+                        func_name.push_back(s[l]);
+                    } 
+                    // cerr<<instructions[i][1].substr(0,pos)<<endl;
+                    curr_func_ste=single_rev_lookup(class_map[instructions[i][1].substr(0,pos)]->next_scope,func_name);
+                    // cerr<<curr_func_ste->lexeme<<endl;
+                    obj_class_ste = class_map[instructions[i][1].substr(0,pos)];
+                }
+                else{
+                    for(int l=0;l<instructions[i][1].size()-1;l++){
+                        func_name.push_back(instructions[i][1][l]);
+                    }   
+                    curr_func_ste=single_rev_lookup(global_sym_table,func_name);
+                }
+                x86_code.push_back({instructions[i][1]});
             }
 
             else if(instructions[i][1]=="BeginFunc"){
@@ -357,29 +420,152 @@ void create_x86(){
                 x86_code.push_back({"\tmovq","0(%r12)",",","%r8"});
             }
 
-            else if(instructions[i][2]=="print"){
-                stack_pos2(instructions[i][3]);
-                if(str_temp==0){
-                    x86_code.push_back({"\tmovq", "%r12", ",", "%rsi"});
-                    x86_code.push_back({"\tlea", ".note0(%rip)",",", "%rax"});
-                    x86_code.push_back({"\tmovq", "%rax", ",", "%rdi"});
-                    x86_code.push_back({"\txor", "%rax", ",", "%rax"});
-                    x86_code.push_back({"\tcall", "printf@plt"}); 
+            else if(instructions[i][2] == "printstr"){
+                if(str_map.find(instructions[i][3]) != str_map.end()){
+                    string s = instructions[i][3];  //removed the quotes
+                    // x86_code.push_back({"\tmov", "$1", ",", "%rax"});
+                    // x86_code.push_back({"\tmov", "$1",",","%rdi"});
+                    // x86_code.push_back({"\tlea", "string"+to_string(str_id[s])+"(%rip)",",","%rsi"});
+                    // x86_code.push_back({"\tmov", "$"+to_string(str_map[s].size()+1),",","%rdx"});
+                    // x86_code.push_back({"\tsyscall"});
+
+                    x86_code.push_back({"\tlea", "string"+to_string(str_id[s])+"(%rip)",",","%rdi"});
+                    x86_code.push_back({"\tcall puts"});
+
                 }
-                if(str_temp==1){
-                    string s = instructions[i][3].substr(1, instructions[i][3].size() - 2);  //removed the quotes
-                    str_name = s;
-                    x86_code.push_back({"\tmov", "$1", ",", "%rax"});
-                    x86_code.push_back({"\tmov", "$1",",","%rdi"});
-                    x86_code.push_back({"\tlea", "string"+to_string(str_cnt)+"(%rip)",",","%rsi"});
-                    x86_code.push_back({"\tmov", "$"+to_string(s.size()+1),",","%rdx"});
-                    x86_code.push_back({"\tsyscall"});
+                else{
+                    stack_pos2(instructions[i][3]);
+
+                    x86_code.push_back({"\tmovq", "%r12",",","%rdi"});
+                    x86_code.push_back({"\tcall puts"});
                 }
             }
 
+            else if(instructions[i][2]=="print"){
+                //cerr<<instructions[i][3]<<" "<<str_temp<<endl;
+                if(str_map.find(instructions[i][3]) != str_map.end()){
+                    string s = instructions[i][3];  //removed the quotes
+                    // x86_code.push_back({"\tmov", "$1", ",", "%rax"});
+                    // x86_code.push_back({"\tmov", "$1",",","%rdi"});
+                    // x86_code.push_back({"\tlea", "string"+to_string(str_id[s])+"(%rip)",",","%rsi"});
+                    // x86_code.push_back({"\tmov", "$"+to_string(str_map[s].size()+1),",","%rdx"});
+                    // x86_code.push_back({"\tsyscall"});
+
+                    x86_code.push_back({"\tlea", "string"+to_string(str_id[s])+"(%rip)",",","%rdi"});
+                    x86_code.push_back({"\tcall puts"});
+
+                }
+                else{
+                    stack_pos2(instructions[i][3]);
+                    if(str_temp==0){
+                        x86_code.push_back({"\tmovq", "%r12", ",", "%rsi"});
+                        x86_code.push_back({"\tlea", ".note0(%rip)",",", "%rax"});
+                        x86_code.push_back({"\tmovq", "%rax", ",", "%rdi"});
+                        x86_code.push_back({"\txor", "%rax", ",", "%rax"});
+                        x86_code.push_back({"\tcall", "printf@plt"}); 
+                    }
+                    else if(str_temp==1){
+                        string s = instructions[i][3].substr(1, instructions[i][3].size() - 2);  //removed the quotes
+                        str_name = s;
+
+                        x86_code.push_back({"\tmov", "$1", ",", "%rax"});
+                        x86_code.push_back({"\tmov", "$1",",","%rdi"});
+                        x86_code.push_back({"\tlea", "string"+to_string(str_cnt)+"(%rip)",",","%rsi"});
+                        x86_code.push_back({"\tmov", "$"+to_string(s.size()+1),",","%rdx"});
+                        x86_code.push_back({"\tsyscall"});
+                    }
+                }
+            }
+
+            else if(instructions[i][1]=="create_obj"){
+                obj_in_constructor = instructions[i][3];
+                x86_code.push_back({"\tmovq", "$"+instructions[i][2], ",", "%rdi"});
+                x86_code.push_back({"\tcall", "malloc"});
+                x86_code.push_back({"\tmovq", "%rax", ",", to_string(curr_func_ste->offset_map[instructions[i][3]])+"(%rbp)"});
+            }
+
             else if(instructions[i][1]=="call"){
-                if(instructions[i][2] != "main"){
-                    x86_code.push_back({"\tcall", instructions[i][2]});
+                if(instructions[i][3] != "main"){
+                    if(instructions[i][2]=="self"){ //self function calls only, not attributes
+                        string s = instructions[i][3];
+                        size_t pos = s.find('.'); // Find the position of the first period
+                        string obj_name;
+                        string func_name;
+                        if (pos != std::string::npos) {
+                            obj_name = s.substr(0, pos); // Trim the string up to the first period
+                            func_name = s.substr(pos + 1);
+                        }
+                        
+                        ste* class_ste = obj_class_ste;
+                        ste* c_ste=single_rev_lookup(class_ste->next_scope, func_name);
+                        //cerr<<c_ste->lexeme<<endl;
+                        if(c_ste!=NULL){
+                            x86_code.push_back({"\tcall", class_ste->lexeme+"."+func_name});
+                        }
+                        else{
+                            c_ste = lookup(class_ste, func_name);
+                            while(c_ste->lexeme!="scope_head"){
+                                c_ste = c_ste->prev;
+                            }
+                            c_ste = c_ste->prev_scope;
+                            if(c_ste!=NULL){
+                                x86_code.push_back({"\tcall", c_ste->lexeme+"."+func_name});
+                            }
+                            else{
+                                cerr<<"Error: Function "<<func_name<<" not declared"<<endl;
+                            }
+                        }
+                    }
+                    else if(instructions[i][2]=="obj"){
+                        // cerr<<"entered"<<endl;
+                        string s = instructions[i][3];
+                        size_t pos = s.find('.'); // Find the position of the first period
+                        string obj_name;
+                        string func_name;
+                        if (pos != std::string::npos) {
+                            obj_name = s.substr(0, pos); // Trim the string up to the first period
+                            func_name = s.substr(pos + 1);
+                        }
+                        
+                        x86_code.push_back({"\tmovq", to_string(curr_func_ste->offset_map[obj_name])+"(%rbp)", ",", "%r15"});
+
+                        ste* class_ste = class_map[obj_class[obj_name]]; 
+                        // cerr<<instructions[i][3]<<"yes"<<endl;
+                        obj_class_ste = class_ste;
+                        // cerr<<class_ste->lexeme<<endl;
+                        ste* c_ste=single_rev_lookup(class_ste->next_scope, func_name);
+                        if(c_ste!=NULL){
+                            x86_code.push_back({"\tcall", class_ste->lexeme+"."+func_name});
+                        }
+                        else{
+                            c_ste = lookup(class_ste, func_name);
+                            while(c_ste->lexeme!="scope_head"){
+                                c_ste = c_ste->prev;
+                            }
+                            c_ste = c_ste->prev_scope;
+                            if(c_ste!=NULL){
+                                x86_code.push_back({"\tcall", c_ste->lexeme+"."+func_name});
+                            }
+                            else{
+                                cerr<<"Error: Function "<<func_name<<" not declared"<<endl;
+                            }
+
+                        }
+
+                    }
+                    else if(instructions[i][2]=="class"){
+                        ste* class_ste = class_map[instructions[i][3]];
+                        ste* c_ste=single_rev_lookup(class_ste->next_scope, "__init__");
+
+                        x86_code.push_back({"\tmovq", to_string(curr_func_ste->offset_map[obj_in_constructor])+"(%rbp)", ",", "%r15"});
+                        
+                        if(c_ste != NULL){  //__init__ will be present in every class
+                            x86_code.push_back({"\tcall",instructions[i][3]+".__init__"});
+                        }
+                    }
+                    else if(instructions[i][2]=="function"){
+                        x86_code.push_back({"\tcall", instructions[i][3]});
+                    }
                 }
             }
 
@@ -449,47 +635,57 @@ void create_x86(){
                 }
             }
 
-           else if(instructions[i][3].size()!=0 && instructions[i][3][0]=='\"'){
+            else if(instructions[i][3].size()!=0 && instructions[i][3][0]=='\"'){
 
-                x86_code.push_back({"\tmovq", "%rax", ",", to_string(curr_func_ste->offset_map[instructions[i][1]])+"(%rbp)"});
+
+                //x86_code.push_back({"\tmovq", "%rax", ",", to_string(curr_func_ste->offset_map[instructions[i][1]])+"(%rbp)"});
                 string s = instructions[i][3].substr(1, instructions[i][3].size() - 2);  //removed the quotes
 
                 str_map[instructions[i][1]] = s;
+                str_name = s;
+                str_cnt++;
+                str_temp=1;
+                str_id[instructions[i][1]] = str_cnt;
 
-                int str_index_bytes=0;
+                x86_code.push_back({"\tlea", "string"+to_string(str_cnt)+"(%rip)", ",", "%r12"});
+                x86_code.push_back({"\tmovq", "%r12", ",", to_string(curr_func_ste->offset_map[instructions[i][1]])+"(%rbp)"});
 
-                for(int j=0;j<s.size();j++){
-                    stack_pos2(to_string((int)s[j]));
-                    x86_code.push_back({"\tmovq", "%r12", ",", to_string(str_index_bytes)+"(%rax)"});
-                    str_index_bytes+=8;
-                }
+                // int str_index_bytes=0;
+
+                // for(int j=0;j<s.size();j++){
+                //     stack_pos2(to_string((int)s[j]));
+                //     x86_code.push_back({"\tmovq", "%r12", ",", to_string(str_index_bytes)+"(%rax)"});
+                //     str_index_bytes+=8;
+                // }
+
+                //x86_code.push_back({"\tmovq", "$string"+to_string(str_cnt), ",", "%r12"});
             }
 
-            else if(instructions[i][1].size()!=0 && instructions[i][1].find(':')!=string::npos){
-                string s = instructions[i][1];
-                //cerr<<s<<endl;
-                size_t pos = s.find(':'); // Find the position of the first colon
-                if (pos != std::string::npos) {
-                    s = s.substr(0, pos); // Trim the string up to the first colon
-                }
+            // else if(instructions[i][1].size()!=0 && instructions[i][1].find(':')!=string::npos){
+            //     string s = instructions[i][1];
+            //     //cerr<<s<<endl;
+            //     size_t pos = s.find(':'); // Find the position of the first colon
+            //     if (pos != std::string::npos) {
+            //         s = s.substr(0, pos); // Trim the string up to the first colon
+            //     }
                 
-                x86_code.push_back({"\tmovq", "%rax", ",", to_string(curr_func_ste->offset_map[s])+"(%rbp)"});
-                int len = str_map[instructions[i][3]].size();
-                int str_index_bytes=0;
-                x86_code.push_back({"\tmovq", "$"+to_string(len), ",", "%r12"});
-                x86_code.push_back({"\tmovq", "%r12", ",", to_string(str_index_bytes)+"(%rax)"});
-                str_index_bytes+=8;
+            //     x86_code.push_back({"\tmovq", "%rax", ",", to_string(curr_func_ste->offset_map[s])+"(%rbp)"});
+            //     int len = str_map[instructions[i][3]].size();
+            //     int str_index_bytes=0;
+            //     x86_code.push_back({"\tmovq", "$"+to_string(len), ",", "%r12"});
+            //     x86_code.push_back({"\tmovq", "%r12", ",", to_string(str_index_bytes)+"(%rax)"});
+            //     str_index_bytes+=8;
 
-                //cerr<<instructions[i][3]<<endl;
-                stack_pos_lhs(instructions[i][3]);
-                for(int j=0;j<len;j++){
-                    x86_code.push_back({"\taddq", "$8", ",", "%r13"});
-                    x86_code.push_back({"\taddq", "$8", ",", "%rax"});
-                    x86_code.push_back({"\tmovq", "0(%r13)", ",", "%r15"});
-                    x86_code.push_back({"\tmovq", "%r15", ",", "0(%rax)"});
-                    //cerr<<"pushed char"<<j<<endl;
-                }
-            }
+            //     //cerr<<instructions[i][3]<<endl;
+            //     stack_pos_lhs(instructions[i][3]);
+            //     for(int j=0;j<len;j++){
+            //         x86_code.push_back({"\taddq", "$8", ",", "%r13"});
+            //         x86_code.push_back({"\taddq", "$8", ",", "%rax"});
+            //         x86_code.push_back({"\tmovq", "0(%r13)", ",", "%r15"});
+            //         x86_code.push_back({"\tmovq", "%r15", ",", "0(%rax)"});
+            //         //cerr<<"pushed char"<<j<<endl;
+            //     }
+            // }
 
             else if(instructions[i][2]=="="){
                 //here also in if else you have to handle different types of c
@@ -497,7 +693,11 @@ void create_x86(){
                 // cerr<<instructions[i][3]<<endl;
                 if(str_map.find(instructions[i][3]) != str_map.end()){
                     //cerr<<"hello"<<endl;
-                    str_map[instructions[i][i]] = str_map[instructions[i][3]];
+                    str_map[instructions[i][1]] = str_map[instructions[i][3]];
+                    str_cnt++;
+                    str_temp=1;
+                    str_name = str_map[instructions[i][3]];
+                    str_id[instructions[i][1]] = str_cnt;
                 }
                 else{
                     stack_pos_lhs(instructions[i][1]);
@@ -512,6 +712,7 @@ void create_x86(){
                 x86_code.push_back({"\t\tsyscall"});
             }
         }
+        // cout<<i+1<<"done"<<endl;
     }
    
     x86_code.push_back({"format:\n\t.ascii", "\"%ld\\n\""});

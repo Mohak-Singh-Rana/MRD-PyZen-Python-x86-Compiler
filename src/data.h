@@ -38,6 +38,9 @@ typedef struct node
     map <string,int> offset_map;
 
     int str_len=0;
+
+    char* class_name;
+    char* obj_name;
 } NODE;
 
 NODE *create_node(int n_args, ...);

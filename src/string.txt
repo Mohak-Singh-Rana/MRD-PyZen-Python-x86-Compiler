@@ -1,0 +1,68 @@
+1	A.__init__: 
+2	BeginFunc 
+3		PushParam RBP 
+4		ra = PopParam 
+5		Heapalloc 2 
+6		Stackpointer +0 
+7		self.x = "30" 
+8		Heapalloc 2 
+9		Stackpointer +0 
+10		self.y = "40" 
+11		Stackpointer -0 
+12		goto ra 
+13		return 
+14	EndFunc 
+15	A.add: 
+16	BeginFunc 
+17		PushParam RBP 
+18		ra = PopParam 
+19		x = PopParam 
+20		y = PopParam 
+21		z = PopParam 
+22		call print x 
+23		call print y 
+24		call print z 
+25		return x 
+26		Stackpointer -0 
+27		goto ra 
+28	EndFunc 
+29	B.__init__: 
+30	BeginFunc 
+31		PushParam RBP 
+32		ra = PopParam 
+33		x = PopParam 
+34		y = PopParam 
+35		z = PopParam 
+36		Stackpointer +0 
+37		self.y = y 
+38		call print self.y 
+39		Stackpointer +0 
+40		self.x = x 
+41		call print self.x 
+42		Stackpointer +0 
+43		self.z = z 
+44		Stackpointer -0 
+45		goto ra 
+46		return 
+47	EndFunc 
+48	main: 
+49	BeginFunc 
+50		PushParam RBP 
+51		ra = PopParam 
+52		create_obj 40 obj 
+53		PushParamra 56 
+54		PushParam "10" 
+55		PushParam "20" 
+56		PushParam "69" 
+57		call class B 
+58		PopParamAll 3 
+59		call print obj.y 
+60		Stackpointer -0 
+61		goto ra 
+62		return 
+63	EndFunc 
+64	PushParamra 64 
+65	call function main 
+66	PopParamAll 0 
+67	PopParamra t1 
+68	EOF 

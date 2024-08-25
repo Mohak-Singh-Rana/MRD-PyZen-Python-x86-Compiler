@@ -60,7 +60,8 @@
     map<string,int> class_offset_map;
     int class_offset =0;
     string curr_class="";
-    map<string, int> string_map_mohak;
+    // map<string, int> string_map_mohak;
+    map<string, string> obj_class;
     //m3 end
 
     char* numtochar( int num){  
@@ -103,7 +104,7 @@
 
 %type<elem> class_declare M N file snippet stmt simple_stmt small_stmt_list small_stmt expr_stmt eq_testlist_star_expr_plus flow_stmt break_stmt continue_stmt return_stmt global_stmt compound_stmt funcdef parameters typedargslist typedarg tfpdef if_stmt while_stmt for_stmt suite nts_star test or_test and_test not_test comparison comp_op expr xor_expr and_expr shift_expr arith_expr term term_choice factor factor_choice power atom_expr atom STRING_PLUS trailer classdef arglist argument_list argument testlist testlist_list comma_name_star and_test_star not_test_star stmt_plus
 %type<elem> for_test func_name func_ret_type while_expr else_scope else_if_scope if_scope while_scope for_scope if_expr
-%type<elem> range_stmt for_core class_body_suite funcdef_plus d_expr S T for_else_N
+%type<elem> range_stmt for_core class_body_suite funcdef_plus d_expr S T for_else_N obj_dec
 %token<elem> RANGE NEWLINE INDENT DEDENT ASSIGN_OPERATOR POWER_OPERATOR SHIFT_OPER FLOOR_DIV_OPER ARROW_OPER TYPE_HINT NAME IF ELSE ELIF WHILE FOR IN AND OR NOT BREAK CONTINUE RETURN CLASS DEF GLOBAL ATOM_KEYWORDS STRING OPEN_BRACKET CLOSE_BRACKET EQUAL SEMI_COLON COLON COMMA PLUS MINUS MULTIPLY DIVIDE REMAINDER ATTHERATE NEGATION BIT_AND BIT_OR BIT_XOR DOT CURLY_OPEN CURLY_CLOSE SQUARE_OPEN SQUARE_CLOSE LESS_THAN GREATER_THAN EQUAL_EQUAL GREATER_THAN_EQUAL LESS_THAN_EQUAL NOT_EQUAL_ARROW NOT_EQUAL IS
 %token<elem> TRUE FALSE NUMBER NONE LEN PRINT D_MAIN D_NAME SELF 
 
@@ -381,7 +382,7 @@ typedargslist:  typedarg    {
             $$->ins = instCount+1;
             
             // paramStack.pop();
-			create_ins(0,$1->addr,"=","PopParam","");
+            create_ins(0,$1->addr,"=","PopParam","");
 
         }
         | typedargslist COMMA  typedarg  {  
@@ -391,7 +392,7 @@ typedargslist:  typedarg    {
             $$->num_params = $1->num_params + 1;
             $$->ins = instCount+1;
             // paramStack.pop();
-			create_ins(0,$3->addr,"=","PopParam","");
+            create_ins(0,$3->addr,"=","PopParam","");
 
             //handle vector of par type 
             $$->func_par_type = $1->func_par_type;
@@ -635,7 +636,7 @@ expr_stmt: test ASSIGN_OPERATOR test {
             //M3 END
 
         }
-        | test COLON test ASSIGN_OPERATOR test {  
+        /*| test COLON test ASSIGN_OPERATOR test {  
             $$ = create_node(4, "expr_stmt", $1, $2, $3);
             $$->ins = $1->ins;
             $$->lineno = $1->lineno;
@@ -656,7 +657,7 @@ expr_stmt: test ASSIGN_OPERATOR test {
 
             //m3 end
 
-        }
+        }*/
         | testlist {
 			$$=$1;
         }
@@ -726,16 +727,16 @@ expr_stmt: test ASSIGN_OPERATOR test {
             string check = chartostring($5->addr);
 
             if(st=="str" && check.find("\"") != string::npos){  //x:str = "hello"
-                string_map_mohak[chartostring($1->addr)] = $5->str_len;
+                // string_map_mohak[chartostring($1->addr)] = $5->str_len;
                 create_ins(0, "Heapalloc",to_string(chartostring($5->addr).size()-2), "", "");
             }
-            else if(st=="str"){ //y:str = x
-                string_map_mohak[chartostring($1->addr)] = string_map_mohak[chartostring($5->addr)];
-                create_ins(0, "Heapalloc",to_string(string_map_mohak[chartostring($5->addr)]), "", "");
-                if($5->atom_type == "str"){
-                    $5->addr = str_to_ch(chartostring($5->addr)+":str");
-                }
-            }
+            // else if(st=="str"){ //y:str = x
+            //     string_map_mohak[chartostring($1->addr)] = string_map_mohak[chartostring($5->addr)];
+            //     create_ins(0, "Heapalloc",to_string(string_map_mohak[chartostring($5->addr)]), "", "");
+            //     if($5->atom_type == "str"){
+            //         $5->addr = str_to_ch(chartostring($5->addr)+":str");
+            //     }
+            // }
 
             if(st == "int" || st == "float" || st == "bool" || st == "str") {
                 create_ins(0, "Stackpointer +"+to_string(get_width($3->addr)), "", "", "");
@@ -773,12 +774,12 @@ expr_stmt: test ASSIGN_OPERATOR test {
                     exit(1);
                 }
                 if(ret_type != $5->atom_type){
-                    if(chartostring($3->addr )!= "str") create_ins(0, $1->addr, "=", "("+ret_type+")"+chartostring($5->addr),"");
-                    else create_ins(0, chartostring($1->addr)+":str", "=", "("+ret_type+")"+chartostring($5->addr),"");
+                    create_ins(0, $1->addr, "=", "("+ret_type+")"+chartostring($5->addr),"");
+                    // else create_ins(0, chartostring($1->addr)+":str", "=", "("+ret_type+")"+chartostring($5->addr),"");
                 }
                 else{
-                    if(chartostring($3->addr) != "str") create_ins(0, $1->addr, "=", $5->addr, "");
-                    else create_ins(0, chartostring($1->addr)+":str", "=", $5->addr, "");
+                    create_ins(0, $1->addr, "=", $5->addr, "");
+                    // else create_ins(0, chartostring($1->addr)+":str", "=", $5->addr, "");
                 }
             //typecheck done
 
@@ -803,11 +804,11 @@ expr_stmt: test ASSIGN_OPERATOR test {
 
             //M3 END
         }
-        | test COLON test EQUAL eq_testlist_star_expr_plus{
-            $$ = create_node(4, "eq_testlist_star_expr_plus", $1, $2, $3);
+        /*| test COLON test EQUAL eq_testlist_star_expr_plus{
+            $$ = create_node(7, "eq_testlist_star_expr_plus", $1, $2, $3,$4,$5,$6);
 			$$->ins = $1->ins;
             $$->lineno = $1->lineno;
-			create_ins(0, $1->addr, $4->addr, $5->addr, ""); 
+			create_ins(0, $1->addr, $5->addr, $6->addr, ""); 
 
             //runtime support
             // create_ins(0, "Stackpointer +xxx", "", "", "");
@@ -829,7 +830,7 @@ expr_stmt: test ASSIGN_OPERATOR test {
             else{
                 ste* lookup_ste = current_ste;
                 if(lookup(lookup_ste, $1->addr) == NULL){
-                    current_ste = insert_entry_same_scope(current_ste, "OBJECT", $1->addr, $3->addr, $1->lineno, 1, $5->list_size);
+                    current_ste = insert_entry_same_scope(current_ste, "OBJECT", $1->addr, $3->addr, $1->lineno, 1, $6->list_size);
                 }
                 else{
                     cerr<<"Error: Variable "<<$1->addr<<" already declared on line "<<lookup(lookup_ste, $1->addr)->lineno<<"\n";
@@ -840,9 +841,82 @@ expr_stmt: test ASSIGN_OPERATOR test {
                 // do we have do handle like self.a : LALRPARSER = LALRPARSER('abc',...);
             //m3 end
 
+        }*/
+        | obj_dec EQUAL eq_testlist_star_expr_plus{
+            $$ = create_node(4, "expr_stmt", $1, $2, $3);
+			$$->ins = $1->ins;
+            $$->lineno = $1->lineno;
+			// create_ins(0, $1->obj_name, $2->addr, $3->addr, ""); 
+
+            //runtime support
+            // create_ins(0, "Stackpointer +xxx", "", "", "");
+            // create_ins(0,"call memalloc 1","","","");
+            // create_ins(0,"Stackpointer -yyy","","","");
+
+
+
+            // $1->atom_type = str_to_ch($1->class_name);
+            
+            if(chartostring($1->type) == "self_call"){
+                ste* prev_ste = get_prev_scope(current_ste);
+                ste* prev_prev_ste = prev_ste->prev;
+                prev_prev_ste = insert_entry_same_scope(prev_prev_ste, "VARIABLE", $1->class_param,$1->class_name, $1->lineno,1);
+                prev_prev_ste->next = prev_ste;
+                prev_ste->prev = prev_prev_ste;
+            }
+
+            //STE code start
+            else{
+                ste* lookup_ste = current_ste;
+                if(lookup(lookup_ste, $1->obj_name) == NULL){
+                    current_ste = insert_entry_same_scope(current_ste, "OBJECT", $1->obj_name, $1->class_name, $1->lineno, 1, $3->list_size);
+                }
+                else{
+                    cerr<<"Error: Variable "<<$1->obj_name<<" already declared on line "<<lookup(lookup_ste, $1->obj_name)->lineno<<"\n";
+                    exit(1);
+                }
+            }
+            //m3 start pending
+                // do we have do handle like self.a : LALRPARSER = LALRPARSER('abc',...);
+                $$->stack_width = $1->stack_width + $3->stack_width;
+            //m3 end
+
         }
         
     ;
+
+obj_dec: test COLON test {
+    $$= create_node(4,"Obj_eq",$1,$2,$3);
+    $$->ins = $1->ins;
+    $$->lineno = $1->lineno;
+
+    if(chartostring($1->type) == "self_call"){
+        $$->class_param = $1->class_param;
+    }
+    cerr<<$1->addr<<endl;
+    $$->obj_name = $1->addr;
+    // cerr<<"out"<<endl;
+    $$->class_name = $3->addr;
+    $$->type = $1->type;
+
+    if(class_map.find(chartostring($3->addr))!=class_map.end()){
+        $$->stack_width = 8 + $1->stack_width + $3->stack_width;
+        offset_map[chartostring($1->addr)] = -stack_offset;
+        stack_offset+=8;
+
+        //create instructions 
+        create_ins(0,"create_obj",to_string(class_map[chartostring($3->addr)]->class_width),$1->addr,"");
+        obj_class[chartostring($1->addr)] = chartostring($3->addr);
+    }
+    else{
+        cerr<<"Error: Class "<<$3->addr<<" not defined on line "<<$1->lineno<<"\n";
+        exit(1);
+    }
+
+
+};
+
+
 
 eq_testlist_star_expr_plus: test {
             $$=$1;
@@ -1892,9 +1966,9 @@ atom_expr: atom {
             string temp = newTemp();
             $$->addr = str_to_ch(temp);
             //create_ins(0, temp, "=" ,"call "+chartostring($1->addr), "");
-            create_ins(0,"call",chartostring($1->addr),"","");
-            create_ins(0,"PopParamAll",to_string($2->num_params),"","");
-            create_ins(0, "PopParamra", temp, "", "");
+            // create_ins(0,"call",chartostring($1->addr),"","");
+            // create_ins(0,"PopParamAll",to_string($2->num_params),"","");
+            // create_ins(0, "PopParamra", temp, "", "");
             backpatch($2->nextlist, instCount);
 
             ste* function_ste = new ste;
@@ -1906,6 +1980,10 @@ atom_expr: atom {
                     cerr<<"Error: Function in selfcall "<<$1->class_param<<" not declared in class on line "<< $1->lineno <<"\n";
                     exit(1);
                 }
+
+                create_ins(0,"call","self",chartostring($1->addr),"");
+                create_ins(0,"PopParamAll",to_string($2->num_params),"","");
+                create_ins(0, "PopParamra", temp, "", "");
                 $$->atom_type = lookup_ste->return_type;
             }
             
@@ -1989,6 +2067,10 @@ atom_expr: atom {
                     $$->atom_type = lookup_ste2->return_type;
                 }
 
+                create_ins(0,"call","obj",chartostring($1->addr),"");
+                create_ins(0,"PopParamAll",to_string($2->num_params),"","");
+                create_ins(0, "PopParamra", temp, "", "");
+
             }
             else if(chartostring($1->type) == "class_constructor"){ 
                 //LALRparser(self,"abc") is type wale
@@ -2017,6 +2099,9 @@ atom_expr: atom {
                 else{
                     function_ste=lookup_ste;
                 } 
+                create_ins(0,"call","class",chartostring($1->addr),"");
+                create_ins(0,"PopParamAll",to_string($2->num_params),"","");
+                // create_ins(0, "PopParamra", temp, "", "");
             }
             else{ 
             //typecheck
@@ -2040,6 +2125,9 @@ atom_expr: atom {
                     // cout<<"in atm_func"<<endl;
                     //cout<<function_ste->num_params<<endl;
                 }
+                create_ins(0,"call","function",chartostring($1->addr),"");
+                create_ins(0,"PopParamAll",to_string($2->num_params),"","");
+                create_ins(0, "PopParamra", temp, "", "");
             }
             //endtypecheck
 
@@ -2164,20 +2252,21 @@ atom_expr: atom {
                 //$$->stack_width = get_width($3->atom_type) + $1->stack_width;
             //m3 end
             
-            // ste* lookup_ste2 = lookup(current_ste,$1->addr);
-            // if(lookup_ste2 ->token == "OBJECT"){
-            //     string classname= lookup_ste2 -> type;
-            //     lookup_ste2 = class_map[classname]; //symboltable entry of class
-            //     ste* attribute = lookup(lookup_ste2,$3->addr);
-            //     if(attribute == NULL){
-            //         attribute = single_rev_lookup(lookup_ste2->next_scope,$3->addr);
-            //     }
-            //     if(attribute!= NULL){ 
-            //         $$->atom_type = attribute->type;
-            //     }
-            //     //error condition daal sakte
-            // //cout<< "atom expr dot name: "<<$$->atom_type<<endl;
-            // }
+            //add this
+            ste* lookup_ste2 = lookup(current_ste,$1->addr);
+            if(lookup_ste2 ->token == "OBJECT"){  
+                string classname= lookup_ste2 -> type;
+                lookup_ste2 = class_map[classname]; //symboltable entry of class
+                ste* attribute = single_rev_lookup(lookup_ste2->next_scope,$3->addr);
+                if(attribute == NULL){ 
+                    attribute = lookup(lookup_ste2,$3->addr);  
+                }
+                if(attribute!= NULL){  
+                    $$->atom_type = attribute->type;
+                }
+            }
+            //add this
+
 
         }
         | LEN OPEN_BRACKET test CLOSE_BRACKET { 
@@ -2221,7 +2310,19 @@ atom_expr: atom {
             //$$->addr = str_to_ch("print("+chartostring($3->addr)+")");
             $$->atom_type = "None";
             // create_ins(0, "PushParam", $3->addr, "", "");
-            create_ins(0, "call", "print", $3->addr, "");
+
+
+            if($3->atom_type == "str"){
+                create_ins(0, "call", "printstr", $3->addr, "");
+            }
+            else{
+                create_ins(0, "call", "print", $3->addr, "");
+            }
+
+
+            //create_ins(0, "call", "print", $3->addr, "");
+
+
             // create_ins(0, "PopParamAll", "1", "", "");
 
             //m3 start
@@ -2246,9 +2347,9 @@ atom_expr: atom {
             string classname= lookup_ste2 -> token;
             lookup_ste2 = class_map[classname];
             //print_ste(lookup_ste2,0);
-            ste* attribute = lookup(lookup_ste2,$3->addr);     //FOR INHERITANCE
+            ste* attribute = single_rev_lookup(lookup_ste2->next_scope,$3->addr);     //FOR INHERITANCE
             if(attribute == NULL){
-                attribute = single_rev_lookup(lookup_ste2->next_scope,$3->addr);
+                attribute = lookup(lookup_ste2,$3->addr);
             }
             if(attribute!= NULL){ 
                 $$->atom_type = attribute->type;
@@ -2611,6 +2712,7 @@ class_declare:  NAME {
 
             //m3 start
             curr_class = chartostring($1->addr);
+            // class_offset = 8;
             //mm3 end
         }
         | NAME OPEN_BRACKET CLOSE_BRACKET{
@@ -2634,6 +2736,7 @@ class_declare:  NAME {
 
             //m3 start
             curr_class = chartostring($1->addr);
+            // class_offset = 8;
             //mm3 end
         }    
         | NAME OPEN_BRACKET argument CLOSE_BRACKET{
@@ -3197,7 +3300,7 @@ int main(int argc, char* argv[]){
 
     instCount=0;
     tempCount=0;
-    /* yydebug=1; */
+    yydebug=1; 
     current_ste = setup_global_sym_table(current_ste);
     /* cout<<"Parsing Started\n"; */
     yyparse();
