@@ -15,11 +15,13 @@
     void yyerror(string str);
     extern stack<int> indent_stack;
     stack<int> loopStack;
+    // stack<string> paramStack;
 
     int instCount;
     vector<vector<string>> instructions;
     vector<int> makelist(int i);
     void backpatch(vector<int> p, int i);
+    void backpatch_str(vector<int> p, string str);
     void create_ins(int type,string i,string op,string arg1,string arg2);
     vector<int> merge(vector<int> p1, vector<int> p2);
     string newTemp();
@@ -75,7 +77,7 @@
 %start file
 
 %type<elem> M N file snippet stmt simple_stmt small_stmt_list small_stmt expr_stmt eq_testlist_star_expr_plus flow_stmt break_stmt continue_stmt return_stmt global_stmt compound_stmt funcdef parameters typedargslist typedarg tfpdef if_stmt while_stmt for_stmt suite nts_star test or_test and_test not_test comparison comp_op expr xor_expr and_expr shift_expr arith_expr term term_choice factor factor_choice power atom_expr atom STRING_PLUS trailer classdef arglist argument_list argument testlist testlist_list comma_name_star and_test_star not_test_star func_body_suite stmt_plus
-%type<elem> for_test func_name func_ret_type class_name while_expr else_scope else_if_scope if_scope while_scope for_scope 
+%type<elem> block for_test func_name func_ret_type class_name while_expr else_scope else_if_scope if_scope while_scope for_scope 
 %type<elem> range_stmt for_core
 %token<elem> RANGE NEWLINE INDENT DEDENT ASSIGN_OPERATOR POWER_OPERATOR SHIFT_OPER FLOOR_DIV_OPER ARROW_OPER TYPE_HINT NAME IF ELSE ELIF WHILE FOR IN AND OR NOT BREAK CONTINUE RETURN CLASS DEF GLOBAL ATOM_KEYWORDS STRING NUMBER OPEN_BRACKET CLOSE_BRACKET EQUAL SEMI_COLON COLON COMMA PLUS MINUS MULTIPLY DIVIDE REMAINDER ATTHERATE NEGATION BIT_AND BIT_OR BIT_XOR DOT CURLY_OPEN CURLY_CLOSE SQUARE_OPEN SQUARE_CLOSE LESS_THAN GREATER_THAN EQUAL_EQUAL GREATER_THAN_EQUAL LESS_THAN_EQUAL NOT_EQUAL_ARROW NOT_EQUAL IS
 
@@ -122,26 +124,54 @@ funcdef: DEF func_name parameters COLON func_body_suite {
             current_ste = get_prev_scope(current_ste);
             populate_new_scope(current_ste, "FUNCTION", $2->addr, $4->num_params, $1->lineno, 1);
             //STE code end
+            $$->ins = instCount+1;
 
+            // thisTemps.pop();
+			// create_ins(0,$5->return_param,"=","PopParam","");
+            create_ins(0,"goto","ra","","");
+            create_ins(0,"EndFunc","","","");
+            backpatch_str($5->nextlist, "ra");
+            // thisTemps.push(reg1);
 
         }
         | DEF func_name parameters ARROW_OPER func_ret_type COLON func_body_suite {
             current_ste = get_prev_scope(current_ste);
             populate_new_scope(current_ste, "FUNCTION", $2->addr, $4->num_params, $1->lineno, 1);
+           
+            // thisTemps.pop();
+			// create_ins(0,$2->return_func,"=","PopParam","");
+            create_ins(0,"Goto","ra","","");
+            create_ins(0,"EndFunc","","","");
         }
         | DEF func_name OPEN_BRACKET CLOSE_BRACKET COLON func_body_suite {
             current_ste = get_prev_scope(current_ste);
             populate_new_scope(current_ste, "FUNCTION", $2->addr, 0, $1->lineno, 1);
+
+            // thisTemps.pop();
+			// create_ins(0,$2->return_func,"=","PopParam","");
+            create_ins(0,"Goto","ra","","");
+            create_ins(0,"EndFunc","","","");
         }
         | DEF func_name OPEN_BRACKET CLOSE_BRACKET ARROW_OPER func_ret_type COLON func_body_suite{
             current_ste = get_prev_scope(current_ste);
             populate_new_scope(current_ste, "FUNCTION", $2->addr, 0, $1->lineno, 1);
+
+            // thisTemps.pop();
+			// create_ins(0,$2->return_func,"=","PopParam","");
+            create_ins(0,"Goto","ra","","");
+            create_ins(0,"EndFunc","","","");
         }
         ;
 
 func_name: NAME 
     {   
         $$=$1;
+
+        create_ins(0,chartostring($1->addr)+":","","","");
+        create_ins(0,"BeginFunc","","","");
+        // paramStack.pop(); //popping return address
+        create_ins(0,"ra","=","PopParam","");
+
         //STE code start
         ste* lookup_ste = current_ste;
         if(lookup(lookup_ste, $1->addr) == NULL){
@@ -164,18 +194,26 @@ parameters: OPEN_BRACKET typedargslist CLOSE_BRACKET {
             $$ = create_node(4, "parameters", $1, $2, $3);
             $$->ins = $2->ins;
             $$->num_params = $2->num_params;
+            // cout<<"parameterts done"<<endl;
         }
         ;
 
 typedargslist:  typedarg    {  
             $$=$1;
             $$->num_params=1;
+            $$->ins = instCount+1;
+            
+            // paramStack.pop();
+			create_ins(0,$1->addr,"=","PopParam","");
         }
         | typedargslist COMMA  typedarg  {  
             $$ = create_node(4, "typedargslist", $1, $2, $3);
             $$->ins = $1->ins;
 
             $$->num_params = $1->num_params + 1;
+            $$->ins = instCount+1;
+            // paramStack.pop();
+			create_ins(0,$3->addr,"=","PopParam","");
         }
         ;
 
@@ -196,6 +234,7 @@ tfpdef: NAME {
         | NAME COLON TYPE_HINT {  
             $$ = create_node(4, "tfpdef", $1, $2, $3); 
 			$$->ins = instCount+1;
+            $$->addr = $1->addr;
 
             //STE code start
             ste* lookup_ste = current_ste;
@@ -285,7 +324,7 @@ expr_stmt: test ASSIGN_OPERATOR test {
             //STE code start
             ste* lookup_ste = current_ste;
             if(lookup(lookup_ste, $1->addr) == NULL){
-                current_ste = insert_entry_same_scope(current_ste, "VARIABLE", $1->addr, $3->addr, $1->lineno, 1);
+                current_ste = insert_entry_same_scope(current_ste, "VARIABLE", $1->addr, $3->addr, $1->lineno, 1, $5->list_size);
             }
             else{
                 cerr<<"Error: Variable "<<$1->addr<<" already declared\n";
@@ -293,6 +332,7 @@ expr_stmt: test ASSIGN_OPERATOR test {
             }
             //STE code end
         }
+        
     ;
 
 eq_testlist_star_expr_plus: test {
@@ -333,10 +373,13 @@ continue_stmt: CONTINUE     {
         }
         ;
 return_stmt: RETURN     {  
-            
+            create_ins(0,"return","","","");
         }
         | RETURN test     {  
-            
+            $$->return_param = str_to_ch(newTemp());
+            create_ins(0,$$->return_param,"=",$2->addr,"");
+            // paramStack.push($$->return_param);
+            create_ins(0,"return",$$->return_param,"","");
         } 
         ;   
 
@@ -385,7 +428,7 @@ if_stmt: if_scope test COLON M suite     {
            $$->nextlist = merge($2->falselist, $5->nextlist);
 
             //STE code start
-            current_ste = get_prev_scope(current_ste);  
+            // current_ste = get_prev_scope(current_ste);  
             //STE code end
 
         }
@@ -397,7 +440,7 @@ if_stmt: if_scope test COLON M suite     {
             $$->nextlist = merge(temp, $10->nextlist);
 
             //STE code start
-            current_ste = get_prev_scope(current_ste);
+            // current_ste = get_prev_scope(current_ste);
             //STE code end
 
         }
@@ -412,17 +455,17 @@ if_stmt: if_scope test COLON M suite     {
 
 if_scope: IF{
         $$=$1;
-        current_ste = insert_entry_new_scope(current_ste);
-        populate_new_scope(current_ste->prev_scope, "IF", "IF", 0, $1->lineno, 0);
+        // current_ste = insert_entry_new_scope(current_ste);
+        // populate_new_scope(current_ste->prev_scope, "IF", "IF", 0, $1->lineno, 0);
     }
     ;
 
 else_scope: ELSE{
         $$=$1;
         //STE code start
-        current_ste = get_prev_scope(current_ste);
-        current_ste = insert_entry_new_scope(current_ste);
-        populate_new_scope(current_ste->prev_scope, "ELSE", "ELSE", 0, $1->lineno, 1);
+        // current_ste = get_prev_scope(current_ste);
+        // current_ste = insert_entry_new_scope(current_ste);
+        // populate_new_scope(current_ste->prev_scope, "ELSE", "ELSE", 0, $1->lineno, 1);
 
         //STE code end
     }
@@ -431,9 +474,9 @@ else_scope: ELSE{
 else_if_scope: ELIF{
         $$=$1;
         //STE code start
-        current_ste = get_prev_scope(current_ste);
-        current_ste = insert_entry_new_scope(current_ste);
-        populate_new_scope(current_ste->prev_scope, "ELSE_IF", "ELSE_IF", 0, $1->lineno, 1);
+        // current_ste = get_prev_scope(current_ste);
+        // current_ste = insert_entry_new_scope(current_ste);
+        // populate_new_scope(current_ste->prev_scope, "ELSE_IF", "ELSE_IF", 0, $1->lineno, 1);
         //STE code end
     }
     ;
@@ -446,7 +489,7 @@ nts_star : else_if_scope test COLON M suite  {
             $$->nextlist = merge($2->falselist, $5->nextlist);
 
             //STE code start
-            current_ste = get_prev_scope(current_ste);
+            // current_ste = get_prev_scope(current_ste);
             //STE code end
         }
         | else_if_scope test COLON M suite N nts_star  {  
@@ -464,7 +507,7 @@ nts_star : else_if_scope test COLON M suite  {
             $$->nextlist = merge($5->nextlist, merge($6->nextlist,$10->nextlist));
 
             //STE code start
-            current_ste = get_prev_scope(current_ste);
+            // current_ste = get_prev_scope(current_ste);
             //STE code end
         }
         ;
@@ -478,7 +521,7 @@ while_stmt: while_scope M while_expr COLON M suite   {
             create_ins(0, "goto", to_string($2->ins), "", "");
 
             //STE code start
-            current_ste = get_prev_scope(current_ste);
+            // current_ste = get_prev_scope(current_ste);
             //STE code end
         }
 		| while_scope M while_expr COLON M suite N else_scope COLON M suite  {   
@@ -491,15 +534,15 @@ while_stmt: while_scope M while_expr COLON M suite   {
 			$$->nextlist = $11->nextlist; //verify //verified 
 
             //STE code start
-            current_ste = get_prev_scope(current_ste);
+            // current_ste = get_prev_scope(current_ste);
             //STE code end
         }
         ;
 
 while_scope: WHILE {
         $$=$1;
-        current_ste = insert_entry_new_scope(current_ste);
-        populate_new_scope(current_ste->prev_scope, "WHILE", "WHILE", 0, $1->lineno, 0);
+        // current_ste = insert_entry_new_scope(current_ste);
+        // populate_new_scope(current_ste->prev_scope, "WHILE", "WHILE", 0, $1->lineno, 0);
     }
     ;
 
@@ -522,7 +565,7 @@ for_stmt: for_scope for_core COLON M suite    {
             create_ins(0, "goto", to_string($2->ins), "", "");
 
             //STE code start
-            current_ste = get_prev_scope(current_ste);
+            // current_ste = get_prev_scope(current_ste);
             //STE code end            
         }
         | for_scope for_core COLON M suite N ELSE COLON M suite   { 
@@ -545,7 +588,7 @@ for_stmt: for_scope for_core COLON M suite    {
             $$->nextlist = $10->nextlist; //verify
 
             //STE code start
-            current_ste = get_prev_scope(current_ste);
+            // current_ste = get_prev_scope(current_ste);
             //STE code end
         }
         ;
@@ -569,10 +612,11 @@ for_core: expr IN range_stmt   {
         ;
 
 for_scope: FOR {
+        $$=$1;
         //STE code start
         //loopStack.push($$->ins);
-        current_ste = insert_entry_new_scope(current_ste);
-        populate_new_scope(current_ste->prev_scope, "FOR", "FOR", 0, $1->lineno, 0);
+        // current_ste = insert_entry_new_scope(current_ste);
+        // populate_new_scope(current_ste->prev_scope, "FOR", "FOR", 0, $1->lineno, 0);
         //STE code end
     }
     ;
@@ -848,16 +892,34 @@ power: atom_expr        {
 
 atom_expr: atom {  
             $$ = $1;
+            
         }
-        | atom_expr trailer {  
+        | NAME trailer {   //this is function call
             $$ = create_node(3, "atom_expr", $1, $2);
             $$->ins = $1->ins;
+
+            string temp = newTemp();
+            $$->addr = str_to_ch(temp);
+            create_ins(0, temp, "=" ,"call "+chartostring($1->addr), "");
+            create_ins(0, "PopParam", temp, "", "");
+            backpatch($2->nextlist, instCount);
+
+
+        }
+        | NAME SQUARE_OPEN test SQUARE_CLOSE{
+            $$ = create_node(5, "atom_expr", $1, $2, $3, $4);
+            $$->ins = $1->ins;
+
+            string temp = newTemp();
+            create_ins(1, temp, "*", $3->addr, to_string(get_width(lookup(current_ste, $1->addr)->type)));
+            $$->addr = str_to_ch(chartostring($1->addr) + "["+temp+"]");
         }
         | atom_expr DOT NAME { 
             $$ = create_node(4, "atom_expr", $1, $2, $3);
             $$->ins = $1->ins;
         }
         ;
+
 
 atom: OPEN_BRACKET testlist CLOSE_BRACKET  { 
         $$=$2;
@@ -866,13 +928,16 @@ atom: OPEN_BRACKET testlist CLOSE_BRACKET  {
         $$ = create_node(3, "atom", $1, $2);
         $$->ins = instCount+1;
     }
+    
     | SQUARE_OPEN testlist SQUARE_CLOSE    { 
         $$ = $2;
+        
     }
     | SQUARE_OPEN SQUARE_CLOSE  {
         $$ = create_node(3, "atom", $1, $2);
         $$->ins = instCount+1;
     }
+
     | CURLY_OPEN CURLY_CLOSE    { 
         $$ = create_node(3, "atom", $1, $2);
         $$->ins = instCount+1;
@@ -906,27 +971,37 @@ STRING_PLUS: STRING     {
 trailer: OPEN_BRACKET CLOSE_BRACKET  { 
             $$ = create_node(3, "trailer", $1, $2);
             $$->ins = instCount+1;
+
+            create_ins(0, "PushParam", "", "", "");
+            $$->nextlist = makelist(instCount);
         }
         | OPEN_BRACKET arglist CLOSE_BRACKET  {
-            $$ = create_node(4, "trailer", $1, $2, $3);
-            $$->ins = $2->ins;
-        }
-        | SQUARE_OPEN test SQUARE_CLOSE{
-            $$ = create_node(4, "trailer", $1, $2, $3);
-            $$->ins = $2->ins;
+            $$=$2;
+
         }
         ;
 
+ /* trailer2: SQUARE_OPEN test SQUARE_CLOSE{
+            $$=$2;
+            
+        }
+        ; */
+
 testlist: testlist_list    { 
             $$ = $1;
+            $$-> addr = str_to_ch(chartostring($1->addr) + "]");
         }
         | testlist_list COMMA   {
             $$=create_node(3,"testlist",$1,$2);
             $$->ins = $1 -> ins;
+            $$->list_size = $1->list_size;
+            $$-> addr = str_to_ch(chartostring($1->addr) + "]");
         }
         ;
 testlist_list: test         {
             $$ = $1;
+            $$->list_size = 1;
+            $$-> addr = str_to_ch( "[" + chartostring($1->addr));
         }
         | test COLON TYPE_HINT{
             $$ = create_node(4, "testlist_list", $1, $2, $3);
@@ -947,6 +1022,10 @@ testlist_list: test         {
         | testlist_list COMMA test  { 
             $$ = create_node(4, "testlist_list", $1, $2, $3);
             $$->ins = $1->ins;
+            $$->list_size = $1->list_size + 1;
+            //cout<<$1->addr<<endl;
+            $$-> addr = str_to_ch(chartostring($1->addr) + "," + chartostring($3->addr));
+            //cout<<$$->addr<<endl;
         }
         | testlist_list COMMA test COLON TYPE_HINT { 
             $$ = create_node(6, "testlist_list", $1, $2, $3, $4, $5);
@@ -991,6 +1070,10 @@ class_name: NAME {
             exit(1);
         }
         //STE code end
+
+        create_ins(0, chartostring($1->addr)+":","","","");
+        create_ins(0,"BeginClass","","","");
+        
 };
 
 
@@ -1005,11 +1088,19 @@ arglist: argument_list     {
 argument_list: argument     { 
             $$=$1;
             $$->num_params=1;
+
+            $$->ins = instCount+1;
+            $$->nextlist = makelist(instCount+1);
+            create_ins(0, "PushParam", "", "", "");
+            create_ins(0, "PushParam", $1->addr, "", "");
         }
         | argument_list COMMA argument  { 
             $$ = create_node(4, "argument_list", $1, $2, $3);
             $$->ins = $1->ins;
             $$->num_params = $1->num_params + 1;
+
+            create_ins(0, "PushParam", $3->addr, "", "");
+            $$->nextlist = $1->nextlist;
         }
         ;
 
@@ -1023,7 +1114,16 @@ argument: test  {
         }
         ;
 
-func_body_suite: simple_stmt    { 
+func_body_suite: block
+                {
+                    $$ = $1;
+                    $$->ins = instCount+1;
+
+                    // backpatch($1->nextlist,$$->ins);
+                }
+                ;
+
+block: simple_stmt    { 
             $$ = $1;
         }
         | NEWLINE INDENT stmt_plus DEDENT   { 
@@ -1070,6 +1170,11 @@ void create_ins(int type,string i,string op,string arg1,string arg2){
 void backpatch(vector<int>p, int i){
 	for(int j=0;j<p.size();j++)
 		instructions[p[j]-1].push_back(to_string(i));
+}
+
+void backpatch_str(vector<int>p, string str){
+	for(int j=0;j<p.size();j++)
+		instructions[p[j]-1].push_back(str);
 }
 
 vector<int> merge(vector<int> p1, vector<int> p2){
@@ -1123,7 +1228,7 @@ ste* setup_global_sym_table(ste* curr_ste){
     curr_ste = insert_entry_same_scope(curr_ste, "IN", "in", "RESERVED_KEYWORD", -1, -1);
     curr_ste = insert_entry_same_scope(curr_ste, "CLASS", "class", "RESERVED_KEYWORD", -1, -1);
     curr_ste = insert_entry_same_scope(curr_ste, "IS", "is", "RESERVED_KEYWORD", -1, -1);
-    curr_ste = insert_entry_same_scope(curr_ste, "RETURN", "return", "RESERVED_KEYWORD", -1, -1);\
+    curr_ste = insert_entry_same_scope(curr_ste, "RETURN", "return", "RESERVED_KEYWORD", -1, -1);
     curr_ste = insert_entry_same_scope(curr_ste, "AND", "and", "RESERVED_KEYWORD", -1, -1);
     curr_ste = insert_entry_same_scope(curr_ste, "CONTINUE", "continue", "RESERVED_KEYWORD", -1, -1);
     curr_ste = insert_entry_same_scope(curr_ste, "FOR", "for", "RESERVED_KEYWORD", -1, -1);
@@ -1137,23 +1242,7 @@ ste* setup_global_sym_table(ste* curr_ste){
     return curr_ste;
 }
 
- /* int get_offset(node* TYPE_HINT){
-    if(TYPE_HINT->addr == "int"){
-        return 4;
-    }
-    else if(TYPE_HINT->addr == "float"){
-        return 8;
-    }
-    else if(TYPE_HINT->addr == "bool"){
-        return 1;
-    }
-    else if(TYPE_HINT->addr == "None"){
-        return 0;
-    } 
-    else if(TYPE_HINT->addr == "str"){
-        
-    }
-} */
+
 
 
 

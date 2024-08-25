@@ -6,7 +6,7 @@
 
 functions.cpp linking errors....currently functions defined in parser
 
-offset and sizes of variables
+offset and sizes of variables   //done except for string
 
 extra check that the RHS can't be of type NAME COLON TYPE_HINT
 
@@ -18,8 +18,12 @@ Self handle
 
 IF, FOR, WHILE : symbol table   //done
 
-BREAK, CONTINUE : handle
+BREAK, CONTINUE : handle    //done
 
 3AC : FOR WHILE FUNC CLASS BREAK CONTINUE
 
 source file in symtab
+
+if,for,while new_scope remove   //done
+
+primitive types add in width, then add in expr_stmt also

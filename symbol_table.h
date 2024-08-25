@@ -5,7 +5,6 @@ using namespace std;
 typedef struct symbol_table_entry{
     string token, lexeme, type; //for variables
     int lineno; //for variables, functions, classes
-    int offset; //for variables
     int isvar = 0;  //check if it is a variable
     string return_type = "None", id;  //for functions, classes
     int num_params;        //for functions, classes
@@ -14,6 +13,8 @@ typedef struct symbol_table_entry{
     struct symbol_table_entry* prev = NULL;    //pointer to previous entry in the same symbol table
     struct symbol_table_entry* next_scope = NULL;  //pointer to the head of the next scope
     struct symbol_table_entry* prev_scope = NULL;  //pointer to the head of the previous scope    
+    int width = 0;  //width of the variable
+    int offset = 0;  //offset of the variable
 } ste ;
 
 // typedef struct symbol_table_map_entry {

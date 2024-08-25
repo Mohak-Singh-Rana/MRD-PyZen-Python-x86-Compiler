@@ -1,12 +1,51 @@
 #include "symbol_table.h"
 
-ste* insert_entry_same_scope(ste* curr_ste, string token,string lexeme,string type,int lineno, int isvar){
+
+
+int get_width(string TYPE_HINT){
+    if(TYPE_HINT == "int"){
+        return 4;
+    }
+    else if(TYPE_HINT== "float"){
+        return 8;
+    }
+    else if(TYPE_HINT == "bool"){
+        return 1;
+    }
+    else if(TYPE_HINT == "None"){
+        return 0;
+    } 
+    else if(TYPE_HINT == "list[int]"){
+        return 4;
+    }
+    else if(TYPE_HINT == "list[float]"){
+        return 8;
+    }
+    else if(TYPE_HINT == "list[bool]"){
+        return 1;
+    }
+    else if(TYPE_HINT == "list[None]"){
+        return 0;
+    }
+    return 0;
+    
+}
+
+ste* insert_entry_same_scope(ste* curr_ste, string token,string lexeme,string type,int lineno, int isvar, int list_size=0){
     ste* new_entry = new ste;
     new_entry->token = token;
     new_entry->lexeme = lexeme;
     new_entry->type = type;
     new_entry->lineno = lineno;
     new_entry->isvar = isvar;
+
+    if(type == "int"||type == "float"||type == "bool"||type == "None"){
+        new_entry->width = get_width(type);
+    }
+    else{
+        new_entry->width = get_width(type)*(list_size);
+    }
+    new_entry->offset = curr_ste->offset + curr_ste->width;
 
     // new_entry->next = NULL;
     new_entry->prev = curr_ste;

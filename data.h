@@ -20,6 +20,10 @@ typedef struct node
     char* for_start;
     // int last_ins;
 
+    string return_param;
+
+    int list_size=0;
+
     vector<int> truelist;
     vector<int> falselist;
     vector<int> nextlist;
