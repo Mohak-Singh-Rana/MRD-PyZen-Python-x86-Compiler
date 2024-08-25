@@ -15,9 +15,20 @@
     int dedent_count = 0;
     int line_joining_counter = 0;
 
-    void noding(char* yytext){
+    void noding(char* yytext,string type=""){
         yylval.elem = create_node(1, strdup(yytext));
         yylval.elem->lineno = yylineno;
+        if(type=="NUMBER"){
+            for(int i=0;i<strlen(yytext);i++){
+                if(yytext[i]=='.'){
+                    yylval.elem->type = strdup("float");
+                    yylval.elem->atom_type = strdup("float");
+                    return;     
+                }
+            }
+            yylval.elem->type = strdup("int");
+            yylval.elem->atom_type = "int";
+        }
     }
     
 %}
@@ -63,8 +74,10 @@ CURLY_CLOSE       "}"
 SQUARE_OPEN       "["
 SQUARE_CLOSE      "]"
 EQUAL             "="
+D_NAME            "__name__"
+D_MAIN            "__main__"
 
-PRIMITVE_TYPE     "int"|"float"|"str"|"bool"|"None"
+PRIMITVE_TYPE     "int"|"float"|"str"|"bool"
 TYPE_HINT          {PRIMITVE_TYPE}|List\[{PRIMITVE_TYPE}\]
 
 IF                "if"
@@ -80,6 +93,10 @@ RETURN            "return"
 CLASS             "class"
 DEF               "def"
 GLOBAL            "global"
+NONE              "None"
+LEN               "len"
+PRINT             "print"
+SELF              "self"
 
 stringprefix       "r"|"u"|"R"|"U"|"f"|"F"|"fr"|"Fr"|"fR"|"FR"|"rf"|"rF"|"Rf"|"RF"
 shortstringcharsingle    [^\\\n\']
@@ -248,8 +265,14 @@ NAME      {ID_START}{ID_CONTINUE}*
 <INITIAL,IMPLICIT_LINE_JOINING>{CLASS}  {noding(yytext);  return CLASS;}
 <INITIAL,IMPLICIT_LINE_JOINING>{DEF}    {noding(yytext);  return DEF;}
 <INITIAL,IMPLICIT_LINE_JOINING>{GLOBAL}  { noding(yytext); return GLOBAL;}
-<INITIAL,IMPLICIT_LINE_JOINING>"..."|"True"|"False"|"None"  {noding(yytext);  return ATOM_KEYWORDS;}
-<INITIAL,IMPLICIT_LINE_JOINING>{NUMBER}    { noding(yytext);  return NUMBER;}
+<INITIAL,IMPLICIT_LINE_JOINING>"..."|"True"|"False"  {noding(yytext);  return ATOM_KEYWORDS;}
+<INITIAL,IMPLICIT_LINE_JOINING>{NONE}  {noding(yytext);  return NONE;}
+<INITIAL,IMPLICIT_LINE_JOINING>{LEN}  {noding(yytext);  return LEN;}
+<INITIAL,IMPLICIT_LINE_JOINING>{PRINT}  {noding(yytext);  return PRINT;}
+<INITIAL,IMPLICIT_LINE_JOINING>{D_NAME}  {noding(yytext);  return D_NAME;}
+<INITIAL,IMPLICIT_LINE_JOINING>{D_MAIN}  {noding(yytext);  return D_MAIN;}
+<INITIAL,IMPLICIT_LINE_JOINING>{SELF}  {noding(yytext);  return SELF;}
+<INITIAL,IMPLICIT_LINE_JOINING>{NUMBER}    { noding(yytext,"NUMBER");  return NUMBER;}
 <INITIAL,IMPLICIT_LINE_JOINING>"range"      { noding(yytext); return RANGE;}
 <INITIAL,IMPLICIT_LINE_JOINING>{NAME}      { noding(yytext); return NAME;}
 <INITIAL>{NEWLINE}[ ]*/{NEWLINE}   {}

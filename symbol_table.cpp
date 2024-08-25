@@ -38,6 +38,7 @@ ste* insert_entry_same_scope(ste* curr_ste, string token,string lexeme,string ty
     new_entry->type = type;
     new_entry->lineno = lineno;
     new_entry->isvar = isvar;
+    new_entry->list_size = list_size;
 
     if(type == "int"||type == "float"||type == "bool"||type == "None"){
         new_entry->width = get_width(type);
@@ -73,10 +74,11 @@ ste* insert_entry_new_scope(ste* curr_ste) {
     return head_scope;
 }
 
-void populate_new_scope(ste* curr_ste, string token, string id, int num_params, int lineno, int is_func_class) {
+void populate_new_scope(ste* curr_ste, string token, string id,int num_params, int lineno, int is_func_class, string return_type="None") {
     curr_ste->token = token;
     curr_ste->lexeme = id;
-    // curr_ste->return_type = return_type;
+    curr_ste->type = token; //added
+    curr_ste->return_type = return_type;
     curr_ste->num_params = num_params;
     curr_ste->lineno = lineno;
     curr_ste->is_func_class = is_func_class;
@@ -117,5 +119,27 @@ ste* lookup(ste* lookup_ste, string lexeme)
         return lookup(lookup_ste->prev_scope,lexeme);
     if (lookup_ste->prev!=NULL)
         return lookup(lookup_ste->prev,lexeme);
+    return NULL;
+}
+
+ste* rev_lookup(ste* lookup_ste, string lexeme){
+    if (lookup_ste == NULL)
+        return NULL;
+    if (lookup_ste->lexeme==lexeme)
+        return lookup_ste;
+    if (rev_lookup(lookup_ste->next_scope,lexeme)!=NULL)
+        return rev_lookup(lookup_ste->next_scope,lexeme);
+    if (rev_lookup(lookup_ste->next,lexeme)!=NULL)
+        return rev_lookup(lookup_ste->next,lexeme);
+    return NULL;
+} 
+
+ste* single_rev_lookup(ste* lookup_ste, string lexeme){
+    if (lookup_ste == NULL)
+        return NULL;
+    if (lookup_ste->lexeme==lexeme)
+        return lookup_ste;
+    if (lookup_ste->next!=NULL)
+        return single_rev_lookup(lookup_ste->next,lexeme);
     return NULL;
 }

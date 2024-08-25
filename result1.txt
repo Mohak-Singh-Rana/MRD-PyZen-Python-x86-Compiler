@@ -1,3 +1,42 @@
+
+check in expr_stmt: 
+int int int
+
+check in expr_stmt: 
+int int int
+
+check in expr_stmt: 
+bool bool bool
+ENTER YOU FUCKING BITCH
+int
+int int int
+ENTER YOU FUCKING BITCH
+int
+ENTER YOU FUCKING BITCH
+int
+
+check in expr_stmt: 
+int int int
+ENTER YOU FUCKING BITCH
+int
+int int int
+ENTER YOU FUCKING BITCH
+int
+int int int
+ENTER YOU FUCKING BITCH
+int
+hello
+
+check in expr_stmt: 
+list[int] list[int] list[int]
+FUNCTION
+
+check in expr_stmt: 
+int int int
+ENTER YOU FUCKING BITCH
+int
+"__main__"
+FUNCTION
 global_head GLOBAL_HEAD
 True RESERVED_KEYWORD
 False RESERVED_KEYWORD
@@ -18,7 +57,92 @@ not RESERVED_KEYWORD
 elif RESERVED_KEYWORD
 if RESERVED_KEYWORD
 or RESERVED_KEYWORD
-x list[int]
-1	x = [1,2,3] 
-2	t0 = 3 * 4
-3	x[t0] = 4 
+bubbleSort FUNCTION
+-> scope_head SCOPE_HEAD
+-> array list[int]
+-> i int
+-> j int
+-> swapped bool
+-> temp int
+main FUNCTION
+-> scope_head SCOPE_HEAD
+-> data list[int]
+-> i int
+1	bubbleSort: 
+2	BeginFunc 
+3		ra = PopParam 
+4		array = PopParam 
+5		i = 0 
+6		j = 0 
+7		PushParam array 
+8		call len 
+9		t0 = PopParam 
+10		i = -1 
+11		i = i + 1
+12		t1 = i < t0
+13		if t1 goto 15 
+14		goto 
+15		swapped = False 
+16		PushParam array 
+17		call len 
+18		t2 = PopParam 
+19		t3 = i - t2
+20		t4 = 1 - t3
+21		j = -1 
+22		j = j + 1
+23		t5 = j < t4
+24		if t5 goto 26 
+25		goto 11 
+26		t6 = j * 4
+27		t7 = 1 + j
+28		t8 = t7 * 4
+29		t9 = array[t6] > array[t8]
+30		if t9 goto 32 
+31		goto 22 
+32		t10 = j * 4
+33		temp = array[t10] 
+34		t11 = j * 4
+35		t12 = 1 + j
+36		t13 = t12 * 4
+37		array[t11] = array[t13] 
+38		t14 = 1 + j
+39		t15 = t14 * 4
+40		array[t15] = temp 
+41		swapped = True 
+42		goto 22 
+43		goto 11 
+44		Goto ra 
+45	EndFunc 
+46	main: 
+47	BeginFunc 
+48		ra = PopParam 
+49		t16 =  - 2
+50		t17 =  - 9
+51		HeapAlloc 4*5 
+52		data = [t16,45,0,11,t17] 
+53		PushParam 56 
+54		PushParam data 
+55		t18 = call bubbleSort 
+56		PopParam t18 
+57		PushParam 'Sorted Array in Ascending Order:' 
+58		call print 
+59		PopParam 1 
+60		i = 0 
+61		PushParam data 
+62		call len 
+63		t19 = PopParam 
+64		i = -1 
+65		i = i + 1
+66		t20 = i < t19
+67		if t20 goto 69 
+68		goto 
+69		t21 = i * 4
+70		PushParam data[t21] 
+71		call print 
+72		PopParam 1 
+73		goto 65 
+74		Goto ra 
+75	EndFunc 
+76	PushParam 78 
+77	t22 = call main 
+78	PopParam t22 

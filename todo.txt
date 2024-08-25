@@ -1,14 +1,14 @@
- see true false in while stmt
+see true false in while stmt when cases are (true or false) //done
  
- while(a or b)
+while(a or b)
 
- __name__ ki symbol table entry add karni hai to global symbol table at the start
+__name__ ki symbol table entry add karni hai to global symbol table at the start
 
 functions.cpp linking errors....currently functions defined in parser
 
 offset and sizes of variables   //done except for string
 
-extra check that the RHS can't be of type NAME COLON TYPE_HINT
+extra check that the RHS can't be of type NAME COLON TYPE_HINT 
 
 do testing that name a varaible as break and see if it gives error
 
@@ -20,10 +20,64 @@ IF, FOR, WHILE : symbol table   //done
 
 BREAK, CONTINUE : handle    //done
 
-3AC : FOR WHILE FUNC CLASS BREAK CONTINUE
+3AC : FOR WHILE FUNC CLASS BREAK CONTINUE //break ka border case
 
 source file in symtab
 
+expr stmt me add instructions  //done
+
 if,for,while new_scope remove   //done
 
-primitive types add in width, then add in expr_stmt also
+primitive types add in width, then add in expr_stmt also //done
+
+global name support
+
+if no funcdef in class body suite then see what to do 
+
+nested classes nahi karna na //done
+
+break backpatch
+
+None support // done
+
+class name jab bana rahe hai to symbol table entry me to jaa hi nhi rha, sirf naya scope bana dia hai apan ne
+
+jo function kisi class me nhi hai unhe to golbal wali symbol table me daalna hoga na, abhi wo kaam nhi kar rha //not needed already done i guess
+
+atom_expr ke  function call wale rule me exit(1) ko comment kia hai laga dena dekhke
+
+PLUS wale me string ka dhyan rakhna, abhi nhi dhyan diya hai
+
+len and print function ka alag se support  //done
+
+range len aur print ko global symbol table entry me daalo
+
+_name_==main
+
+self and .name wale ka support dena hai
+
+test in class with functions having same variable name
+
+check evrywhere ki agar hum lookup retunr null paaye to error daalo
+
+a.b.c wali cheez chalegi? 
+
+assign operator wala complete karo
+
+do typechecking in len and print function
+
+test Colon test equal wala statement dekhlo bas
+
+goto bhardo jab bhi end ho raha ho
+
+test EQUAL eq_testlist_star_expr_plus is wale me jo self aur class ke liye add kia hai wo check karo jaise 
+a.len= b.len type check sahi ho raha hai ya nhi and aisa hi baaki equal aur assign operator wale me bhi add karo
+
+rev_lookup ki jaroorat nhi hai ig kyuki hume ek scope hi aage jana hai
+
+add 3ac for calling constructor in atom_expr and check for parameters pass
+add 3ac for obj.name = something wale parts ka and ye sab check 
+
+check is instruction set everywhere $$->ins 
+
+atom_type object ko bhi handle karo 

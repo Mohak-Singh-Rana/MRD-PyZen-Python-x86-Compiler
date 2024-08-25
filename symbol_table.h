@@ -15,6 +15,7 @@ typedef struct symbol_table_entry{
     struct symbol_table_entry* prev_scope = NULL;  //pointer to the head of the previous scope    
     int width = 0;  //width of the variable
     int offset = 0;  //offset of the variable
+    int list_size=0;
 } ste ;
 
 // typedef struct symbol_table_map_entry {

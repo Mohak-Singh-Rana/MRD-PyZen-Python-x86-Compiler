@@ -1,0 +1,2 @@
+function parameters me same naam do baar nhi ja sakta checked aur bina declaration ke a=2 nhi likh sakte checked
+
