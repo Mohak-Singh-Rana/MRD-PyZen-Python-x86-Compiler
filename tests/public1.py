@@ -9,7 +9,7 @@ def bubbleSort(array: list[int]) -> None:
         array[j] = array[j + 1]
         array[j + 1] = temp
         swapped = True
-    if i==3:
+    if not swapped:
       break
 
 

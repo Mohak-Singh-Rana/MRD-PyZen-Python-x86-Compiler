@@ -6,7 +6,7 @@ def compute_min() -> float:
   i: int = 0
   j: int = len(data)
   for i in range(j):
-    if min_value>0:
+    if not min_value:
       min_value = data[i]
     elif data[i] < min_value:
       min_value = data[i]
