@@ -37,7 +37,7 @@ class LALRParser(CLRParser):
 
 def main():
   obj: LALRParser = LALRParser("LALR", "CLR", "Shift-Reduce")
-  obj.print_name()
+  obj.__init__("cbh", "hfdjj", "hjdc")
   
 
 

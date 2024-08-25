@@ -16,6 +16,7 @@
     void yyerror(string str);
     extern stack<int> indent_stack;
     stack<int> loopStack;
+    stack<string> iterStack;
     // stack<string> paramStack;
 
     //map<NODE*,map<string,int>> global_offset;
@@ -51,9 +52,15 @@
     int incheck=0;
     int isinsquare =0;
 
+
     //m3 start
     int stack_offset=16;    //8 bytes for rbp and 8 bytes for rip
     map<string, int> offset_map;
+    map<string,string> class_parent;
+    map<string,int> class_offset_map;
+    int class_offset =0;
+    string curr_class="";
+    map<string, int> string_map_mohak;
     //m3 end
 
     char* numtochar( int num){  
@@ -96,7 +103,7 @@
 
 %type<elem> class_declare M N file snippet stmt simple_stmt small_stmt_list small_stmt expr_stmt eq_testlist_star_expr_plus flow_stmt break_stmt continue_stmt return_stmt global_stmt compound_stmt funcdef parameters typedargslist typedarg tfpdef if_stmt while_stmt for_stmt suite nts_star test or_test and_test not_test comparison comp_op expr xor_expr and_expr shift_expr arith_expr term term_choice factor factor_choice power atom_expr atom STRING_PLUS trailer classdef arglist argument_list argument testlist testlist_list comma_name_star and_test_star not_test_star stmt_plus
 %type<elem> for_test func_name func_ret_type while_expr else_scope else_if_scope if_scope while_scope for_scope if_expr
-%type<elem> range_stmt for_core class_body_suite funcdef_plus d_expr S T
+%type<elem> range_stmt for_core class_body_suite funcdef_plus d_expr S T for_else_N
 %token<elem> RANGE NEWLINE INDENT DEDENT ASSIGN_OPERATOR POWER_OPERATOR SHIFT_OPER FLOOR_DIV_OPER ARROW_OPER TYPE_HINT NAME IF ELSE ELIF WHILE FOR IN AND OR NOT BREAK CONTINUE RETURN CLASS DEF GLOBAL ATOM_KEYWORDS STRING OPEN_BRACKET CLOSE_BRACKET EQUAL SEMI_COLON COLON COMMA PLUS MINUS MULTIPLY DIVIDE REMAINDER ATTHERATE NEGATION BIT_AND BIT_OR BIT_XOR DOT CURLY_OPEN CURLY_CLOSE SQUARE_OPEN SQUARE_CLOSE LESS_THAN GREATER_THAN EQUAL_EQUAL GREATER_THAN_EQUAL LESS_THAN_EQUAL NOT_EQUAL_ARROW NOT_EQUAL IS
 %token<elem> TRUE FALSE NUMBER NONE LEN PRINT D_MAIN D_NAME SELF 
 
@@ -111,6 +118,14 @@ M: %empty{
 
 N: %empty{
         $$ = create_node(1, "Marker Non-terminal N");
+        $$->nextlist = makelist(instCount+1);
+        create_ins(0, "goto", "", "", "");
+}
+;
+
+for_else_N: %empty{
+        $$ = create_node(1, "Marker Non-terminal for_else_N");
+        create_ins(1, iterStack.top(), "+", iterStack.top(), "1");
         $$->nextlist = makelist(instCount+1);
         create_ins(0, "goto", "", "", "");
 }
@@ -152,6 +167,8 @@ funcdef: DEF func_name parameters COLON suite {
             create_ins(0,"Stackpointer -"+to_string(funcOffset),"","","");
             funcOffset=0;
             create_ins(0,"goto","ra","","");
+            create_ins(0, "return", "", "", "");
+
             create_ins(0,"EndFunc","","","");
             backpatch_str($5->nextlist, "ra");
             // thisTemps.push(reg1);
@@ -178,6 +195,10 @@ funcdef: DEF func_name parameters COLON suite {
             create_ins(0,"Stackpointer -"+to_string(funcOffset),"","","");
             funcOffset=0;
             create_ins(0,"goto","ra","","");
+            if(chartostring($5->addr) == "None"){
+                //cerr<<"return instruction created"<<endl;
+                create_ins(0, "return", "", "", "");
+            }
             create_ins(0,"EndFunc","","","");
 
             //populate in symbol table
@@ -189,6 +210,7 @@ funcdef: DEF func_name parameters COLON suite {
             current_ste->offset_map = offset_map;
             stack_offset = 16;
             offset_map.clear();
+            
             //m3 end
         }
         | DEF func_name OPEN_BRACKET CLOSE_BRACKET T COLON suite {
@@ -201,6 +223,8 @@ funcdef: DEF func_name parameters COLON suite {
             create_ins(0,"Stackpointer -"+to_string(funcOffset),"","","");
             funcOffset=0;
             create_ins(0,"goto","ra","","");
+            create_ins(0, "return", "", "", "");
+
             create_ins(0,"EndFunc","","","");
 
             //m3 start
@@ -221,6 +245,9 @@ funcdef: DEF func_name parameters COLON suite {
             create_ins(0,"Stackpointer -"+to_string(funcOffset),"","","");
             funcOffset=0;
             create_ins(0,"goto","ra","","");
+            if(chartostring($6->addr) == "None"){
+                create_ins(0, "return", "", "", "");
+            }
             create_ins(0,"EndFunc","","","");
 
             //m3 start
@@ -229,6 +256,7 @@ funcdef: DEF func_name parameters COLON suite {
             current_ste->offset_map = offset_map;
             stack_offset = 16;
             offset_map.clear();
+            
             //m3 end
         }
         ;
@@ -694,6 +722,21 @@ expr_stmt: test ASSIGN_OPERATOR test {
             //runtime support
             funcOffset += get_width($3->addr);
             string st=str_to_ch($3-> addr);
+
+            string check = chartostring($5->addr);
+
+            if(st=="str" && check.find("\"") != string::npos){  //x:str = "hello"
+                string_map_mohak[chartostring($1->addr)] = $5->str_len;
+                create_ins(0, "Heapalloc",to_string(chartostring($5->addr).size()-2), "", "");
+            }
+            else if(st=="str"){ //y:str = x
+                string_map_mohak[chartostring($1->addr)] = string_map_mohak[chartostring($5->addr)];
+                create_ins(0, "Heapalloc",to_string(string_map_mohak[chartostring($5->addr)]), "", "");
+                if($5->atom_type == "str"){
+                    $5->addr = str_to_ch(chartostring($5->addr)+":str");
+                }
+            }
+
             if(st == "int" || st == "float" || st == "bool" || st == "str") {
                 create_ins(0, "Stackpointer +"+to_string(get_width($3->addr)), "", "", "");
             }
@@ -724,22 +767,40 @@ expr_stmt: test ASSIGN_OPERATOR test {
 
             //typecheck
                 string ret_type=typecast($1->atom_type,$5->atom_type,"=");
+                
                 if(ret_type == "Error"){
                     cerr<<"Error: Type mismatch in assignment on line "<<$1->lineno<<"\n";
                     exit(1);
                 }
                 if(ret_type != $5->atom_type){
-                    create_ins(0, $1->addr, "=", "("+ret_type+")"+chartostring($5->addr),"");
+                    if(chartostring($3->addr )!= "str") create_ins(0, $1->addr, "=", "("+ret_type+")"+chartostring($5->addr),"");
+                    else create_ins(0, chartostring($1->addr)+":str", "=", "("+ret_type+")"+chartostring($5->addr),"");
                 }
                 else{
-                    create_ins(0, $1->addr, "=", $5->addr, "");
+                    if(chartostring($3->addr) != "str") create_ins(0, $1->addr, "=", $5->addr, "");
+                    else create_ins(0, chartostring($1->addr)+":str", "=", $5->addr, "");
                 }
             //typecheck done
 
             //M3 START
-            $$->stack_width = 8 + $1->stack_width + $5->stack_width;
-            offset_map[chartostring($1->addr)] = -stack_offset;
-            stack_offset+=8;
+            
+            // for __init__ function and when it is self, it should not add so see that 
+            //but there may be possibility of t0 setting up here, think!!
+            if(chartostring($1->type) == "self_call"){
+                // I need class and I think it should run always , not sure
+                if(curr_class!=""){
+                    ste* pre_class = class_map[curr_class];
+                    pre_class->class_offset_map[$1->class_param]=class_offset;
+                    class_offset += 8;
+                }
+            }
+            else{
+                $$->stack_width = 8 + $1->stack_width + $5->stack_width;
+                offset_map[chartostring($1->addr)] = -stack_offset;
+                stack_offset+=8;
+            }
+            
+
             //M3 END
         }
         | test COLON test EQUAL eq_testlist_star_expr_plus{
@@ -776,7 +837,7 @@ expr_stmt: test ASSIGN_OPERATOR test {
                 }
             }
             //m3 start pending
-
+                // do we have do handle like self.a : LALRPARSER = LALRPARSER('abc',...);
             //m3 end
 
         }
@@ -840,12 +901,14 @@ break_stmt: BREAK   {
 continue_stmt: CONTINUE     {  
             $$=$1;
             $$->ins = instCount+1;
+            create_ins(1, iterStack.top(), "+", iterStack.top(), "1");
             create_ins(0, "goto", to_string(loopStack.top()), "", "");
         }
         ;
 return_stmt: RETURN     {  
             $$=$1;
-            create_ins(0,"return","","","");
+            //create_ins(0,"return","","","");
+
         }
         | RETURN test     {  
             $$ = $2; //ye saih hai?
@@ -889,10 +952,12 @@ compound_stmt: if_stmt      {
         }
         | while_stmt   {  
             $$=$1;
+            iterStack.pop();
             loopStack.pop();
         }
         | for_stmt     {  
             $$=$1;
+            iterStack.pop();
             loopStack.pop();
         }
         | funcdef      {  
@@ -929,7 +994,9 @@ if_stmt: if_scope if_expr COLON M suite     {
             backpatch($2->truelist, $4->ins);
             backpatch($2->falselist, $9->ins);
             vector<int> temp = merge($5->nextlist, $6->nextlist);
-            $$->nextlist = merge(temp, $10->nextlist);
+            //$$->nextlist = merge(temp, $10->nextlist);
+            $$->nextlist = $10->nextlist;
+            backpatch(temp,instCount+1);
 
             //STE code start
             // current_ste = get_prev_scope(current_ste);
@@ -946,7 +1013,9 @@ if_stmt: if_scope if_expr COLON M suite     {
             $$->lineno = $1->lineno;
             backpatch($2->falselist, $7->ins);     
             vector<int> temp = merge($5->nextlist, $6->nextlist);
-            $$->nextlist = merge(temp, $7->nextlist); 
+            //$$->nextlist = merge(temp, $7->nextlist); 
+            $$->nextlist= $7->nextlist;
+            backpatch(temp,instCount+1);
 
             //m3 start
             $$->stack_width = $2->stack_width + $5->stack_width + $7->stack_width; 
@@ -1001,6 +1070,7 @@ else_scope: ELSE{
 
 else_if_scope: ELIF{
         $$=$1;
+        incheck=1;
         //STE code start
         // current_ste = get_prev_scope(current_ste);
         // current_ste = insert_entry_new_scope(current_ste);
@@ -1015,7 +1085,9 @@ nts_star : else_if_scope if_expr COLON M suite  {
             $$->ins = $2->ins;
             $$->lineno = $1->lineno;
             backpatch($2->truelist, $4->ins);
-            $$->nextlist = merge($2->falselist, $5->nextlist);
+            //$$->nextlist = merge($2->falselist, $5->nextlist);
+            backpatch($2->falselist,instCount+1);
+            $$->nextlist = $5->nextlist;
 
             //STE code start
             // current_ste = get_prev_scope(current_ste);
@@ -1031,7 +1103,9 @@ nts_star : else_if_scope if_expr COLON M suite  {
             $$->lineno = $1->lineno;
             backpatch($2->truelist, $4->ins);
             backpatch($2->falselist, $7->ins);
-            $$->nextlist = merge($5->nextlist, merge($6->nextlist, $7->nextlist));
+            //$$->nextlist = merge($5->nextlist, merge($6->nextlist, $7->nextlist));
+            backpatch(merge($6->nextlist, $5->nextlist),instCount+1);
+            $$->nextlist = $7->nextlist;
 
             //m3 start
             $$->stack_width = $2->stack_width + $5->stack_width + $7->stack_width;
@@ -1044,7 +1118,9 @@ nts_star : else_if_scope if_expr COLON M suite  {
             $$->lineno = $1->lineno;
             backpatch($2->truelist, $4->ins);
             backpatch($2->falselist, $9->ins);
-            $$->nextlist = merge($5->nextlist, merge($6->nextlist,$10->nextlist));
+            //$$->nextlist = merge($5->nextlist, merge($6->nextlist,$10->nextlist));
+            backpatch(merge($6->nextlist,$5->nextlist),instCount+1);
+            $$->nextlist = $10->nextlist;
 
             //STE code start
             // current_ste = get_prev_scope(current_ste);
@@ -1060,10 +1136,10 @@ while_stmt: while_scope M while_expr COLON M suite   {
             $$ = create_node(7, "while_stmt", $1, $2, $3, $4, $5, $6);
             $$->ins = $2->ins;
             $$->lineno = $1->lineno;
-            backpatch($6->nextlist, $2->ins);
-            backpatch($3->truelist, $5->ins);
             //$$->nextlist = $3->falselist;
             create_ins(0, "goto", to_string($2->ins), "", "");
+            backpatch($3->truelist, $5->ins);
+            backpatch($6->nextlist, instCount+1);
             backpatch($3->falselist, instCount+1);
             //STE code start
             // current_ste = get_prev_scope(current_ste);
@@ -1080,7 +1156,7 @@ while_stmt: while_scope M while_expr COLON M suite   {
             // create_ins(0,"return",$$->return_param,"","");
             $$->lineno = $1->lineno;
 			backpatch($7->nextlist, $2->ins);
-			backpatch($6->nextlist, $2->ins);
+			backpatch($6->nextlist, $10->ins);
 			backpatch($3->truelist, $5->ins);
 			backpatch($3->falselist, $10->ins);
 			$$->nextlist = $11->nextlist; //verify //verified 
@@ -1106,6 +1182,7 @@ while_scope: WHILE {
 while_expr: test   { 
             $$=$1;
             $$->ins = $1->ins;
+            iterStack.push($$->addr);
             loopStack.push($$->ins);
             incheck=0;
             // cout<<"out of while_test"<<endl;
@@ -1126,12 +1203,14 @@ for_stmt: for_scope for_core COLON M suite    {
 
             // create_ins(1, $2->for_it, "+", $2->for_it, "1");
             // backpatch($5->nextlist, instCount); //suite nextlist will be patched to update statement of for loop
+            create_ins(1, $2->addr, "+", $2->addr, "1");
             create_ins(0, "goto", to_string($2->ins), "", "");
                 //commented one is old
                     //backpatch($5->nextlist, $2->ins); //suite nextlist will be patched to update statement of for loop
                     backpatch($5->nextlist, instCount+1); 
                 //end
             backpatch($2->falselist, instCount+1); //ye add karke do entry ho gayi
+            
             
             //backpatch($5->nextlist, instCount+1); 
 
@@ -1144,7 +1223,7 @@ for_stmt: for_scope for_core COLON M suite    {
             $$->stack_width = $2->stack_width + $5->stack_width;
             //m3 end
         }
-        | for_scope for_core COLON M suite N ELSE COLON M suite   { 
+        | for_scope for_core COLON M suite for_else_N ELSE COLON M suite   { 
             $$ = create_node(11, "for_else_stmt", $1, $2, $3, $4, $5, $6, $7, $8, $9, $10);
             $$->ins = $1->ins;
             $$->lineno = $1->lineno;
@@ -1153,10 +1232,10 @@ for_stmt: for_scope for_core COLON M suite    {
             create_ins(0, "goto", "", "", "");
             
             // create_ins(1, $2->for_it, "+", $2->for_it, "1");
-            // backpatch($6->nextlist, instCount); 
-            // backpatch($5->nextlist, instCount);
-            backpatch($6->nextlist, $2->ins); 
-            backpatch($5->nextlist, $2->ins);
+            backpatch($6->nextlist, instCount+1); 
+            backpatch($5->nextlist, instCount+1);
+            // backpatch($6->nextlist, $2->ins); 
+            // backpatch($5->nextlist, $2->ins);
             create_ins(0, "goto", to_string($2->ins), "", "");
 
             backpatch($2->truelist, $4->ins);
@@ -1180,13 +1259,15 @@ for_core: expr IN range_stmt   {
             $$ = create_node(3, "for_core", $1, $2, $3);
 
             $$->lineno = $1->lineno;
-            create_ins(0, $1->addr, "=", to_string(chartonum($3->for_start)-1), "");
+            create_ins(0, $1->addr, "=", to_string(chartonum($3->for_start)), "");
+            // create_ins(0, $1->addr, "=", to_string(chartonum($3->for_start)-1), "");
 
-            create_ins(1, $1->addr, "+", $1->addr, "1");
-            loopStack.push(instCount);
-            $$->ins = instCount;
+            // create_ins(1, $1->addr, "+", $1->addr, "1");
             string temp = newTemp();
             create_ins(1, temp, "<", $1->addr, $3->for_end);
+            iterStack.push($1->addr);
+            loopStack.push(instCount);
+            $$->ins = instCount;
             $$->truelist = makelist(instCount+1);
             $$->falselist = makelist(instCount+2);
             create_ins(0, "if", temp, "goto", "");
@@ -1196,6 +1277,8 @@ for_core: expr IN range_stmt   {
             $$->stack_width = 8 + $1->stack_width + $3->stack_width;
             offset_map[temp]=-stack_offset;
             stack_offset += 8;
+            
+            $$->addr = $1->addr;
             //m3 end
         }
         ;
@@ -1340,7 +1423,7 @@ not_test: NOT not_test   {
 
             // cout<< "in comp "<<$$->addr<<endl;
             // cout<<"isatom = "<<isatom<<" "<<incheck<<" "<<yytext<<endl;
-            if(isatom && incheck){
+            if(isatom && incheck && !isinsquare){
                 $$->truelist = makelist(instCount+1);
                 $$->falselist = makelist(instCount+2);
                 create_ins(0, "if", $$->addr, "goto", "");
@@ -1984,15 +2067,15 @@ atom_expr: atom {
             //m3 end
 
         }
-        | atom_expr SQUARE_OPEN test SQUARE_CLOSE{   //array access
-            $$ = create_node(5, "atom_expr", $1, $2, $3, $4);
+        | atom_expr SQUARE_OPEN S test SQUARE_CLOSE{   //array access
+            $$ = create_node(6, "atom_expr", $1, $2, $3, $4, $5);
             $$->lineno = $1->lineno;
             $$->ins = $1->ins;
             //$$->atom_type= $1->atom_type; //check this
             string temp = str_to_ch(newTemp());
             $$->addr = str_to_ch(temp);
             //cout<<"in atom_expr "<<temp<<endl;
-            create_ins(1, $$->addr, "*", $3->addr, to_string(get_width(lookup(current_ste, $1->addr)->type)));
+            create_ins(1, $$->addr, "*", $4->addr, to_string(get_width(lookup(current_ste, $1->addr)->type)));
             $$->addr = str_to_ch(chartostring($1->addr) + "["+chartostring($$->addr)+"]");
 
             //typechecking handle and $$->atom_type also
@@ -2009,7 +2092,7 @@ atom_expr: atom {
                 array_type.push_back(lookup_ste->type[i]);
                 i++;
             }
-            if($3->atom_type != "int"){
+            if($4->atom_type != "int"){
                 cerr<<"Error: Array index is not an integer at line "<<$1->lineno<<"\n";
                 exit(1);
             }
@@ -2018,9 +2101,10 @@ atom_expr: atom {
              //check this suppose a[2] hai to hum a ka type dekhenge
 
              //m3 start
-            $$->stack_width = 8 + $1->stack_width + $3->stack_width;
+            $$->stack_width = 8 + $1->stack_width + $4->stack_width;
             offset_map[temp]=-stack_offset;
             stack_offset += 8;
+            isinsquare=0;
              //m3 end
 
         }
@@ -2122,14 +2206,12 @@ atom_expr: atom {
             //     ste* lookup_ste = lookup(current_ste, $3->addr);
             //     list_size = lookup_ste->list_size;
             // }
-            // else{
+            // else{    
             //     list_size = $3->list_size;
             // }
-
-            create_ins(0, "PushParam", $3->addr, "", "");
-            create_ins(0, "call", "len", "", "");
+            create_ins(0, "call", "len", $3->addr, "");
             string temp = newTemp();
-            create_ins(0, temp, "=", "PopParam", "");
+            create_ins(0, "PopParamra", temp, "","");
             $$->addr = str_to_ch(temp);
         }
         | PRINT OPEN_BRACKET test CLOSE_BRACKET { 
@@ -2138,9 +2220,9 @@ atom_expr: atom {
             $$->ins = $1->ins;
             //$$->addr = str_to_ch("print("+chartostring($3->addr)+")");
             $$->atom_type = "None";
-            create_ins(0, "PushParam", $3->addr, "", "");
-            create_ins(0, "call", "print", "", "");
-            create_ins(0, "PopParamAll", "1", "", "");
+            // create_ins(0, "PushParam", $3->addr, "", "");
+            create_ins(0, "call", "print", $3->addr, "");
+            // create_ins(0, "PopParamAll", "1", "", "");
 
             //m3 start
             $$->stack_width = $3->stack_width;
@@ -2206,7 +2288,7 @@ atom:
             type.push_back($3->atom_type[i]);
             i++;
         }
-        create_ins(0,"Stackpointer +", to_string(get_width(type)) + "*" + to_string($3->list_size), "", "");
+        create_ins(0,"Heapalloc", to_string($3->list_size), "", "");
         funcOffset += get_width(type) * $3->list_size;
     }
     | SQUARE_OPEN S SQUARE_CLOSE  {
@@ -2283,6 +2365,12 @@ STRING_PLUS: STRING     {
 			$$->ins = instCount+1;
             $$->type=str_to_ch("str");
             $$->atom_type="str";
+
+            //m3 start
+            //cout<<$1->addr<<endl;
+            $$->str_len = chartostring($1->addr).size()-2;
+            //cout<<$$->str_len<<endl;
+            //m3 end
         }
         | STRING STRING_PLUS    { 
             $$ = create_node(3, "STRING_PLUS", $1, $2);
@@ -2290,6 +2378,10 @@ STRING_PLUS: STRING     {
             $$->ins = $2->ins;
             $$->atom_type="str";
             $$->type=str_to_ch("str");
+
+            //m3 start
+            $$->str_len = $1->str_len + $2->str_len;
+            //m3 end
 
         }
         ;
@@ -2488,6 +2580,13 @@ classdef: CLASS class_declare COLON class_body_suite{
                     current_ste = current_ste->next;
                 }
             }
+
+            //m3start
+            ste* class_ste = class_map[chartostring($2->addr)];
+            class_ste->class_width = class_offset;
+            class_offset = 0;
+            curr_class="";
+            //m3 end
         }
         ;  
 
@@ -2509,6 +2608,10 @@ class_declare:  NAME {
                 exit(1);
             }
             //STE code end 
+
+            //m3 start
+            curr_class = chartostring($1->addr);
+            //mm3 end
         }
         | NAME OPEN_BRACKET CLOSE_BRACKET{
             $$=$1;
@@ -2528,6 +2631,10 @@ class_declare:  NAME {
                 exit(1);
             }
             //STE code end 
+
+            //m3 start
+            curr_class = chartostring($1->addr);
+            //mm3 end
         }    
         | NAME OPEN_BRACKET argument CLOSE_BRACKET{
             $$ = create_node(5, "class_declare", $1, $2, $3, $4);
@@ -2563,6 +2670,16 @@ class_declare:  NAME {
                 cerr<<"Error: Class "<<$1->addr<<" already declared at line "<<class_map[chartostring($1->addr)]->lineno<<"\n";
                 exit(1);
             }
+
+            //m3 start
+            class_parent[chartostring($1->addr)]=chartostring($3->addr);
+            ste* child_ste = class_map[chartostring($1->addr)];
+            ste* parent_ste = class_map[chartostring($3->addr)];
+            child_ste->class_offset_map = parent_ste->class_offset_map;
+            class_offset = parent_ste->class_width;
+            curr_class = chartostring($1->addr);
+            //m3 end
+
         }      
         ;
 //new end
@@ -3080,7 +3197,7 @@ int main(int argc, char* argv[]){
 
     instCount=0;
     tempCount=0;
-    yydebug=1;
+    /* yydebug=1; */
     current_ste = setup_global_sym_table(current_ste);
     /* cout<<"Parsing Started\n"; */
     yyparse();

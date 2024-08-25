@@ -21,6 +21,9 @@ typedef struct symbol_table_entry{
     int stack_width=0;
     map<string, int> offset_map ;
 
+    int class_width=0;
+    map<string,int> class_offset_map;
+
 } ste ;
 
 // typedef struct symbol_table_map_entry {

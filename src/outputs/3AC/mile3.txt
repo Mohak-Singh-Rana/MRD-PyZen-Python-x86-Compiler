@@ -1,34 +1,42 @@
-1	add: 
+1	foo: 
 2	BeginFunc 
 3		PushParam RBP 
 4		ra = PopParam 
-5		x = PopParam 
-6		y = PopParam 
-7		t0 = x + y
-8		return t0 
-9		Stackpointer -0 
-10		goto ra 
-11	EndFunc 
-12	main: 
-13	BeginFunc 
-14		PushParam RBP 
-15		ra = PopParam 
-16		PushParamra 21 
-17		PushParam 2 
-18		PushParam 1 
-19		call add 
-20		PopParamAll 2 
-21		PopParamra t1 
-22		Stackpointer +4 
-23		y = t1 
-24		PushParam y 
-25		call print 
-26		PopParamAll 1 
-27		Stackpointer -4 
-28		goto ra 
-29	EndFunc 
-30	PushParamra 33 
-31	call main 
-32	PopParamAll 0 
-33	PopParamra t2 
-34	EOF 
+5		a = PopParam 
+6		t0 = a + 1
+7		return t0 
+8		Stackpointer -0 
+9		goto ra 
+10	EndFunc 
+11	main: 
+12	BeginFunc 
+13		PushParam RBP 
+14		ra = PopParam 
+15		Heapalloc 5 
+16		data = [1,2,3,4,5] 
+17		call len data 
+18		PopParamra t1 
+19		call print t1 
+20		Heapalloc 5 
+21		Stackpointer +0 
+22		x:str = "hello" 
+23		call print x 
+24		Stackpointer +4 
+25		a = 5 
+26		PushParamra 30 
+27		PushParam a 
+28		call foo 
+29		PopParamAll 1 
+30		PopParamra t2 
+31		Stackpointer +4 
+32		z = t2 
+33		call print z 
+34		Stackpointer -36 
+35		goto ra 
+36		return 
+37	EndFunc 
+38	PushParamra 41 
+39	call main 
+40	PopParamAll 0 
+41	PopParamra t3 
+42	EOF 

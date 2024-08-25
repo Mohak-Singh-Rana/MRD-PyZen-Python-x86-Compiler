@@ -36,6 +36,8 @@ typedef struct node
 
     int stack_width = 0;
     map <string,int> offset_map;
+
+    int str_len=0;
 } NODE;
 
 NODE *create_node(int n_args, ...);
