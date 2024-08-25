@@ -1,4 +1,4 @@
-#include "data.h"
+#include "../include/data.h"
 #include "symbol_table.cpp"
 
 extern ste* global_sym_table;
@@ -21,6 +21,28 @@ ste* obj_class_ste;
 
 string obj_in_constructor;
 
+void stack_pos2_obj(ste* my_ste, string c){
+    if(my_ste->class_offset_map.find(c)!=my_ste->class_offset_map.end()){
+        x86_code.push_back({"\tmovq", to_string(my_ste->class_offset_map[c])+"(%r15)",",","%r12"});
+    }
+    else if(c.find('[')!=string::npos){
+        size_t pos = c.find('[');
+        // Extract the array name and the index
+        string arrayName = c.substr(0, pos);
+        string index = c.substr(pos + 1, c.size() - pos - 2);
+
+        x86_code.push_back({"\tmovq", to_string(curr_func_ste->offset_map[index])+"(%rbp)", ",", "%r12"});
+        x86_code.push_back({"\taddq", "$8", ",", "%r12"});
+        x86_code.push_back({"\tmovq", "%r12", ",", "%r9"}); 
+        stack_pos2_obj(my_ste,arrayName);
+        x86_code.push_back({"\taddq", "%r9", ",", "%r12"});
+        x86_code.push_back({"\tmovq", "0(%r12)", ",", "%r12"});
+    }
+    else{
+        x86_code.push_back({"\tmovq", "$"+c, ",", "%r12"});
+    }
+}
+
 
 void stack_pos2(string c){  //r12
     if(curr_func_ste->offset_map.find(c)!= curr_func_ste->offset_map.end()){
@@ -33,27 +55,28 @@ void stack_pos2(string c){  //r12
     else if(c=="False"){
         x86_code.push_back({"\tmovq", "$0", ",", "%r12"});
     }
-    else if(c.find('\"') != string::npos){
+    else if(c==""){
+        x86_code.push_back({"\tmovq", "$0", ",", "%r12"});
+    }
+    else if(c.find('\"') != string::npos || c.find('\'') != string::npos){
         string s = c.substr(1, c.size() - 2);  //removed the quotes
         str_cnt++;
         str_temp=1;
         str_name = s; 
-        x86_code.push_back({"\tmovq", "$string"+to_string(str_cnt), ",", "%r12"});      
-    }
-    else if(c==""){
-        x86_code.push_back({"\tmovq", "$0", ",", "%r12"});
+        //x86_code.push_back({"\tmovq", "$string"+to_string(str_cnt), ",", "%r12"});     
+        x86_code.push_back({"\tlea", "string"+to_string(str_cnt)+"(%rip)", ",", "%r12"});  
     }
     else if(c.find('.')!=string::npos){ 
         size_t pos = c.find('.');
         string obj_name = c.substr(0, pos);
         string attribute = c.substr(pos + 1);
         if(obj_name=="self"){
-            x86_code.push_back({"\tmovq", to_string(obj_class_ste->class_offset_map[attribute])+"(%r15)", ",", "%r12"});
+            stack_pos2_obj(obj_class_ste, attribute);
         }
         else{
             ste* class_ste = class_map[obj_class[obj_name]];
             x86_code.push_back({"\tmovq", to_string(curr_func_ste->offset_map[obj_name])+"(%rbp)", ",", "%r15"});
-            x86_code.push_back({"\tmovq", to_string(class_ste->class_offset_map[attribute])+"(%r15)", ",", "%r12"});
+            stack_pos2_obj(class_ste, attribute);
         }      
     }
     else if(c.find('[')!=string::npos){ //array[3]
@@ -75,6 +98,30 @@ void stack_pos2(string c){  //r12
     }
 }
 
+
+void stack_pos1_obj(ste* my_ste, string b){
+    if(my_ste->class_offset_map.find(b)!=my_ste->class_offset_map.end()){
+        x86_code.push_back({"\tmovq", to_string(my_ste->class_offset_map[b])+"(%r15)",",","%r11"});
+    }
+    else if(b.find('[')!=string::npos){
+        size_t pos = b.find('[');
+        // Extract the array name and the index
+        string arrayName = b.substr(0, pos);
+        string index = b.substr(pos + 1, b.size() - pos - 2);
+
+        x86_code.push_back({"\tmovq", to_string(curr_func_ste->offset_map[index])+"(%rbp)", ",", "%r11"});
+        x86_code.push_back({"\taddq", "$8", ",", "%r11"});
+        x86_code.push_back({"\tmovq", "%r11", ",", "%r9"}); 
+        stack_pos1_obj(my_ste,arrayName);
+        x86_code.push_back({"\taddq", "%r9", ",", "%r11"});
+        x86_code.push_back({"\tmovq", "0(%r11)", ",", "%r11"});
+    }
+    else{
+        x86_code.push_back({"\tmovq", "$"+b, ",", "%r11"});
+    }
+}
+
+
 void stack_pos1(string b){  //r11
     if(curr_func_ste->offset_map.find(b)!= curr_func_ste->offset_map.end()){
         curr_func_ste->offset_map[b];
@@ -94,17 +141,15 @@ void stack_pos1(string b){  //r11
         string obj_name = b.substr(0, pos);
         string attribute = b.substr(pos + 1);
         if(obj_name=="self"){
-            // x86_code.push_back({"\tmovq", "0(%r15)", ",", "%r12"});
-            // cerr<<obj_class_ste->class_offset_map[attribute]<<endl;
-            x86_code.push_back({"\tmovq", to_string(obj_class_ste->class_offset_map[attribute])+"(%r15)", ",", "%r11"});
+            stack_pos1_obj(obj_class_ste, attribute);
         }
         else{
             ste* class_ste = class_map[obj_class[obj_name]];
             x86_code.push_back({"\tmovq", to_string(curr_func_ste->offset_map[obj_name])+"(%rbp)", ",", "%r15"});
-            x86_code.push_back({"\tmovq", to_string(class_ste->class_offset_map[attribute])+"(%r15)", ",", "%r11"});
+            stack_pos1_obj(class_ste, attribute);
         }      
     }
-    else if(b.find('\"') != string::npos){
+    else if(b.find('\"') != string::npos || b.find('\'') != string::npos){
         string s = b.substr(1, b.size() - 2);  //removed the quotes
         str_cnt++;
         str_temp=1;
@@ -132,10 +177,32 @@ void stack_pos1(string b){  //r11
     }
 }
 
+
+void stack_pos_lhs_obj(ste* my_ste, string b){
+    if(my_ste->class_offset_map.find(b)!=my_ste->class_offset_map.end()){ 
+        // cerr<<"mac"<<endl; 
+        x86_code.push_back({"\tmovq", "%r15", ",", "%r13"});
+        x86_code.push_back({"\taddq", "$"+to_string(my_ste->class_offset_map[b]), ",", "%r13"});
+    }
+    else if(b.find('[')!=string::npos){
+        // cerr<<"yes"<<endl;
+        size_t pos = b.find('[');
+        // Extract the array name and the index
+        string arrayName = b.substr(0, pos);
+        string index = b.substr(pos + 1, b.size() - pos - 2);
+
+        x86_code.push_back({"\tmovq", to_string(curr_func_ste->offset_map[index])+"(%rbp)", ",", "%r11"});
+        x86_code.push_back({"\taddq", "$8", ",", "%r11"});
+        x86_code.push_back({"\tmovq", "%r11", ",", "%r14"});
+        stack_pos1_obj(my_ste,arrayName);
+        x86_code.push_back({"\taddq", "%r14", ",", "%r11"});
+        x86_code.push_back({"\tmovq", "%r11", ",", "%r13"});        
+    }
+}
+
+
 void stack_pos_lhs(string b){   //r13
     if(curr_func_ste->offset_map.find(b)!= curr_func_ste->offset_map.end()){
-        //cerr<<"gadbad "<<b<<endl;
-        //cerr<<curr_func_ste->offset_map[b]<<" "<<b<<endl;
         x86_code.push_back({"\tmovq", "%rbp", ",", "%r13"}); 
         if(curr_func_ste->offset_map[b]>0){
             x86_code.push_back({"\taddq", "$"+to_string(curr_func_ste->offset_map[b]), ",","%r13"});
@@ -149,16 +216,13 @@ void stack_pos_lhs(string b){   //r13
         string obj_name = b.substr(0, pos);
         string attribute = b.substr(pos + 1);
         if(obj_name=="self"){
-            // cerr<<obj_class_ste->lexeme<<endl;
-            x86_code.push_back({"\tmovq", "%r15", ",", "%r13"});
-            x86_code.push_back({"\taddq", "$"+to_string(obj_class_ste->class_offset_map[attribute]), ",", "%r13"});
-            // cerr<<"exited"<<endl;
+            stack_pos_lhs_obj(obj_class_ste,attribute);
         }
         else{
+            // cerr<<"here "<<obj_name<<" "<<attribute<<endl;
             ste* class_ste = class_map[obj_class[obj_name]];
             x86_code.push_back({"\tmovq", to_string(curr_func_ste->offset_map[obj_name])+"(%rbp)", ",", "%r15"});
-            x86_code.push_back({"\tmovq", "%r15", ",", "%r13"});
-            x86_code.push_back({"\taddq", "$"+to_string(class_ste->class_offset_map[attribute]), ",", "%r13"});
+            stack_pos_lhs_obj(class_ste,attribute);
         }
     }
     else if(b.find('[')!=string::npos){
@@ -175,8 +239,8 @@ void stack_pos_lhs(string b){   //r13
         x86_code.push_back({"\taddq", "%r14", ",", "%r11"});
         x86_code.push_back({"\tmovq", "%r11", ",", "%r13"});
     }
-    
 }
+
 
 void create_x86(){    
 
@@ -193,17 +257,105 @@ void create_x86(){
             x86_code.push_back({".section", ".text"});
             str_temp=0;
             str_name="";
-        } 
-        x86_code.push_back({"L"+to_string(i+1)+":"+"\n\t"});
+        }
+        x86_code.push_back({"L"+to_string(i+1)+":\n\t"});
         if(instructions[i][0]=="1"){   //type 1 instruction     // a = b op c
             string a = instructions[i][1];
             string op = instructions[i][2];
             string b = instructions[i][3];
             string c = instructions[i][4];
 
+            string s1,s2;
+
+            if((instructions[i][3].find('\"') != string::npos || instructions[i][3].find('\'') != string::npos) && (instructions[i][4].find('\"') != string::npos || instructions[i][4].find('\'') != string::npos) ){
+                s1 = instructions[i][3].substr(1, instructions[i][3].size() - 2);  //removed the quotes
+                s2 = instructions[i][4].substr(1, instructions[i][4].size() - 2);  //removed the quotes
+            }
+            else if((instructions[i][3].find('\"') != string::npos || instructions[i][3].find('\'') != string::npos )&& str_map.find(instructions[i][4]) != str_map.end()){
+                s1 = instructions[i][3].substr(1, instructions[i][3].size() - 2);  //removed the quotes
+                s2 = str_map[instructions[i][4]];
+            }
+            else if((instructions[i][4].find('\"') != string::npos || instructions[i][4].find('\'') != string::npos) && str_map.find(instructions[i][3]) != str_map.end()){
+                s2 = instructions[i][4].substr(1, instructions[i][4].size() - 2);  //removed the quotes
+                s1 = str_map[instructions[i][3]];
+            }
+            else if(str_map.find(instructions[i][3]) != str_map.end() && str_map.find(instructions[i][4]) != str_map.end()){
+                s1 = str_map[instructions[i][3]];
+                s2 = str_map[instructions[i][4]];
+            }
+
+            if(!s1.empty() && !s2.empty()){
+                stack_pos_lhs(a);
+                if(op == "=="){
+                    if(s1 == s2){
+                        x86_code.push_back({"\tmovq", "$1", ",", "%r11"});
+                    }
+                    else{
+                        x86_code.push_back({"\tmovq", "$0", ",", "%r11"});
+                    }
+                    x86_code.push_back({"\tmovq", "%r11", ",", "0(%r13)"});
+                }
+                else if(op == "!="){
+                    if(s1 != s2){
+                        x86_code.push_back({"\tmovq", "$1", ",", "%r11"});
+                    }
+                    else{
+                        x86_code.push_back({"\tmovq", "$0", ",", "%r11"});
+                    }
+                    x86_code.push_back({"\tmovq", "%r11", ",", "0(%r13)"});
+                }
+                else if(op == "<"){
+                    if(s1 < s2){
+                        x86_code.push_back({"\tmovq", "$1", ",", "%r11"});
+                    }
+                    else{
+                        x86_code.push_back({"\tmovq", "$0", ",", "%r11"});
+                    }
+                    x86_code.push_back({"\tmovq", "%r11", ",", "0(%r13)"});
+                }
+                else if(op == ">"){
+                    if(s1 > s2){
+                        x86_code.push_back({"\tmovq", "$1", ",", "%r11"});
+                    }
+                    else{
+                        x86_code.push_back({"\tmovq", "$0", ",", "%r11"});
+                    }
+                    x86_code.push_back({"\tmovq", "%r11", ",", "0(%r13)"});
+                }
+                else if(op == "<="){
+                    if(s1 <= s2){
+                        x86_code.push_back({"\tmovq", "$1", ",", "%r11"});
+                    }
+                    else{
+                        x86_code.push_back({"\tmovq", "$0", ",", "%r11"});
+                    }
+                    x86_code.push_back({"\tmovq", "%r11", ",", "0(%r13)"});
+                }
+                else if(op == ">="){
+                    if(s1 >= s2){
+                        x86_code.push_back({"\tmovq", "$1", ",", "%r11"});
+                    }
+                    else{
+                        x86_code.push_back({"\tmovq", "$0", ",", "%r11"});
+                    }
+                    x86_code.push_back({"\tmovq", "%r11", ",", "0(%r13)"});
+                }
+                else if(op == "+"){
+                    string s = s1+s2;  //removed the quotes
+                    str_cnt++;
+                    str_id[s] = str_cnt;
+                    str_name = s;
+                    str_temp=1;
+                    x86_code.push_back({"\tlea", "string"+to_string(str_cnt)+"(%rip)", ",", "%r11"}); 
+                    x86_code.push_back({"\tmovq", "%r11", ",", "0(%r13)"});
+                }
+            }
+
+            else{
+
+            stack_pos_lhs(a);
             stack_pos1(b);
             stack_pos2(c);
-            stack_pos_lhs(a);
 
             if(op == "+"){
                 x86_code.push_back({"\taddq", "%r12", ",", "%r11"});
@@ -331,6 +483,7 @@ void create_x86(){
                 x86_code.push_back({"\tmovq", "%r11", ",", "0(%r13)"});
             }
         }
+        }
         else{   //type 0 instruction
 
             // to get if instruction is a start of function
@@ -433,6 +586,18 @@ void create_x86(){
                     x86_code.push_back({"\tcall puts"});
 
                 }
+                else if(instructions[i][3].find('\"') != string::npos || instructions[i][3].find('\'') != string::npos){
+                    string s = instructions[i][3].substr(1, instructions[i][3].size() - 2);  //removed the quotes
+                    str_cnt++;
+                    str_id[s] = str_cnt;
+                    str_name = s;
+                    str_temp=1;
+                    x86_code.push_back({"\tmov", "$1", ",", "%rax"});
+                    x86_code.push_back({"\tmov", "$1",",","%rdi"});
+                    x86_code.push_back({"\tlea", "string"+to_string(str_cnt)+"(%rip)",",","%rsi"});
+                    x86_code.push_back({"\tmov", "$"+to_string(s.size()),",","%rdx"});
+                    x86_code.push_back({"\tsyscall"});
+                }
                 else{
                     stack_pos2(instructions[i][3]);
 
@@ -443,38 +608,51 @@ void create_x86(){
 
             else if(instructions[i][2]=="print"){
                 //cerr<<instructions[i][3]<<" "<<str_temp<<endl;
-                if(str_map.find(instructions[i][3]) != str_map.end()){
-                    string s = instructions[i][3];  //removed the quotes
-                    // x86_code.push_back({"\tmov", "$1", ",", "%rax"});
-                    // x86_code.push_back({"\tmov", "$1",",","%rdi"});
-                    // x86_code.push_back({"\tlea", "string"+to_string(str_id[s])+"(%rip)",",","%rsi"});
-                    // x86_code.push_back({"\tmov", "$"+to_string(str_map[s].size()+1),",","%rdx"});
-                    // x86_code.push_back({"\tsyscall"});
 
-                    x86_code.push_back({"\tlea", "string"+to_string(str_id[s])+"(%rip)",",","%rdi"});
-                    x86_code.push_back({"\tcall puts"});
+                if(str_temp==0){
+                stack_pos2(instructions[i][3]);
+
+                x86_code.push_back({"\tmovq", "%r12", ",", "%rsi"});
+                x86_code.push_back({"\tlea", ".note0(%rip)",",", "%rax"});
+                x86_code.push_back({"\tmovq", "%rax", ",", "%rdi"});
+                x86_code.push_back({"\txor", "%rax", ",", "%rax"});
+                x86_code.push_back({"\tcall", "printf@plt"}); 
 
                 }
-                else{
-                    stack_pos2(instructions[i][3]);
-                    if(str_temp==0){
-                        x86_code.push_back({"\tmovq", "%r12", ",", "%rsi"});
-                        x86_code.push_back({"\tlea", ".note0(%rip)",",", "%rax"});
-                        x86_code.push_back({"\tmovq", "%rax", ",", "%rdi"});
-                        x86_code.push_back({"\txor", "%rax", ",", "%rax"});
-                        x86_code.push_back({"\tcall", "printf@plt"}); 
-                    }
-                    else if(str_temp==1){
-                        string s = instructions[i][3].substr(1, instructions[i][3].size() - 2);  //removed the quotes
-                        str_name = s;
 
-                        x86_code.push_back({"\tmov", "$1", ",", "%rax"});
-                        x86_code.push_back({"\tmov", "$1",",","%rdi"});
-                        x86_code.push_back({"\tlea", "string"+to_string(str_cnt)+"(%rip)",",","%rsi"});
-                        x86_code.push_back({"\tmov", "$"+to_string(s.size()+1),",","%rdx"});
-                        x86_code.push_back({"\tsyscall"});
-                    }
-                }
+
+                // if(str_map.find(instructions[i][3]) != str_map.end()){
+                //     string s = instructions[i][3];  //removed the quotes
+                //     // x86_code.push_back({"\tmov", "$1", ",", "%rax"});
+                //     // x86_code.push_back({"\tmov", "$1",",","%rdi"});
+                //     // x86_code.push_back({"\tlea", "string"+to_string(str_id[s])+"(%rip)",",","%rsi"});
+                //     // x86_code.push_back({"\tmov", "$"+to_string(str_map[s].size()+1),",","%rdx"});
+                //     // x86_code.push_back({"\tsyscall"});
+
+                //     x86_code.push_back({"\tlea", "string"+to_string(str_id[s])+"(%rip)",",","%rdi"});
+                //     x86_code.push_back({"\tcall puts"});
+
+                // }
+                // else{
+                //     stack_pos2(instructions[i][3]);
+                //     if(str_temp==0){
+                //         x86_code.push_back({"\tmovq", "%r12", ",", "%rsi"});
+                //         x86_code.push_back({"\tlea", ".note0(%rip)",",", "%rax"});
+                //         x86_code.push_back({"\tmovq", "%rax", ",", "%rdi"});
+                //         x86_code.push_back({"\txor", "%rax", ",", "%rax"});
+                //         x86_code.push_back({"\tcall", "printf@plt"}); 
+                //     }
+                //     else if(str_temp==1){
+                //         string s = instructions[i][3].substr(1, instructions[i][3].size() - 2);  //removed the quotes
+                //         str_name = s;
+
+                //         x86_code.push_back({"\tmov", "$1", ",", "%rax"});
+                //         x86_code.push_back({"\tmov", "$1",",","%rdi"});
+                //         x86_code.push_back({"\tlea", "string"+to_string(str_cnt)+"(%rip)",",","%rsi"});
+                //         x86_code.push_back({"\tmov", "$"+to_string(s.size()),",","%rdx"});
+                //         x86_code.push_back({"\tsyscall"});
+                //     }
+                // }
             }
 
             else if(instructions[i][1]=="create_obj"){
@@ -563,6 +741,11 @@ void create_x86(){
                             x86_code.push_back({"\tcall",instructions[i][3]+".__init__"});
                         }
                     }
+                    else if(instructions[i][2]=="class_func"){
+                        
+                        x86_code.push_back({"\tcall",instructions[i][3]+".__init__"});
+                        
+                    }
                     else if(instructions[i][2]=="function"){
                         x86_code.push_back({"\tcall", instructions[i][3]});
                     }
@@ -603,8 +786,10 @@ void create_x86(){
 
             else if(instructions[i][3].size()!=0 && instructions[i][3][0]=='['){
                 // cerr<<"here"<<endl;
-                // there may be case like instructions[i][1] = self.array so handle that
-                x86_code.push_back({"\tmovq", "%rax", ",", to_string(curr_func_ste->offset_map[instructions[i][1]])+"(%rbp)"});
+                // there may be case like instructions[i][1] = self.array so handle that    //done
+
+                stack_pos_lhs(instructions[i][1]);
+                x86_code.push_back({"\tmovq", "%rax", ",", "0(%r13)"});
 
                 int array_index_bytes=0;
                 string s = instructions[i][3];
@@ -635,8 +820,7 @@ void create_x86(){
                 }
             }
 
-            else if(instructions[i][3].size()!=0 && instructions[i][3][0]=='\"'){
-
+            else if(instructions[i][3].size()!=0 && (instructions[i][3][0]=='\"' || instructions[i][3][0]=='\'')){
 
                 //x86_code.push_back({"\tmovq", "%rax", ",", to_string(curr_func_ste->offset_map[instructions[i][1]])+"(%rbp)"});
                 string s = instructions[i][3].substr(1, instructions[i][3].size() - 2);  //removed the quotes
@@ -692,6 +876,8 @@ void create_x86(){
                 //handle swapped = false type
                 // cerr<<instructions[i][3]<<endl;
                 if(str_map.find(instructions[i][3]) != str_map.end()){
+                    //cerr<<"here "<<(i+1)<<" "<<str_map[instructions[i][3]]<<endl;
+                    // cerr<<i+1<<endl;
                     //cerr<<"hello"<<endl;
                     str_map[instructions[i][1]] = str_map[instructions[i][3]];
                     str_cnt++;
@@ -717,12 +903,6 @@ void create_x86(){
    
     x86_code.push_back({"format:\n\t.ascii", "\"%ld\\n\""});
 
-    // Print the x86_code
-    for(const auto& line : x86_code){
-        for(const auto& part : line){
-            cout << part << " ";
-        }
-        cout << endl;
-    }
+    
 
 }

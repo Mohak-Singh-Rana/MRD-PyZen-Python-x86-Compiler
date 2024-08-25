@@ -1,49 +1,49 @@
-class C:
-    def __init__(self, c:int):
-        self.a: int = c
+def merge(nums : list[int] , start : int, mid : int, end : int, temp : list[int]) -> None:
+    k : int = start
+    i : int
+    for i in range(start, end + 1):
+        temp[i] = nums[i]
 
-    def printc(self):
-        print(self.a)
+    left_index : int = start
+    right_index : int = mid + 1
+    current : int = start
 
-class A:
-    def __init__(self, a:int, b:bool):
-        self.a : int = a
-        self.li: list[bool] = [True, b, b, False, False] 
-        self.b: bool = b
-    
-    def printa(self, d:int) -> int:
-        print(self.a)
-        return self.a
+    # Merge the temp arrays back into nums
+    while left_index <= mid and right_index <= end:
+        if temp[left_index] <= temp[right_index]:
+            nums[current] = temp[left_index]
+            left_index += 1
+        else:
+            nums[current] = temp[right_index]
+            right_index += 1
+        current += 1
 
-class B(A):
-    def __init__(self, a:int, b:bool, c:int ):
-        self.c:int = c
-        self.a = self.printa(4)
-        self.b = b
-        self.obj:C = C(c)
+    while left_index <= mid:
+        nums[current] = temp[left_index]
+        left_index += 1
+        current += 1
 
-class D(B):
-    def __init__(self, a:int, b:bool, c:int ):
-        self.c = c
-        self.a = self.printa(4)
-        self.b = b
-        self.obj= C(c)
-        self.d:A = A(4, True)
+def merge_sort(nums : list[int], start : int, end : int, temp : list[int]):
+    if start < end:
+        mid : int = (start + end)/2
+        merge_sort(nums, start, mid, temp)
+        merge_sort(nums, mid + 1, end, temp)
+        merge(nums, start, mid, end, temp)
 
-def foo() -> int:
-    return 1
+def print_list(arr : list[int], leng : int)-> None:
+    i : int 
+    for i in range(leng):
+        print(arr[i])
 
 def main():
-  a:B = B(0, False, 0)
-  b:B = B(4,True,1)  
-  c:B = B(1, False, 1)
-  d:B = B(2, False, 2)
-  e:D = D(3, True, 3)
-  
-  b.printa(4)
-
-  obj: A = A(1, True)
-
+    nums : list[int]= [38, 27, 43, 3, 9, 82, 10]
+    leng : int = len(nums)
+    print("Original list:\n")
+    print_list(nums,leng)
+    temp : list[int] = [0,0,0,0,0,0,0]
+    merge_sort(nums, 0, leng - 1, temp)
+    print("Sorted list:\n")
+    print_list(nums,leng)
 
 if __name__ == "__main__":
-  main()
+    main()

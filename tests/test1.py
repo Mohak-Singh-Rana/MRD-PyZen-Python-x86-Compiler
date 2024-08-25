@@ -1,9 +1,11 @@
 class testing():
+
   def loop_func1(n:int)->int:
     i:int
     j:int
+
     for i in range(3,8):
-      a : float = n
+      a : int = n
       for j in range(10):
         b : int = 5
         if(j==5):
@@ -18,10 +20,10 @@ class testing():
     k:int
     l:int
     for k in range(3,8):
-      c : float = n
+      c : int = n
       for l in range(10):
         d : int = 5
-        if(j==5):
+        if(l==5):
           d += 1
           continue
       c = c + 2
@@ -32,8 +34,8 @@ class testing():
 
 def main():
   obj : testing = testing()
-  obj.loop_func1(5)
-  obj.loop_func2(5)
+  print(obj.loop_func1(5))
+  print(obj.loop_func2(5))
 
 if __name__ == "__main__":
   main()

@@ -127,6 +127,7 @@ N: %empty{
 for_else_N: %empty{
         $$ = create_node(1, "Marker Non-terminal for_else_N");
         create_ins(1, iterStack.top(), "+", iterStack.top(), "1");
+        // $$->ins=instCount;
         $$->nextlist = makelist(instCount+1);
         create_ins(0, "goto", "", "", "");
 }
@@ -556,11 +557,13 @@ expr_stmt: test ASSIGN_OPERATOR test {
                 }
                 string temp = newTemp();
                 if(ret_type != $3->atom_type){
-                    create_ins(1, temp, oper,chartostring($1->addr) ,"("+ret_type+")"+chartostring($3->addr));
+                    create_ins(1, temp, oper,chartostring($1->addr) ,chartostring($3->addr));
+                    // create_ins(1, temp, oper,chartostring($1->addr) ,"("+ret_type+")"+chartostring($3->addr));
                     create_ins(0, $1->addr, "=", temp, "");
                 }
                 else if(ret_type != $1->atom_type){
-                    create_ins(1, temp, oper, "("+ret_type+")"+chartostring($1->addr),chartostring($3->addr));
+                    create_ins(1, temp, oper, chartostring($1->addr),chartostring($3->addr));
+                    // create_ins(1, temp, oper, "("+ret_type+")"+chartostring($1->addr),chartostring($3->addr));
                     create_ins(0, $1->addr, "=", temp, "");
                 }
                 else{
@@ -614,11 +617,13 @@ expr_stmt: test ASSIGN_OPERATOR test {
                 }
                 string temp = newTemp();
                 if(ret_type != $5->atom_type){
-                    create_ins(1, temp, oper, chartostring($1->addr),"("+ret_type+")"+chartostring($5->addr));
+                    create_ins(1, temp, oper, chartostring($1->addr),chartostring($5->addr));
+                    // create_ins(1, temp, oper, chartostring($1->addr),"("+ret_type+")"+chartostring($5->addr));
                     create_ins(0, $1->addr, "=", temp, "");
                 }
                 else if(ret_type != $1->atom_type){
-                    create_ins(1, temp, oper, "("+ret_type+")"+chartostring($1->addr),chartostring($5->addr));
+                    create_ins(1, temp, oper, chartostring($1->addr),chartostring($5->addr));
+                    // create_ins(1, temp, oper, "("+ret_type+")"+chartostring($1->addr),chartostring($5->addr));
                     create_ins(0, $1->addr, "=", temp, "");
                 }
                 else{
@@ -703,7 +708,8 @@ expr_stmt: test ASSIGN_OPERATOR test {
                     exit(1);
                 }
                 if(ret_type != $3->atom_type){
-                    create_ins(0, $1->addr, "=", "("+ret_type+")"+chartostring($3->addr),"");
+                    create_ins(0, $1->addr, "=", chartostring($3->addr),"");
+                    // create_ins(0, $1->addr, "=", "("+ret_type+")"+chartostring($3->addr),"");
                 }
                 else{
                     create_ins(0, $1->addr, $2->addr, $3->addr, "");
@@ -751,22 +757,7 @@ expr_stmt: test ASSIGN_OPERATOR test {
                 prev_prev_ste = insert_entry_same_scope(prev_prev_ste, "VARIABLE", $1->class_param,$3->addr, $1->lineno,1);
                 prev_prev_ste->next = prev_ste;
                 prev_ste->prev = prev_prev_ste;
-            }
 
-            //STE code start
-            else{
-                ste* lookup_ste = current_ste;
-                if(lookup(lookup_ste, $1->addr) == NULL){
-                    current_ste = insert_entry_same_scope(current_ste, "VARIABLE", $1->addr, $3->addr, $1->lineno, 1, $5->list_size);
-                }
-                else{
-                    cerr<<"Error: Variable "<<$1->addr<<" already declared on line "<<lookup(lookup_ste, $1->addr)->lineno<<"\n";
-                    exit(1);
-                }
-            }
-            //STE code end
-
-            //typecheck
                 string ret_type=typecast($1->atom_type,$5->atom_type,"=");
                 
                 if(ret_type == "Error"){
@@ -774,15 +765,71 @@ expr_stmt: test ASSIGN_OPERATOR test {
                     exit(1);
                 }
                 if(ret_type != $5->atom_type){
-                    create_ins(0, $1->addr, "=", "("+ret_type+")"+chartostring($5->addr),"");
-                    // else create_ins(0, chartostring($1->addr)+":str", "=", "("+ret_type+")"+chartostring($5->addr),"");
+                    create_ins(0, $1->addr, "=", chartostring($5->addr),"");
+                    // create_ins(0, $1->addr, "=", "("+ret_type+")"+chartostring($5->addr),"");
+                    
                 }
                 else{
                     create_ins(0, $1->addr, "=", $5->addr, "");
-                    // else create_ins(0, chartostring($1->addr)+":str", "=", $5->addr, "");
                 }
-            //typecheck done
+            }
 
+            //STE code start
+            else{
+                ste* lookup_ste = current_ste;
+                if(lookup(lookup_ste, $1->addr) == NULL){
+
+                    int list_len = $5->list_par_type.size();
+
+                    if(list_len != 0){
+                        string list_type = "";
+                        int i=0;
+                        while($3->addr[i] != '['){
+                            i++;
+                        }
+                        i++;
+                        while($3->addr[i] != ']'){
+                            list_type.push_back($3->addr[i]);
+                            i++;
+                        }
+                        string check="";
+
+                        for(i=0;i<list_len;i++){
+                            check = typecast(list_type,$5->list_par_type[i],"=");
+                            if(check=="Error"){
+                                cerr<<"Error: Type mismatch in list assignment on line "<<$1->lineno<<"\n";
+                                exit(1);
+                            }
+                        }
+
+                        create_ins(0, $1->addr, "=", $5->addr, "");
+
+                    }
+                    else{
+                        string ret_type=typecast($1->atom_type,$5->atom_type,"=");
+                
+                        if(ret_type == "Error"){
+                            cerr<<"Error: Type mismatch in assignment on line "<<$1->lineno<<"\n";
+                            exit(1);
+                        }
+                        if(ret_type != $5->atom_type){
+                            create_ins(0, $1->addr, "=", chartostring($5->addr),"");
+                            // create_ins(0, $1->addr, "=", "("+ret_type+")"+chartostring($5->addr),"");
+                        }
+                        else{
+                            create_ins(0, $1->addr, "=", $5->addr, "");
+                        }
+                    }
+
+                    current_ste = insert_entry_same_scope(current_ste, "VARIABLE", $1->addr, $3->addr, $1->lineno, 1, $5->list_size);
+                }
+                else{
+
+                    cerr<<"Error: Variable "<<$1->addr<<" already declared on line "<<lookup(lookup_ste, $1->addr)->lineno<<"\n";
+                    exit(1);
+                }
+            }
+            //STE code end
             //M3 START
             
             // for __init__ function and when it is self, it should not add so see that 
@@ -893,7 +940,7 @@ obj_dec: test COLON test {
     if(chartostring($1->type) == "self_call"){
         $$->class_param = $1->class_param;
     }
-    cerr<<$1->addr<<endl;
+    //cerr<<$1->addr<<endl;
     $$->obj_name = $1->addr;
     // cerr<<"out"<<endl;
     $$->class_name = $3->addr;
@@ -936,7 +983,8 @@ eq_testlist_star_expr_plus: test {
                     exit(1);
                 }
                 if(ret_type != $3->atom_type){
-                    create_ins(0, $1->addr, "=", "("+ret_type+")"+chartostring($3->addr),"");
+                    create_ins(0, $1->addr, "=", chartostring($3->addr),"");
+                    // create_ins(0, $1->addr, "=", "("+ret_type+")"+chartostring($3->addr),"");
                 }
                 else{
                     create_ins(0, $1->addr, $2->addr, $3->addr, "");
@@ -987,6 +1035,11 @@ return_stmt: RETURN     {
         | RETURN test     {  
             $$ = $2; //ye saih hai?
             $$->ins = $2->ins; //ye bhi??
+
+            if(get_prev_scope(current_ste)->return_type != $2->atom_type){
+                cerr<<"Error: Return type mismatch on line "<<$1->lineno<<"\n";
+                exit(1);
+            }
             
             // m3 commented 3 lines
             // $$->return_param = str_to_ch(newTemp());
@@ -1109,7 +1162,8 @@ if_stmt: if_scope if_expr COLON M suite     {
 if_expr: test{
         $$ = $1;
         incheck=0;
-}
+    }
+    ;
 
 d_expr : D_NAME EQUAL_EQUAL STRING {
             incheck=0;
@@ -1333,7 +1387,13 @@ for_core: expr IN range_stmt   {
             $$ = create_node(3, "for_core", $1, $2, $3);
 
             $$->lineno = $1->lineno;
-            create_ins(0, $1->addr, "=", to_string(chartonum($3->for_start)), "");
+
+
+            // create_ins(0, $1->addr, "=", to_string(chartonum($3->for_start)), "");
+
+            create_ins(0, $1->addr, "=", $3->for_start, "");
+
+
             // create_ins(0, $1->addr, "=", to_string(chartonum($3->for_start)-1), "");
 
             // create_ins(1, $1->addr, "+", $1->addr, "1");
@@ -1608,15 +1668,17 @@ expr: xor_expr    {
             }
             $$->addr = str_to_ch(newTemp());
             if(ret_type != $3->atom_type){
-                create_ins(1, $$->addr, "|", str_to_ch("("+ret_type+")"+chartostring($3->addr)),$1->addr);
+                create_ins(1, $$->addr, "|", $1->addr, str_to_ch(chartostring($3->addr)));
+                // create_ins(1, $$->addr, "|", $1->addr, str_to_ch("("+ret_type+")"+chartostring($3->addr)));
                 $$->atom_type = $1->atom_type;
             }
             else if(ret_type != $1->atom_type){
-                create_ins(1, $$->addr, "|", str_to_ch("("+ret_type+")"+chartostring($1->addr)),$3->addr);
+                create_ins(1, $$->addr, "|", str_to_ch(chartostring($1->addr)),$3->addr);
+                // create_ins(1, $$->addr, "|", str_to_ch("("+ret_type+")"+chartostring($1->addr)),$3->addr);
                 $$->atom_type = $3->atom_type;
             }
             else{
-                create_ins(1, $$->addr, "|", $3->addr,$1->addr);
+                create_ins(1, $$->addr, "|", $1->addr,$3->addr);
                 $$->atom_type = $1->atom_type;
             }
             //typecheck end
@@ -1648,15 +1710,17 @@ xor_expr: and_expr {
             }
             $$->addr = str_to_ch(newTemp());
             if(ret_type != $3->atom_type){
-                create_ins(1, $$->addr, "^", str_to_ch("("+ret_type+")"+chartostring($3->addr)),$1->addr);
+                create_ins(1, $$->addr, "^", $1->addr, str_to_ch(chartostring($3->addr)));
+                // create_ins(1, $$->addr, "^", $1->addr, str_to_ch("("+ret_type+")"+chartostring($3->addr)));
                 $$->atom_type = $1->atom_type;
             }
             else if(ret_type != $1->atom_type){
-                create_ins(1, $$->addr, "^", str_to_ch("("+ret_type+")"+chartostring($1->addr)),$3->addr);
+                create_ins(1, $$->addr, "^", str_to_ch(chartostring($1->addr)),$3->addr);
+                // create_ins(1, $$->addr, "^", str_to_ch("("+ret_type+")"+chartostring($1->addr)),$3->addr);
                 $$->atom_type = $3->atom_type;
             }
             else{
-                create_ins(1, $$->addr, "^", $3->addr,$1->addr);
+                create_ins(1, $$->addr, "^", $1->addr,$3->addr);
                 $$->atom_type = $1->atom_type;
             }
             //typecheck end
@@ -1689,15 +1753,17 @@ and_expr: shift_expr   {
                 }
                 $$->addr = str_to_ch(newTemp());
                 if(ret_type != $3->atom_type){
-                    create_ins(1, $$->addr, "&", str_to_ch("("+ret_type+")"+chartostring($3->addr)),$1->addr);
+                    create_ins(1, $$->addr, "&", $1->addr, str_to_ch(chartostring($3->addr)));
+                    // create_ins(1, $$->addr, "&", $1->addr, str_to_ch("("+ret_type+")"+chartostring($3->addr)));
                     $$->atom_type = $1->atom_type;
                 }
                 else if(ret_type != $1->atom_type){
-                    create_ins(1, $$->addr, "&", str_to_ch("("+ret_type+")"+chartostring($1->addr)),$3->addr);
+                    create_ins(1, $$->addr, "&", str_to_ch(chartostring($1->addr)),$3->addr);
+                    // create_ins(1, $$->addr, "&", str_to_ch("("+ret_type+")"+chartostring($1->addr)),$3->addr);
                     $$->atom_type = $3->atom_type;
                 }
                 else{
-                    create_ins(1, $$->addr, "&", $3->addr,$1->addr);
+                    create_ins(1, $$->addr, "&", $1->addr,$3->addr);
                     $$->atom_type = $1->atom_type;
                 }
             //typecheck end
@@ -1728,17 +1794,19 @@ shift_expr: arith_expr   {
                 }
                 if(ret_type != $3->atom_type){
                     $$->addr = str_to_ch(newTemp());
-                    create_ins(1, $$->addr, $2->addr, str_to_ch("("+ret_type+")"+chartostring($3->addr)),$1->addr);
+                    create_ins(1, $$->addr, $2->addr, $1->addr, str_to_ch(chartostring($3->addr)));
+                    // create_ins(1, $$->addr, $2->addr, $1->addr, str_to_ch("("+ret_type+")"+chartostring($3->addr)));
                     $$->atom_type = $1->atom_type;
                 }
                 else if(ret_type != $1->atom_type){
                     $$->addr = str_to_ch(newTemp());
-                    create_ins(1, $$->addr, $2->addr, str_to_ch("("+ret_type+")"+chartostring($1->addr)),$3->addr);
+                    create_ins(1, $$->addr, $2->addr, str_to_ch(chartostring($1->addr)), $3->addr );
+                    // create_ins(1, $$->addr, $2->addr, str_to_ch("("+ret_type+")"+chartostring($1->addr)), $3->addr );
                     $$->atom_type = $3->atom_type;
                 }
                 else{
                     $$->addr = str_to_ch(newTemp());
-                    create_ins(1, $$->addr, $2->addr, $3->addr,$1->addr);
+                    create_ins(1, $$->addr, $2->addr, $1->addr,$3->addr);
                     $$->atom_type = $1->atom_type;
                 }
             //typecheck end
@@ -1771,13 +1839,15 @@ arith_expr: term {
                 if(ret_type != $3->atom_type){
                     //string temp = newTemp(); 
                     $$->addr = str_to_ch(newTemp()); 
-                    create_ins(1, $$->addr, "+", $1->addr,str_to_ch("("+ret_type+")"+chartostring($3->addr)));
+                    create_ins(1, $$->addr, "+", $1->addr,str_to_ch(chartostring($3->addr)));
+                    // create_ins(1, $$->addr, "+", $1->addr,str_to_ch("("+ret_type+")"+chartostring($3->addr)));
                     $$->atom_type = $1->atom_type;
                 }
                 else if(ret_type != $1->atom_type){
                     //string temp = newTemp();
                     $$->addr = str_to_ch(newTemp()); 
-                    create_ins(1, $$->addr, "+", str_to_ch("("+ret_type+")"+chartostring($1->addr)),$3->addr);
+                    create_ins(1, $$->addr, "+", str_to_ch(chartostring($1->addr)),$3->addr);
+                    // create_ins(1, $$->addr, "+", str_to_ch("("+ret_type+")"+chartostring($1->addr)),$3->addr);
                     $$->atom_type = $3->atom_type;
                 }
                 else{
@@ -1811,13 +1881,15 @@ arith_expr: term {
                 if(ret_type != $3->atom_type){
                     //string temp = newTemp();
                     $$->addr = str_to_ch(newTemp());
-                    create_ins(1, $$->addr, "-", $1->addr,str_to_ch("("+ret_type+")"+chartostring($3->addr)));
+                    create_ins(1, $$->addr, "-", $1->addr,str_to_ch(chartostring($3->addr)));
+                    // create_ins(1, $$->addr, "-", $1->addr,str_to_ch("("+ret_type+")"+chartostring($3->addr)));
                     $$->atom_type = $1->atom_type;
                 }
                 else if(ret_type != $1->atom_type){
                     //string temp = newTemp();
                     $$->addr = str_to_ch(newTemp());
-                    create_ins(1, $$->addr, "-", str_to_ch("("+ret_type+")"+chartostring($1->addr)),$3->addr);
+                    create_ins(1, $$->addr, "-", str_to_ch(chartostring($1->addr)),$3->addr);
+                    // create_ins(1, $$->addr, "-", str_to_ch("("+ret_type+")"+chartostring($1->addr)),$3->addr);
                     $$->atom_type = $3->atom_type;
                 }
                 else{
@@ -1856,13 +1928,15 @@ term: factor {
                 if(ret_type != $3->atom_type){
                     //string temp = newTemp();
                     $$->addr = str_to_ch(newTemp());
-                    create_ins(1, $$->addr, $2->addr, $1->addr,str_to_ch("("+ret_type+")"+chartostring($3->addr)));
+                    create_ins(1, $$->addr, $2->addr, $1->addr,str_to_ch(chartostring($3->addr)));
+                    // create_ins(1, $$->addr, $2->addr, $1->addr,str_to_ch("("+ret_type+")"+chartostring($3->addr)));
                     $$->atom_type = $1->atom_type;
                 }
                 else if(ret_type != $1->atom_type){
                     //string temp = newTemp();
                     $$->addr = str_to_ch(newTemp());
-                    create_ins(1, $$->addr, $2->addr, str_to_ch("("+ret_type+")"+chartostring($1->addr)),$3->addr);
+                    create_ins(1, $$->addr, $2->addr, str_to_ch(chartostring($1->addr)),$3->addr);
+                    // create_ins(1, $$->addr, $2->addr, str_to_ch("("+ret_type+")"+chartostring($1->addr)),$3->addr);
                     $$->atom_type = $3->atom_type;
                 }
                 else{
@@ -1987,7 +2061,7 @@ atom_expr: atom {
                 $$->atom_type = lookup_ste->return_type;
             }
             
-            else if(chartostring($1->type) == "class_call"){ 
+            else if(chartostring($1->type) == "class_call"){ //cerr<<$1->addr<<endl;
                 string class_name = "";
                 int i=0;
                 while($1->addr[i] != '.'){
@@ -2011,6 +2085,10 @@ atom_expr: atom {
                         cerr<<"Error: Function "<<$1->class_param<<" not declared in class "<<class_name<<" at line "<<$1->lineno<<"\n";
                         exit(1);
                     }
+
+ create_ins(0,"call","class_func",class_name,"");  
+ create_ins(0,"PopParamAll",to_string($2->num_params),"","");          
+
                     //print_ste(lookup_ste,0);
                     //cout<<lookup_ste->type<<endl;
                     // if(lookup_ste->type != "FUNCTION"){
@@ -2159,32 +2237,73 @@ atom_expr: atom {
             $$ = create_node(6, "atom_expr", $1, $2, $3, $4, $5);
             $$->lineno = $1->lineno;
             $$->ins = $1->ins;
+  
+            ste* function_ste = new ste;
+            // if(chartostring($1->type) == "self_call"){
+            //     ste* lookup_ste = lookup(current_ste, $1->class_param);
+            //     function_ste=lookup_ste;
+            //     create_ins(1,$$->addr,"*",$4->addr,"8");
+            //     $$->addr = str_to_ch(chartostring($1->addr) + "["+chartostring($$->addr)+"]");
+            // }
+  
+ //changes here too and ek baar poora atom_expr DOT NAME compare karke update kar dena
             //$$->atom_type= $1->atom_type; //check this
             string temp = str_to_ch(newTemp());
             $$->addr = str_to_ch(temp);
             //cout<<"in atom_expr "<<temp<<endl;
-            create_ins(1, $$->addr, "*", $4->addr, to_string(get_width(lookup(current_ste, $1->addr)->type)));
+            // create_ins(1, $$->addr, "*", $4->addr, to_string(get_width(lookup(current_ste, $1->addr)->type)));
+            create_ins(1, $$->addr, "*", $4->addr,"8");
+            
             $$->addr = str_to_ch(chartostring($1->addr) + "["+chartostring($$->addr)+"]");
 
-            //typechecking handle and $$->atom_type also
-
-            $$->type= str_to_ch("array_element");
-            ste* lookup_ste = lookup(current_ste, $1->addr);
-            int i=0;
-            string array_type="";
-            while(lookup_ste->type[i] != '['){
-                i++;
-            }
+//till here some changes were made
+//added this
+        int i=0;
+        string array_type="";
+        while($1->type[i] != '['){
             i++;
-            while(lookup_ste->type[i] != ']'){
-                array_type.push_back(lookup_ste->type[i]);
-                i++;
-            }
-            if($4->atom_type != "int"){
-                cerr<<"Error: Array index is not an integer at line "<<$1->lineno<<"\n";
-                exit(1);
-            }
-            $$->atom_type = array_type;
+        }
+        i++;
+        while($1->type[i] != ']'){
+            array_type.push_back($1->type[i]);
+            i++;
+        }
+        if($4->atom_type != "int"){
+            cerr<<"Error: Array index is not an integer at line "<<$1->lineno<<"\n";
+            exit(1);
+        }
+        $$->atom_type = array_type;
+
+
+//till here
+
+
+//commented this
+
+            //typechecking handle and $$->atom_type also
+            // $$->type= str_to_ch("array_element");
+            // cerr<<$1->class_param<< " yes"<<endl;
+            // ste* lookup_ste = lookup(current_ste, $1->class_param);
+            // // cerr<<"no"<<endl;
+            // int i=0;
+            // string array_type="";
+            // while(lookup_ste->type[i] != '['){
+            //     i++;
+            // }
+            // i++;
+            // while(lookup_ste->type[i] != ']'){
+            //     array_type.push_back(lookup_ste->type[i]);
+            //     i++;
+            // }
+            // if($4->atom_type != "int"){
+            //     cerr<<"Error: Array index is not an integer at line "<<$1->lineno<<"\n";
+            //     exit(1);
+            // }
+            // $$->atom_type = array_type;
+
+//till here
+
+
             //cout<<$$->atom_type<<endl;
              //check this suppose a[2] hai to hum a ka type dekhenge
 
@@ -2193,7 +2312,7 @@ atom_expr: atom {
             offset_map[temp]=-stack_offset;
             stack_offset += 8;
             isinsquare=0;
-             //m3 end
+            //m3 end
 
         }
         | atom_expr DOT NAME { 
@@ -2213,13 +2332,17 @@ atom_expr: atom {
                 exit(1);
             }
             //cout<<lookup_ste->token<<endl;
-            if(lookup_ste -> token == "OBJECT"){
+             if(lookup_ste -> token == "OBJECT"){ 
                 $$->type = str_to_ch("object_call");
                 //see what else to do
-                lookup_ste = lookup(lookup_ste, $3->addr);
-
-                if(lookup_ste != NULL){
-                    $$->atom_type = lookup_ste->type;
+                lookup_ste = class_map[obj_class[chartostring($1->addr)]];
+                ste* lookup_ste1 = single_rev_lookup(lookup_ste->next_scope, $3->addr);
+                if(lookup_ste1 == NULL){
+                    lookup_ste1 = lookup(lookup_ste,$3->addr);
+                }
+                if(lookup_ste1 != NULL){ 
+                    $$->atom_type = lookup_ste1->type;
+                    $$->class_param = $3->addr;
                 }
             }
             //here it ends
@@ -2264,6 +2387,10 @@ atom_expr: atom {
                 if(attribute!= NULL){  
                     $$->atom_type = attribute->type;
                 }
+                else{
+                    cerr<<"Error: "<<$3->addr<<" not declared in class of object "<<$1->addr<<endl;
+                    exit(1);
+                }
             }
             //add this
 
@@ -2302,6 +2429,11 @@ atom_expr: atom {
             string temp = newTemp();
             create_ins(0, "PopParamra", temp, "","");
             $$->addr = str_to_ch(temp);
+
+            $$->stack_width = 8 + $2->stack_width;
+            offset_map[temp]=-stack_offset;
+            stack_offset += 8;
+
         }
         | PRINT OPEN_BRACKET test CLOSE_BRACKET { 
             $$ = create_node(5, "atom_expr", $1, $2, $3, $4);
@@ -2543,7 +2675,10 @@ testlist: testlist_list    {
 testlist_list: test         {
             $$ = $1;
             $$->list_size = 1;
-            if(isinsquare)$$-> addr = str_to_ch( "[" + chartostring($1->addr));
+            if(isinsquare){
+                $$-> addr = str_to_ch( "[" + chartostring($1->addr));
+                $$->list_par_type.push_back($1->atom_type);
+            }
             else $$-> addr = $1->addr;
             
 
@@ -2592,6 +2727,9 @@ testlist_list: test         {
             //cout<<$$->addr<<endl;
             // cout<<$3->atom_type<<endl;
 
+            $$->list_par_type = $1->list_par_type;
+            $$->list_par_type.push_back($3->atom_type);
+
             // //function parameters check 
             // $$->func_par_type = $1->func_par_type;
             // $$->func_par_type.push_back($3->atom_type);
@@ -2606,7 +2744,13 @@ testlist_list: test         {
             $$->ins = $1->ins;
 
             $3->atom_type = $5->addr;
-            $$->atom_type = "list["+$3->atom_type+"]";
+            //$$->atom_type = "list["+$3->atom_type+"]";
+            $$->atom_type = $1->atom_type;
+
+            $$->list_size = $1->list_size + 1;
+            $$-> addr = str_to_ch(chartostring($1->addr) + "," + chartostring($3->addr));
+            $$->list_par_type = $1->list_par_type;
+            $$->list_par_type.push_back($3->atom_type);
 
             //STE code start
             ste* lookup_ste = current_ste;
@@ -3199,11 +3343,11 @@ ste* setup_global_sym_table(ste* curr_ste){
 void printToCSV(ste* curr,int level,int sublevel,ofstream& fout){
     if(curr->lexeme != "global_head" && curr->lexeme != "scope_head" && curr->type != "RESERVED_KEYWORD" && curr->type != "RESERVED_FUNCTION"){
         fout<<level<<","<<sublevel<<","<<curr->token<<","<<curr->lexeme<<","<<curr->type<<","<<curr->lineno<<","<<curr->is_func_class<<","<<curr->return_type<<","<<curr->stack_width<<","<<endl;
-        fout<<"size="<<curr->offset_map.size()<<endl;
+        /* fout<<"size="<<curr->offset_map.size()<<endl;
         for (const auto& pair : curr->offset_map) {
             fout << pair.first << " => " << pair.second << endl;
         }
-        fout<<endl;
+        fout<<endl; */
     }
     if (curr->next_scope != NULL)
     {   
@@ -3236,22 +3380,12 @@ int main(int argc, char* argv[]){
     typeMap["list[str]"] = 8;
 
     string srcfile="";
-    int j=3;
-    while(argv[1][j] != '/'){
-        j++;
-    }
-    j++;
-    while(argv[1][j] != '.'){
-        srcfile.push_back(argv[1][j]);
-        j++;
-    }
-
     yyrestart(yyin);
 
-    /* for (int i=0; i< argc; i++){
+    for (int i=0; i< argc; i++){
         if (strcmp(argv[i], "-help") == 0){
-            cerr<<"Usage: ./run.sh [-help] [-input <filename>] [-output <filename>] [-verbose]\n";
-            cerr<< "Example: ./myASTGenerator -input input.txt -output output.txt\n";
+            cerr<<"Usage: make\n ./python_compiler [-help] [-input <filename>] [-output <filename>] [-verbose]\n";
+            cerr<< "Example: ./python_compiler -input input.txt -output output.txt\n";
         }
         else if (strcmp(argv[i], "-input") == 0){
             yyin = fopen(argv[i+1], "r");
@@ -3268,10 +3402,10 @@ int main(int argc, char* argv[]){
             yyrestart(yyin);
             inset = true;
         }
-        else if (strcmp(argv[i], "-output") == 0){
+        /* else if (strcmp(argv[i], "-output") == 0){
             freopen(argv[i+1], "w", stdout);
             outset = true;
-        }
+        } */
         else if (strcmp(argv[i], "-verbose") == 0){
             cerr<<"Verbose Output directed to parser.output\n";
         }
@@ -3279,48 +3413,31 @@ int main(int argc, char* argv[]){
     if (!inset){
         cerr<< "Input not set, see help\n";
         return 0;
-    } */
+    }
     /* if (!outset){
         cerr<< "Output not set, see help\n";
         return 0;
     }  */
 
-/*--------------------------------------------------------------*/
-
-        // Open the output file
-        /* fout.open(output_file.c_str(),ios::out); */
-        //code_out.open("./output/3AC.txt",ios::out);
-        // Get the DOT file template from the file
-        /* ifstream infile("./DOT_Template.txt"); */
-        /* string line; */
-        /* while (getline(infile, line)) */
-                /* fout << line << endl; */
-
-/*--------------------------------------------------------------*/
-
     instCount=0;
     tempCount=0;
-    yydebug=1; 
+    /* yydebug=1;  */
     current_ste = setup_global_sym_table(current_ste);
     /* cout<<"Parsing Started\n"; */
     yyparse();
     fclose(yyin); 
 
-    //print_ste(global_sym_table,0);
-
-/*--------------------------------------------------------------*/
-   
 
 // Create 3AC file
     ofstream code_out;
-    string filename1 = "./outputs/3AC/"+srcfile+".txt";
+    string filename1 = "../outputs/3AC/"+srcfile+".txt";
     //cout<<filename1<<endl;
     code_out.open(filename1);
     MakeIRFile(code_out);
 
 // CSV code
     ofstream fout;
-    string filename = "./outputs/SymTab/"+srcfile+".csv";
+    string filename = "../outputs/SymTab/"+srcfile+".csv";
     //cout<<filename<<endl;
     fout.open(filename);
 
@@ -3330,11 +3447,23 @@ int main(int argc, char* argv[]){
 
 // Close the output file
     code_out.close();
+    fout.close();
 
 /*--------------------------------------------------------------*/
 
     //m3 start
+    ofstream m3_out;
+    string filename2 = "../outputs/x86/"+srcfile+".s";
+    m3_out.open(filename2);
     create_x86();
+    // Print the x86_code
+    for(const auto& line : x86_code){
+        for(const auto& part : line){
+            m3_out << part << " ";
+        }
+        m3_out << endl;
+    }
+    m3_out.close();
     //m3 end
 
     return 0;

@@ -1,44 +1,54 @@
-class Animal:
-    def __init__(self, species : str):
-        self.species : str = species
+#Final2 HeapSort
+def heapify(arr: list[int], n: int, i: int) -> None:
+    largest: int = i  # Initialize largest as root
+    l: int = 2 * i + 1  # left = 2*i + 1
+    r: int = 2 * i + 2  # right = 2*i + 2
 
-class Mammal(Animal):
-    def __init__(self, species : str, sound : str):
-        Animal.__init__(self, species)
-        self.sound : str = sound
+    # Check if left child of root exists and is greater than root
+    if l < n and arr[l] > arr[largest]:
+        largest = l
 
-    def speak(self):
-        return "A " + self.species + " makes " + self.sound + " sound."
+    # Check if right child of root exists and is greater than the largest so far
+    if r < n and arr[r] > arr[largest]:
+        largest = r
 
+    # Change root, if needed
+    if largest != i:
+        temp: int
+        temp = arr[i]
+        arr[i] = arr[largest]
+        arr[largest] = temp # Swap
+        # Heapify the root
+        heapify(arr, n, largest)
 
-class Dog(Mammal):
-    def __init__(self, breed : str, sound : str):
-        Mammal.__init__(self, "dog", sound)
-        self.breed : str = breed
+def heap_sort(arr: list[int]) -> None:
+    n: int = len(arr)
 
-    def speak(self):
-        return "A " + self.breed + " " + self.species + " makes " + self.sound + "."
+    # Build a maxheap
+    i:int
+    for i in range(0, n // 2):
+        j : int = n//2 - 1 - i
+        heapify(arr, n, j)
 
+    # Extract elements one by one
+    for i in range(0,n-1):
+        j = n-1-i
+        temp: int
+        temp = arr[0]
+        arr[0] = arr[j]
+        arr[j] = temp # Swap
+        heapify(arr, j, 0)
 
-class Cat(Mammal):
-    def __init__(self, breed : str, sound : str):
-        Mammal.__init__(self, "cat", sound)
-        self.breed : str = breed
-
-    def speak(self):
-        return "A " + self.breed + " " + self.species + " makes " + self.sound + "."
-
-
+def printArray(l : list[int]):
+    i : int
+    for i in range(len(l)):
+        print(l[i])
+        
+# Example usage:
 def main():
-    dog : Dog = Dog("Golden Retriever","bark")
-    cat : Cat = Cat("Siamese","meow")
-
-    a : str = dog.speak()
-    b : str = cat.speak()
-
-    print(a)
-    print(b)
-
+    arr: list[int] = [12, -11, 13, -5, 6, 7]
+    heap_sort(arr)
+    printArray(arr)
 
 if __name__ == "__main__":
     main()

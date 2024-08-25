@@ -1,4 +1,4 @@
-#include "data.h"
+#include "../include/data.h"
 #include <cstdarg>
 
 int num=0;
