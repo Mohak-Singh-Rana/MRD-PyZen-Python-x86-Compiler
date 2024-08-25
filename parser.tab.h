@@ -1,8 +1,8 @@
-/* A Bison parser, made by GNU Bison 3.5.1.  */
+/* A Bison parser, made by GNU Bison 3.8.2.  */
 
 /* Bison interface for Yacc-like parsers in C
 
-   Copyright (C) 1984, 1989-1990, 2000-2015, 2018-2020 Free Software Foundation,
+   Copyright (C) 1984, 1989-1990, 2000-2015, 2018-2021 Free Software Foundation,
    Inc.
 
    This program is free software: you can redistribute it and/or modify
@@ -16,7 +16,7 @@
    GNU General Public License for more details.
 
    You should have received a copy of the GNU General Public License
-   along with this program.  If not, see <http://www.gnu.org/licenses/>.  */
+   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
 
 /* As a special exception, you may create a larger work that contains
    part or all of the Bison parser skeleton and distribute that work
@@ -31,8 +31,9 @@
    This special exception was added by the Free Software Foundation in
    version 2.2 of Bison.  */
 
-/* Undocumented macros, especially those whose name start with YY_,
-   are private implementation details.  Do not rely on them.  */
+/* DO NOT RELY ON FEATURES THAT ARE NOT DOCUMENTED in the manual,
+   especially those whose name start with YY_ or yy_.  They are
+   private implementation details that can be changed or removed.  */
 
 #ifndef YY_YY_PARSER_TAB_H_INCLUDED
 # define YY_YY_PARSER_TAB_H_INCLUDED
@@ -44,80 +45,86 @@
 extern int yydebug;
 #endif
 
-/* Token type.  */
+/* Token kinds.  */
 #ifndef YYTOKENTYPE
 # define YYTOKENTYPE
   enum yytokentype
   {
-    NEWLINE = 258,
-    INDENT = 259,
-    DEDENT = 260,
-    ASSIGN_OPERATOR = 261,
-    POWER_OPERATOR = 262,
-    SHIFT_OPER = 263,
-    FLOOR_DIV_OPER = 264,
-    ARROW_OPER = 265,
-    TYPE_HINT = 266,
-    NAME = 267,
-    IF = 268,
-    ELSE = 269,
-    ELIF = 270,
-    WHILE = 271,
-    FOR = 272,
-    IN = 273,
-    AND = 274,
-    OR = 275,
-    NOT = 276,
-    BREAK = 277,
-    CONTINUE = 278,
-    RETURN = 279,
-    CLASS = 280,
-    DEF = 281,
-    GLOBAL = 282,
-    ATOM_KEYWORDS = 283,
-    STRING = 284,
-    NUMBER = 285,
-    OPEN_BRACKET = 286,
-    CLOSE_BRACKET = 287,
-    EQUAL = 288,
-    SEMI_COLON = 289,
-    COLON = 290,
-    COMMA = 291,
-    PLUS = 292,
-    MINUS = 293,
-    MULTIPLY = 294,
-    DIVIDE = 295,
-    REMAINDER = 296,
-    ATTHERATE = 297,
-    NEGATION = 298,
-    BIT_AND = 299,
-    BIT_OR = 300,
-    BIT_XOR = 301,
-    DOT = 302,
-    CURLY_OPEN = 303,
-    CURLY_CLOSE = 304,
-    SQUARE_OPEN = 305,
-    SQUARE_CLOSE = 306,
-    LESS_THAN = 307,
-    GREATER_THAN = 308,
-    EQUAL_EQUAL = 309,
-    GREATER_THAN_EQUAL = 310,
-    LESS_THAN_EQUAL = 311,
-    NOT_EQUAL_ARROW = 312,
-    NOT_EQUAL = 313,
-    IS = 314
+    YYEMPTY = -2,
+    YYEOF = 0,                     /* "end of file"  */
+    YYerror = 256,                 /* error  */
+    YYUNDEF = 257,                 /* "invalid token"  */
+    RANGE = 258,                   /* RANGE  */
+    NEWLINE = 259,                 /* NEWLINE  */
+    INDENT = 260,                  /* INDENT  */
+    DEDENT = 261,                  /* DEDENT  */
+    ASSIGN_OPERATOR = 262,         /* ASSIGN_OPERATOR  */
+    POWER_OPERATOR = 263,          /* POWER_OPERATOR  */
+    SHIFT_OPER = 264,              /* SHIFT_OPER  */
+    FLOOR_DIV_OPER = 265,          /* FLOOR_DIV_OPER  */
+    ARROW_OPER = 266,              /* ARROW_OPER  */
+    TYPE_HINT = 267,               /* TYPE_HINT  */
+    NAME = 268,                    /* NAME  */
+    IF = 269,                      /* IF  */
+    ELSE = 270,                    /* ELSE  */
+    ELIF = 271,                    /* ELIF  */
+    WHILE = 272,                   /* WHILE  */
+    FOR = 273,                     /* FOR  */
+    IN = 274,                      /* IN  */
+    AND = 275,                     /* AND  */
+    OR = 276,                      /* OR  */
+    NOT = 277,                     /* NOT  */
+    BREAK = 278,                   /* BREAK  */
+    CONTINUE = 279,                /* CONTINUE  */
+    RETURN = 280,                  /* RETURN  */
+    CLASS = 281,                   /* CLASS  */
+    DEF = 282,                     /* DEF  */
+    GLOBAL = 283,                  /* GLOBAL  */
+    ATOM_KEYWORDS = 284,           /* ATOM_KEYWORDS  */
+    STRING = 285,                  /* STRING  */
+    NUMBER = 286,                  /* NUMBER  */
+    OPEN_BRACKET = 287,            /* OPEN_BRACKET  */
+    CLOSE_BRACKET = 288,           /* CLOSE_BRACKET  */
+    EQUAL = 289,                   /* EQUAL  */
+    SEMI_COLON = 290,              /* SEMI_COLON  */
+    COLON = 291,                   /* COLON  */
+    COMMA = 292,                   /* COMMA  */
+    PLUS = 293,                    /* PLUS  */
+    MINUS = 294,                   /* MINUS  */
+    MULTIPLY = 295,                /* MULTIPLY  */
+    DIVIDE = 296,                  /* DIVIDE  */
+    REMAINDER = 297,               /* REMAINDER  */
+    ATTHERATE = 298,               /* ATTHERATE  */
+    NEGATION = 299,                /* NEGATION  */
+    BIT_AND = 300,                 /* BIT_AND  */
+    BIT_OR = 301,                  /* BIT_OR  */
+    BIT_XOR = 302,                 /* BIT_XOR  */
+    DOT = 303,                     /* DOT  */
+    CURLY_OPEN = 304,              /* CURLY_OPEN  */
+    CURLY_CLOSE = 305,             /* CURLY_CLOSE  */
+    SQUARE_OPEN = 306,             /* SQUARE_OPEN  */
+    SQUARE_CLOSE = 307,            /* SQUARE_CLOSE  */
+    LESS_THAN = 308,               /* LESS_THAN  */
+    GREATER_THAN = 309,            /* GREATER_THAN  */
+    EQUAL_EQUAL = 310,             /* EQUAL_EQUAL  */
+    GREATER_THAN_EQUAL = 311,      /* GREATER_THAN_EQUAL  */
+    LESS_THAN_EQUAL = 312,         /* LESS_THAN_EQUAL  */
+    NOT_EQUAL_ARROW = 313,         /* NOT_EQUAL_ARROW  */
+    NOT_EQUAL = 314,               /* NOT_EQUAL  */
+    IS = 315                       /* IS  */
   };
+  typedef enum yytokentype yytoken_kind_t;
 #endif
 
 /* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 67 "parser.y"
+#line 70 "parser.y"
 
     struct node *elem;
 
-#line 121 "parser.tab.h"
+#line 128 "parser.tab.h"
 
 };
 typedef union YYSTYPE YYSTYPE;
@@ -128,6 +135,8 @@ typedef union YYSTYPE YYSTYPE;
 
 extern YYSTYPE yylval;
 
+
 int yyparse (void);
+
 
 #endif /* !YY_YY_PARSER_TAB_H_INCLUDED  */

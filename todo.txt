@@ -1,3 +1,22 @@
  see true false in while stmt
  while(a or b)
- 
+
+ __name__ ki symbol table entry add karni hai to global symbol table at the start
+
+functions.cpp linking errors....currently functions defined in parser
+
+offset and sizes of variables
+
+extra check that the RHS can't be of type NAME COLON TYPE_HINT
+
+// do testing that name a varaible as break and see if it gives error
+
+testlist in atom cant be type_hinted
+
+Self handle
+
+IF, FOR, WHILE : symbol table
+
+BREAK, CONTINUE : handle
+
+3AC : FOR WHILE FUNC CLASS BREAK CONTINUE

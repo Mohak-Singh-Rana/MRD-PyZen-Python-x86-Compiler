@@ -14,6 +14,7 @@ typedef struct node
     char *type;
     char *addr;
     int ins; // stores the starting instruction number of the current node's code
+    int num_params = 0;
     vector<int> truelist;
     vector<int> falselist;
     vector<int> nextlist;

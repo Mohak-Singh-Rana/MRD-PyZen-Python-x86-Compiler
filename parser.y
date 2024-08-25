@@ -2,10 +2,8 @@
     /*definitions*/
     #include <bits/stdc++.h>
     #include "data.h"
-//     #include "data.cpp"
-//     #include "symbol_table.h"
     #include "symbol_table.cpp"
-    #include "functions.cpp"
+    // #include "functions.cpp"
     using namespace std;
 
     extern int yylex();
@@ -27,6 +25,11 @@
     char* str_to_ch(string s);
     int tempCount;
     fstream code_out;
+
+    // map<string,ste> global_sym_table;
+    ste* global_sym_table = new ste;   //pointer to the head(initialising entry) of the global symbol table
+    ste* current_ste = global_sym_table;   //pointer to current symbol table entry (initialised to pointer of head of the global symbol table)  
+
 
     char* numtochar( int num){  
         string s="0";   
@@ -71,63 +74,10 @@
 %start file
 
 %type<elem> M N file snippet stmt simple_stmt small_stmt_list small_stmt expr_stmt eq_testlist_star_expr_plus flow_stmt break_stmt continue_stmt return_stmt global_stmt compound_stmt funcdef parameters typedargslist typedarg tfpdef if_stmt while_stmt for_stmt suite nts_star test or_test and_test not_test comparison comp_op expr xor_expr and_expr shift_expr arith_expr term term_choice factor factor_choice power atom_expr atom STRING_PLUS trailer classdef arglist argument_list argument testlist testlist_list comma_name_star and_test_star not_test_star func_body_suite stmt_plus
-%token<elem> NEWLINE
-%token<elem> INDENT 
-%token<elem> DEDENT
-%token<elem> ASSIGN_OPERATOR 
-%token<elem> POWER_OPERATOR
-%token<elem> SHIFT_OPER
-%token<elem> FLOOR_DIV_OPER 
-%token<elem> ARROW_OPER 
-%token<elem> TYPE_HINT
-%token<elem> NAME 
-%token<elem> IF 
-%token<elem> ELSE 
-%token<elem> ELIF 
-%token<elem> WHILE 
-%token<elem> FOR 
-%token<elem> IN 
-%token<elem> AND
-%token<elem> OR 
-%token<elem> NOT 
-%token<elem> BREAK 
-%token<elem> CONTINUE 
-%token<elem> RETURN 
-%token<elem> CLASS 
-%token<elem> DEF 
-%token<elem> GLOBAL 
-%token<elem> ATOM_KEYWORDS 
-%token<elem> STRING 
-%token<elem> NUMBER 
-%token<elem> OPEN_BRACKET
-%token<elem> CLOSE_BRACKET
-%token<elem> EQUAL
-%token<elem> SEMI_COLON
-%token<elem> COLON 
-%token<elem> COMMA 
-%token<elem> PLUS 
-%token<elem> MINUS
-%token<elem> MULTIPLY
-%token<elem> DIVIDE
-%token<elem> REMAINDER
-%token<elem> ATTHERATE
-%token<elem> NEGATION
-%token<elem> BIT_AND
-%token<elem> BIT_OR
-%token<elem> BIT_XOR
-%token<elem> DOT 
-%token <elem>CURLY_OPEN
-%token <elem>CURLY_CLOSE
-%token<elem> SQUARE_OPEN
-%token<elem> SQUARE_CLOSE
-%token<elem> LESS_THAN
-%token<elem> GREATER_THAN
-%token<elem> EQUAL_EQUAL
-%token<elem> GREATER_THAN_EQUAL
-%token<elem> LESS_THAN_EQUAL
-%token<elem> NOT_EQUAL_ARROW
-%token<elem> NOT_EQUAL
-%token<elem> IS
+%type<elem> A C X 
+%token<elem> RANGE NEWLINE INDENT DEDENT ASSIGN_OPERATOR POWER_OPERATOR SHIFT_OPER FLOOR_DIV_OPER ARROW_OPER TYPE_HINT NAME IF ELSE ELIF WHILE FOR IN AND OR NOT BREAK CONTINUE RETURN CLASS DEF GLOBAL ATOM_KEYWORDS STRING NUMBER OPEN_BRACKET CLOSE_BRACKET EQUAL SEMI_COLON COLON COMMA PLUS MINUS MULTIPLY DIVIDE REMAINDER ATTHERATE NEGATION BIT_AND BIT_OR BIT_XOR DOT CURLY_OPEN CURLY_CLOSE SQUARE_OPEN SQUARE_CLOSE LESS_THAN GREATER_THAN EQUAL_EQUAL GREATER_THAN_EQUAL LESS_THAN_EQUAL NOT_EQUAL_ARROW NOT_EQUAL IS
+
+
 %%
 
 
@@ -165,32 +115,61 @@ snippet: NEWLINE {
     }
     ; 
 
-funcdef: DEF NAME parameters COLON func_body_suite  {  
-            
+funcdef: DEF A parameters COLON func_body_suite {
+            current_ste = get_prev_scope(current_ste);
+            populate_new_scope(current_ste, "FUNCTION", $2->addr, $4->num_params, $1->lineno, 1);
         }
-        | DEF NAME parameters ARROW_OPER TYPE_HINT COLON func_body_suite {  
-            
+        | DEF A parameters ARROW_OPER C COLON func_body_suite {
+            current_ste = get_prev_scope(current_ste);
+            populate_new_scope(current_ste, "FUNCTION", $2->addr, $4->num_params, $1->lineno, 1);
         }
-        | DEF NAME OPEN_BRACKET CLOSE_BRACKET COLON func_body_suite {
-            
+        | DEF A OPEN_BRACKET CLOSE_BRACKET COLON func_body_suite {
+            current_ste = get_prev_scope(current_ste);
+            populate_new_scope(current_ste, "FUNCTION", $2->addr, 0, $1->lineno, 1);
         }
-        | DEF NAME OPEN_BRACKET CLOSE_BRACKET ARROW_OPER TYPE_HINT COLON func_body_suite {  
-            
+        | DEF A OPEN_BRACKET CLOSE_BRACKET ARROW_OPER C COLON func_body_suite{
+            current_ste = get_prev_scope(current_ste);
+            populate_new_scope(current_ste, "FUNCTION", $2->addr, 0, $1->lineno, 1);
         }
-        ;
+    ;
+
+A: NAME 
+    {   
+        $$=$1;
+        //STE code start
+        ste* lookup_ste = current_ste;
+        if(lookup(lookup_ste, $1->addr) == NULL){
+            current_ste = insert_entry_new_scope(current_ste);
+        }
+        else{
+            cerr<<"Error: Function "<<$1->addr<<" already declared\n";
+            exit(1);
+        }
+        //STE code end
+    };
+
+C: TYPE_HINT{
+        $$=$1;
+        get_prev_scope(current_ste)->return_type = $1->addr;
+    }
+    ;
 
 parameters: OPEN_BRACKET typedargslist CLOSE_BRACKET {  
             $$ = create_node(4, "parameters", $1, $2, $3);
             $$->ins = $2->ins;
+            $$->num_params = $2->num_params;
         }
         ;
 
 typedargslist:  typedarg    {  
             $$=$1;
+            $$->num_params=1;
         }
         | typedargslist COMMA  typedarg  {  
             $$ = create_node(4, "typedargslist", $1, $2, $3);
             $$->ins = $1->ins;
+
+            $$->num_params = $1->num_params + 1;
         }
         ;
 
@@ -211,6 +190,18 @@ tfpdef: NAME {
         | NAME COLON TYPE_HINT {  
             $$ = create_node(4, "tfpdef", $1, $2, $3); 
 			$$->ins = instCount+1;
+
+            //STE code start
+            ste* lookup_ste = current_ste;
+            if(lookup(lookup_ste, $1->addr) == NULL){
+                current_ste = insert_entry_same_scope(current_ste, "VARIABLE", $1->addr, $3->addr, $1->lineno, 1);
+            }
+            else{
+                cerr<<"Error: Variable "<<$1->addr<<" already declared\n";
+                exit(1);
+            }
+            //STE code end
+
         }
         ;
 
@@ -251,16 +242,74 @@ small_stmt: expr_stmt       {
         ;
 
 //I removed annassign
-expr_stmt: test COLON test {    //list of test COLON test???
+expr_stmt: 
+        /* test COLON TYPE_HINT {    //list of test COLON test???
             $$ = create_node(4, "expr_stmt", $1, $2, $3);
             $$->ins = $1->ins;
         }
-		| test COLON test EQUAL test{
+		| test COLON TYPE_HINT EQUAL test{
             $$ = create_node(6, "expr_stmt", $1, $2, $3, $4, $5);
             $$->ins = $1->ins;
             create_ins(0, $1->addr, $4->addr, $5->addr, "");
-		}
-        | test ASSIGN_OPERATOR test { 
+		} */
+        test ASSIGN_OPERATOR test { 
+            $$ = create_node(4, "expr_stmt", $1, $2, $3);
+            $$->ins = $1->ins;
+            // Here add instruction 
+        }
+        | test COLON TYPE_HINT ASSIGN_OPERATOR test { 
+            $$ = create_node(4, "expr_stmt", $1, $2, $3);
+            $$->ins = $1->ins;
+            // Here add instruction 
+
+            //STE code start
+            ste* lookup_ste = current_ste;
+            if(lookup(lookup_ste, $1->addr) == NULL){
+                current_ste = insert_entry_same_scope(current_ste, "VARIABLE", $1->addr, $3->addr, $1->lineno, 1);
+            }
+            else{
+                cerr<<"Error: Variable "<<$1->addr<<" already declared\n";
+                exit(1);
+            }
+            //STE code end
+
+        }
+        | testlist {
+			$$=$1;
+        }
+        | test EQUAL eq_testlist_star_expr_plus{
+            $$ = create_node(4, "eq_testlist_star_expr_plus", $1, $2, $3);
+			$$->ins = $1->ins;
+			create_ins(0, $1->addr, $2->addr, $3->addr, ""); 
+        }
+        | test COLON TYPE_HINT EQUAL eq_testlist_star_expr_plus{
+            $$ = create_node(4, "eq_testlist_star_expr_plus", $1, $2, $3);
+			$$->ins = $1->ins;
+			create_ins(0, $1->addr, $4->addr, $5->addr, ""); 
+            //STE code start
+            ste* lookup_ste = current_ste;
+            if(lookup(lookup_ste, $1->addr) == NULL){
+                current_ste = insert_entry_same_scope(current_ste, "VARIABLE", $1->addr, $3->addr, $1->lineno, 1);
+            }
+            else{
+                cerr<<"Error: Variable "<<$1->addr<<" already declared\n";
+                exit(1);
+            }
+            //STE code end
+        }
+    ;
+
+/* expr_stmt: 
+            /* test COLON TYPE_HINT {    //list of test COLON test???
+            $$ = create_node(4, "expr_stmt", $1, $2, $3);
+            $$->ins = $1->ins;
+        } */
+		/* | test COLON TYPE_HINT EQUAL test{
+            $$ = create_node(6, "expr_stmt", $1, $2, $3, $4, $5);
+            $$->ins = $1->ins;
+            create_ins(0, $1->addr, $4->addr, $5->addr, "");
+		} | 
+         test ASSIGN_OPERATOR test { 
             $$ = create_node(4, "expr_stmt", $1, $2, $3);
             $$->ins = $1->ins;
             // Here add instruction 
@@ -273,7 +322,7 @@ expr_stmt: test COLON test {    //list of test COLON test???
 			$$->ins = $1->ins;
 			create_ins(0, $1->addr, $2->addr, $3->addr, ""); 
         }
-        ;
+        ; */
 
 eq_testlist_star_expr_plus: test {
             $$=$1;
@@ -389,15 +438,20 @@ while_stmt: WHILE M test COLON M suite   {
 			$$->nextlist = merge($7->nextlist, $11->nextlist); //verify
         }
         ;
-for_stmt: FOR expr IN testlist COLON suite    { 
+for_stmt: FOR expr IN range_stmt COLON suite    { 
             // $$ = create_node(7, "for_stmt", $1, $2, $3, $4, $5, $6);
             // $$->ins = $2->ins;
 
         }
-        | FOR expr IN testlist COLON suite ELSE COLON suite   { 
+        | FOR expr IN range_stmt COLON suite ELSE COLON suite   { 
             
         }
         ;
+
+range_stmt: RANGE OPEN_BRACKET test CLOSE_BRACKET 
+        | RANGE OPEN_BRACKET test COMMA test CLOSE_BRACKET 
+        ;
+
 suite: simple_stmt  {
             $$=$1;
         }
@@ -700,6 +754,22 @@ atom: OPEN_BRACKET testlist CLOSE_BRACKET  {
         $$ = $1;
         $$->ins = instCount+1;
      }
+    /* | NAME COLON TYPE_HINT  { 
+        $$ = create_node(4, "atom", $1, $2, $3);
+        $$->ins = instCount+1;
+
+        //STE code start
+        ste* lookup_ste = current_ste;
+        if(lookup(lookup_ste, $1->addr) == NULL){
+            current_ste = insert_entry_same_scope(current_ste, "VARIABLE", $1->addr, $3->addr, $1->lineno, 1);
+        }
+        else{
+            cerr<<"Error: Variable "<<$1->addr<<" already declared\n";
+            exit(1);
+        }
+        //STE code end
+
+    } */
     | NUMBER        { 
         $$ = $1;
         $$->ins = instCount+1;
@@ -711,10 +781,10 @@ atom: OPEN_BRACKET testlist CLOSE_BRACKET  {
         $$ = $1;
         $$->ins = instCount+1;
     }
-    | TYPE_HINT     { 
+    /* | TYPE_HINT     { 
         $$ = $1;
         $$->ins = instCount+1;
-    }
+    } */
     ;
 STRING_PLUS: STRING     {
             $$ = $1;
@@ -751,37 +821,88 @@ testlist: testlist_list    {
 testlist_list: test         {
             $$ = $1;
         }
+        | test COLON TYPE_HINT{
+            $$ = create_node(4, "testlist_list", $1, $2, $3);
+            $$->ins = $1->ins;
+
+            //STE code start
+            ste* lookup_ste = current_ste;
+            if(lookup(lookup_ste, $1->addr) == NULL){
+                current_ste = insert_entry_same_scope(current_ste, "VARIABLE", $1->addr, $3->addr, $1->lineno, 1);
+            }
+            else{
+                cerr<<"Error: Variable "<<$1->addr<<" already declared\n";
+                exit(1);
+            }
+            //STE code end
+
+        }
         | testlist_list COMMA test  { 
             $$ = create_node(4, "testlist_list", $1, $2, $3);
             $$->ins = $1->ins;
         }
+        | testlist_list COMMA test COLON TYPE_HINT { 
+            $$ = create_node(6, "testlist_list", $1, $2, $3, $4, $5);
+            $$->ins = $1->ins;
+
+            //STE code start
+            ste* lookup_ste = current_ste;
+            if(lookup(lookup_ste, $3->addr) == NULL){
+                current_ste = insert_entry_same_scope(current_ste, "VARIABLE", $3->addr, $5->addr, $3->lineno, 1);
+            }
+            else{
+                cerr<<"Error: Variable "<<$3->addr<<" already declared\n";
+                exit(1);
+            }
+            //STE code end
+        }
         ;   
 
-classdef: CLASS NAME COLON suite      { 
-            
+classdef: CLASS X COLON suite      { 
+            current_ste = get_prev_scope(current_ste);
+            populate_new_scope(current_ste, "CLASS", $2->addr, 0, $1->lineno, 1);
         }
-        | CLASS NAME OPEN_BRACKET CLOSE_BRACKET COLON suite      { 
-            
+        | CLASS X OPEN_BRACKET CLOSE_BRACKET COLON suite      { 
+            current_ste = get_prev_scope(current_ste);
+            populate_new_scope(current_ste, "CLASS", $2->addr, 0, $1->lineno, 1);
         }
-        | CLASS NAME OPEN_BRACKET arglist CLOSE_BRACKET COLON suite      { 
-           
+        | CLASS X OPEN_BRACKET arglist CLOSE_BRACKET COLON suite      { 
+           current_ste = get_prev_scope(current_ste);
+            populate_new_scope(current_ste, "CLASS", $2->addr, $4->num_params, $1->lineno, 1);
         }
         ;
+
+X: NAME {
+        $$=$1;
+        //STE code start
+        ste* lookup_ste = current_ste;
+        if(lookup(lookup_ste, $1->addr) == NULL){
+            current_ste = insert_entry_new_scope(current_ste);
+        }
+        else{
+            cerr<<"Error: Class "<<$1->addr<<" already declared\n";
+            exit(1);
+        }
+        //STE code end
+};
+
+
 
 arglist: argument_list     { 
             $$=$1;
         }
         | argument_list COMMA    { 
-            $$ = create_node(3, "arglist", $1, $2);
-            $$->ins = $1->ins;
+            $$=$1;
         }
         ;
 argument_list: argument     { 
             $$=$1;
+            $$->num_params=1;
         }
         | argument_list COMMA argument  { 
             $$ = create_node(4, "argument_list", $1, $2, $3);
             $$->ins = $1->ins;
+            $$->num_params = $1->num_params + 1;
         }
         ;
 
@@ -882,6 +1003,34 @@ void MakeIRFile()
 	}
 }
 
+
+ste* setup_global_sym_table(ste* curr_ste){
+    curr_ste->lexeme = "global_head";
+    curr_ste->type = "GLOBAL_HEAD";
+    curr_ste = insert_entry_same_scope(curr_ste, "ATOM_KEYWORDS", "True", "RESERVED_KEYWORD", -1, -1);
+    curr_ste = insert_entry_same_scope(curr_ste, "ATOM_KEYWORDS", "False", "RESERVED_KEYWORD", -1, -1);
+    curr_ste = insert_entry_same_scope(curr_ste, "ELSE", "else", "RESERVED_KEYWORD", -1, -1);
+    curr_ste = insert_entry_same_scope(curr_ste, "ATOM_KEYWORDS", "None", "RESERVED_KEYWORD", -1, -1);
+    curr_ste = insert_entry_same_scope(curr_ste, "BREAK", "break", "RESERVED_KEYWORD", -1, -1);
+    curr_ste = insert_entry_same_scope(curr_ste, "IN", "in", "RESERVED_KEYWORD", -1, -1);
+    curr_ste = insert_entry_same_scope(curr_ste, "CLASS", "class", "RESERVED_KEYWORD", -1, -1);
+    curr_ste = insert_entry_same_scope(curr_ste, "IS", "is", "RESERVED_KEYWORD", -1, -1);
+    curr_ste = insert_entry_same_scope(curr_ste, "RETURN", "return", "RESERVED_KEYWORD", -1, -1);\
+    curr_ste = insert_entry_same_scope(curr_ste, "AND", "and", "RESERVED_KEYWORD", -1, -1);
+    curr_ste = insert_entry_same_scope(curr_ste, "CONTINUE", "continue", "RESERVED_KEYWORD", -1, -1);
+    curr_ste = insert_entry_same_scope(curr_ste, "FOR", "for", "RESERVED_KEYWORD", -1, -1);
+    curr_ste = insert_entry_same_scope(curr_ste, "DEF", "def", "RESERVED_KEYWORD", -1, -1);
+    curr_ste = insert_entry_same_scope(curr_ste, "WHILE", "while", "RESERVED_KEYWORD", -1, -1);
+    curr_ste = insert_entry_same_scope(curr_ste, "GLOBAL", "global", "RESERVED_KEYWORD", -1, -1);
+    curr_ste = insert_entry_same_scope(curr_ste, "NOT", "not", "RESERVED_KEYWORD", -1, -1);
+    curr_ste = insert_entry_same_scope(curr_ste, "ELIF", "elif", "RESERVED_KEYWORD", -1, -1);
+    curr_ste = insert_entry_same_scope(curr_ste, "IF", "if", "RESERVED_KEYWORD", -1, -1);
+    curr_ste = insert_entry_same_scope(curr_ste, "OR", "or", "RESERVED_KEYWORD", -1, -1);
+    return curr_ste;
+}
+
+
+
 int main(int argc, char* argv[]){    
     /* cout<<"Hello\n"; */
     FILE* yyin = fopen(argv[1],"r");
@@ -889,6 +1038,7 @@ int main(int argc, char* argv[]){
 
     /* bool inset = false, outset = false; */
     indent_stack.push(0);
+
 
     /* for (int i=0; i< argc; i++){
         if (strcmp(argv[i], "-help") == 0){
@@ -932,10 +1082,13 @@ int main(int argc, char* argv[]){
 
     instCount=0;
     tempCount=0;
-    yydebug=1;
+    /* yydebug=1; */
+    current_ste = setup_global_sym_table(current_ste);
     /* cout<<"Parsing Started\n"; */
     yyparse();
     fclose(yyin); 
+
+    print_ste(global_sym_table,0);
 
 /*--------------------------------------------------------------*/
 

@@ -250,6 +250,7 @@ NAME      {ID_START}{ID_CONTINUE}*
 <INITIAL,IMPLICIT_LINE_JOINING>{GLOBAL}  { noding(yytext); return GLOBAL;}
 <INITIAL,IMPLICIT_LINE_JOINING>"..."|"True"|"False"|"None"  {noding(yytext);  return ATOM_KEYWORDS;}
 <INITIAL,IMPLICIT_LINE_JOINING>{NUMBER}    { noding(yytext);  return NUMBER;}
+<INITIAL,IMPLICIT_LINE_JOINING>"range"      { noding(yytext); return RANGE;}
 <INITIAL,IMPLICIT_LINE_JOINING>{NAME}      { noding(yytext); return NAME;}
 <INITIAL>{NEWLINE}[ ]*/{NEWLINE}   {}
 <INITIAL>{NEWLINE}[ ]*{COMMENT}/{NEWLINE}   { }

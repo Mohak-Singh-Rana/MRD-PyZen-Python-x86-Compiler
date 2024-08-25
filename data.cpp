@@ -11,6 +11,7 @@ NODE* create_node(int n_args, ...)
     char* temp=new char[1];
     strcpy(temp, s.c_str());
     element->type=temp;
+    // int num_params = 0;
 
     NODE*child;
     va_list valist;

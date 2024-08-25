@@ -1,7 +1,34 @@
-1	t0 = b > 6
-2	if t0 goto 
-3	goto 4 
-4	t1 = 2 + 3
-5	t2 = t1 + 4
-6	x = t2 
-7	goto 1 
+global_head GLOBAL_HEAD
+True RESERVED_KEYWORD
+False RESERVED_KEYWORD
+else RESERVED_KEYWORD
+None RESERVED_KEYWORD
+break RESERVED_KEYWORD
+in RESERVED_KEYWORD
+class RESERVED_KEYWORD
+is RESERVED_KEYWORD
+return RESERVED_KEYWORD
+and RESERVED_KEYWORD
+continue RESERVED_KEYWORD
+for RESERVED_KEYWORD
+def RESERVED_KEYWORD
+while RESERVED_KEYWORD
+global RESERVED_KEYWORD
+not RESERVED_KEYWORD
+elif RESERVED_KEYWORD
+if RESERVED_KEYWORD
+or RESERVED_KEYWORD
+Animal 
+-> scope_head SCOPE_HEAD
+-> cat 
+-> -> scope_head SCOPE_HEAD
+-> -> x int
+-> -> y float
+-> -> z int
+-> dog 
+-> -> scope_head SCOPE_HEAD
+-> -> x int
+-> -> y bool
+1	z = 0 
+2	t0 = x + y
+3	t1 = x - y
