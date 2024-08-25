@@ -1,7 +1,5 @@
-# class Animal:
-#     def cat(x:int, y:float)->int:
-#         z: int = 0
-#         return x + y
-#     def dog(x:int, y:bool):
-#         return x - y
-
+for i in range(5):
+    x=3
+    for j in range(10):
+        y=4
+        continue

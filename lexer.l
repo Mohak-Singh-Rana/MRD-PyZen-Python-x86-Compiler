@@ -64,7 +64,7 @@ SQUARE_OPEN       "["
 SQUARE_CLOSE      "]"
 EQUAL             "="
 
-PRIMITVE_TYPE     "int"|"float"|"str"|"bool"|"complex"|"bytes"|"bytearray"|"NoneType"|"None"
+PRIMITVE_TYPE     "int"|"float"|"str"|"bool"|"None"
 TYPE_HINT          {PRIMITVE_TYPE}|List\[{PRIMITVE_TYPE}\]
 
 IF                "if"
@@ -231,8 +231,8 @@ NAME      {ID_START}{ID_CONTINUE}*
 <INITIAL,IMPLICIT_LINE_JOINING>{CURLY_CLOSE}           {line_joining_counter--; if(line_joining_counter==0)BEGIN(INITIAL); noding(yytext); return CURLY_CLOSE;}
 <INITIAL,IMPLICIT_LINE_JOINING>{SQUARE_OPEN}           {line_joining_counter++; BEGIN(IMPLICIT_LINE_JOINING); noding(yytext); return SQUARE_OPEN;}
 <INITIAL,IMPLICIT_LINE_JOINING>{SQUARE_CLOSE}         {line_joining_counter--; if(line_joining_counter==0)BEGIN(INITIAL); noding(yytext); return SQUARE_CLOSE;}
-<INITIAL,IMPLICIT_LINE_JOINING>{STRING} {noding(yytext);  return STRING;}
-<INITIAL,IMPLICIT_LINE_JOINING>{TYPE_HINT}         {noding(yytext);   return TYPE_HINT; }
+<INITIAL,IMPLICIT_LINE_JOINING>{STRING}             {noding(yytext);  return STRING;}
+<INITIAL,IMPLICIT_LINE_JOINING>{TYPE_HINT}         {noding(yytext); return TYPE_HINT; }
 <INITIAL>\\[\n\t\ ]+  { /* ignore */ } 
 
 <INITIAL,IMPLICIT_LINE_JOINING>{IF}        { noding(yytext); return IF;}

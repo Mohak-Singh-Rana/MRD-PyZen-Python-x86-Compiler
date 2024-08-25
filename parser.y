@@ -14,6 +14,7 @@
     extern char* yytext;
     void yyerror(string str);
     extern stack<int> indent_stack;
+    stack<int> loopStack;
 
     int instCount;
     vector<vector<string>> instructions;
@@ -29,7 +30,7 @@
     // map<string,ste> global_sym_table;
     ste* global_sym_table = new ste;   //pointer to the head(initialising entry) of the global symbol table
     ste* current_ste = global_sym_table;   //pointer to current symbol table entry (initialised to pointer of head of the global symbol table)  
-
+    int global_offset = 0;
 
     char* numtochar( int num){  
         string s="0";   
@@ -74,7 +75,8 @@
 %start file
 
 %type<elem> M N file snippet stmt simple_stmt small_stmt_list small_stmt expr_stmt eq_testlist_star_expr_plus flow_stmt break_stmt continue_stmt return_stmt global_stmt compound_stmt funcdef parameters typedargslist typedarg tfpdef if_stmt while_stmt for_stmt suite nts_star test or_test and_test not_test comparison comp_op expr xor_expr and_expr shift_expr arith_expr term term_choice factor factor_choice power atom_expr atom STRING_PLUS trailer classdef arglist argument_list argument testlist testlist_list comma_name_star and_test_star not_test_star func_body_suite stmt_plus
-%type<elem> A C X 
+%type<elem> for_test func_name func_ret_type class_name while_expr else_scope else_if_scope if_scope while_scope for_scope 
+%type<elem> range_stmt for_core
 %token<elem> RANGE NEWLINE INDENT DEDENT ASSIGN_OPERATOR POWER_OPERATOR SHIFT_OPER FLOOR_DIV_OPER ARROW_OPER TYPE_HINT NAME IF ELSE ELIF WHILE FOR IN AND OR NOT BREAK CONTINUE RETURN CLASS DEF GLOBAL ATOM_KEYWORDS STRING NUMBER OPEN_BRACKET CLOSE_BRACKET EQUAL SEMI_COLON COLON COMMA PLUS MINUS MULTIPLY DIVIDE REMAINDER ATTHERATE NEGATION BIT_AND BIT_OR BIT_XOR DOT CURLY_OPEN CURLY_CLOSE SQUARE_OPEN SQUARE_CLOSE LESS_THAN GREATER_THAN EQUAL_EQUAL GREATER_THAN_EQUAL LESS_THAN_EQUAL NOT_EQUAL_ARROW NOT_EQUAL IS
 
 
@@ -115,25 +117,29 @@ snippet: NEWLINE {
     }
     ; 
 
-funcdef: DEF A parameters COLON func_body_suite {
+funcdef: DEF func_name parameters COLON func_body_suite {
+            //STE code start
             current_ste = get_prev_scope(current_ste);
             populate_new_scope(current_ste, "FUNCTION", $2->addr, $4->num_params, $1->lineno, 1);
-        }
-        | DEF A parameters ARROW_OPER C COLON func_body_suite {
-            current_ste = get_prev_scope(current_ste);
-            populate_new_scope(current_ste, "FUNCTION", $2->addr, $4->num_params, $1->lineno, 1);
-        }
-        | DEF A OPEN_BRACKET CLOSE_BRACKET COLON func_body_suite {
-            current_ste = get_prev_scope(current_ste);
-            populate_new_scope(current_ste, "FUNCTION", $2->addr, 0, $1->lineno, 1);
-        }
-        | DEF A OPEN_BRACKET CLOSE_BRACKET ARROW_OPER C COLON func_body_suite{
-            current_ste = get_prev_scope(current_ste);
-            populate_new_scope(current_ste, "FUNCTION", $2->addr, 0, $1->lineno, 1);
-        }
-    ;
+            //STE code end
 
-A: NAME 
+
+        }
+        | DEF func_name parameters ARROW_OPER func_ret_type COLON func_body_suite {
+            current_ste = get_prev_scope(current_ste);
+            populate_new_scope(current_ste, "FUNCTION", $2->addr, $4->num_params, $1->lineno, 1);
+        }
+        | DEF func_name OPEN_BRACKET CLOSE_BRACKET COLON func_body_suite {
+            current_ste = get_prev_scope(current_ste);
+            populate_new_scope(current_ste, "FUNCTION", $2->addr, 0, $1->lineno, 1);
+        }
+        | DEF func_name OPEN_BRACKET CLOSE_BRACKET ARROW_OPER func_ret_type COLON func_body_suite{
+            current_ste = get_prev_scope(current_ste);
+            populate_new_scope(current_ste, "FUNCTION", $2->addr, 0, $1->lineno, 1);
+        }
+        ;
+
+func_name: NAME 
     {   
         $$=$1;
         //STE code start
@@ -148,7 +154,7 @@ A: NAME
         //STE code end
     };
 
-C: TYPE_HINT{
+func_ret_type: TYPE_HINT{
         $$=$1;
         get_prev_scope(current_ste)->return_type = $1->addr;
     }
@@ -227,6 +233,7 @@ small_stmt_list: small_stmt     {
         | small_stmt_list SEMI_COLON small_stmt      {  
            $$ = create_node(3, "small_stmt_list", $1, $2, $3);
 		   $$->ins = $1->ins;
+           $$->nextlist = merge($1->nextlist, $3->nextlist);
         }
         ;
 
@@ -241,18 +248,7 @@ small_stmt: expr_stmt       {
         }
         ;
 
-//I removed annassign
-expr_stmt: 
-        /* test COLON TYPE_HINT {    //list of test COLON test???
-            $$ = create_node(4, "expr_stmt", $1, $2, $3);
-            $$->ins = $1->ins;
-        }
-		| test COLON TYPE_HINT EQUAL test{
-            $$ = create_node(6, "expr_stmt", $1, $2, $3, $4, $5);
-            $$->ins = $1->ins;
-            create_ins(0, $1->addr, $4->addr, $5->addr, "");
-		} */
-        test ASSIGN_OPERATOR test { 
+expr_stmt: test ASSIGN_OPERATOR test { 
             $$ = create_node(4, "expr_stmt", $1, $2, $3);
             $$->ins = $1->ins;
             // Here add instruction 
@@ -299,31 +295,6 @@ expr_stmt:
         }
     ;
 
-/* expr_stmt: 
-            /* test COLON TYPE_HINT {    //list of test COLON test???
-            $$ = create_node(4, "expr_stmt", $1, $2, $3);
-            $$->ins = $1->ins;
-        } */
-		/* | test COLON TYPE_HINT EQUAL test{
-            $$ = create_node(6, "expr_stmt", $1, $2, $3, $4, $5);
-            $$->ins = $1->ins;
-            create_ins(0, $1->addr, $4->addr, $5->addr, "");
-		} | 
-         test ASSIGN_OPERATOR test { 
-            $$ = create_node(4, "expr_stmt", $1, $2, $3);
-            $$->ins = $1->ins;
-            // Here add instruction 
-        }
-        | testlist {
-			$$=$1;
-        }
-        | test EQUAL eq_testlist_star_expr_plus{
-            $$ = create_node(4, "eq_testlist_star_expr_plus", $1, $2, $3);
-			$$->ins = $1->ins;
-			create_ins(0, $1->addr, $2->addr, $3->addr, ""); 
-        }
-        ; */
-
 eq_testlist_star_expr_plus: test {
             $$=$1;
         }
@@ -347,12 +318,18 @@ flow_stmt: break_stmt   {
         ;
 
 break_stmt: BREAK   {  
-            
-            
+            $$=$1;
+            $$->ins = instCount+1;
+            int temp = loopStack.top();
+            loopStack.pop();
+            create_ins(0, "goto", to_string(loopStack.top()), "", "");
+            loopStack.push(temp);
         }
         ;
 continue_stmt: CONTINUE     {  
-            
+            $$=$1;
+            $$->ins = instCount+1;
+            create_ins(0, "goto", to_string(loopStack.top()), "", "");
         }
         ;
 return_stmt: RETURN     {  
@@ -387,9 +364,11 @@ compound_stmt: if_stmt      {
         }
         | while_stmt   {  
             $$=$1;
+            loopStack.pop();
         }
         | for_stmt     {  
             $$=$1;
+            loopStack.pop();
         }
         | funcdef      {  
             $$=$1;
@@ -399,57 +378,226 @@ compound_stmt: if_stmt      {
         }
         ;  
 
-if_stmt: IF test COLON M suite     {  
+if_stmt: if_scope test COLON M suite     {  
            $$=create_node(6, "if_stmt", $1, $2, $3, $4, $5);
            $$->ins = $2->ins;
            backpatch($2->truelist, $4->ins);
            $$->nextlist = merge($2->falselist, $5->nextlist);
+
+            //STE code start
+            current_ste = get_prev_scope(current_ste);  
+            //STE code end
+
         }
-        | IF test COLON M suite N ELSE COLON M suite   {  
-            $$ = create_node(11, "if_else_stmt", $1, $2, $3, $4, $5, $6, $7, $8, $9, $10);
+        | if_scope test COLON M suite N else_scope COLON M suite   {  
+            $$ = create_node(11, "if_else_stmt", $1,$2, $3, $4, $5, $6, $7, $8, $9, $10);
             backpatch($2->truelist, $4->ins);
             backpatch($2->falselist, $9->ins);
             vector<int> temp = merge($5->nextlist, $6->nextlist);
             $$->nextlist = merge(temp, $10->nextlist);
+
+            //STE code start
+            current_ste = get_prev_scope(current_ste);
+            //STE code end
+
         }
-        | IF test COLON M suite N nts_star    {  
-            $$ = create_node(8, "if_elif_stmt", $1, $2, $3, $4, $5, $6, $7);
+        | if_scope test COLON M suite N nts_star    {  
+            $$ = create_node(8, "if_elif_stmt", $1,$2, $3, $4, $5, $6, $7);
             backpatch($2->truelist, $4->ins);
             backpatch($2->falselist, $7->ins);     
             vector<int> temp = merge($5->nextlist, $6->nextlist);
-            $$->nextlist = merge(temp, $7->nextlist);
+            $$->nextlist = merge(temp, $7->nextlist);    
         }
         ;
-while_stmt: WHILE M test COLON M suite   {  
+
+if_scope: IF{
+        $$=$1;
+        current_ste = insert_entry_new_scope(current_ste);
+        populate_new_scope(current_ste->prev_scope, "IF", "IF", 0, $1->lineno, 0);
+    }
+    ;
+
+else_scope: ELSE{
+        $$=$1;
+        //STE code start
+        current_ste = get_prev_scope(current_ste);
+        current_ste = insert_entry_new_scope(current_ste);
+        populate_new_scope(current_ste->prev_scope, "ELSE", "ELSE", 0, $1->lineno, 1);
+
+        //STE code end
+    }
+    ;
+
+else_if_scope: ELIF{
+        $$=$1;
+        //STE code start
+        current_ste = get_prev_scope(current_ste);
+        current_ste = insert_entry_new_scope(current_ste);
+        populate_new_scope(current_ste->prev_scope, "ELSE_IF", "ELSE_IF", 0, $1->lineno, 1);
+        //STE code end
+    }
+    ;
+    
+
+nts_star : else_if_scope test COLON M suite  {  
+            $$=create_node(6, "elif_stmt", $1, $2, $3, $4, $5);
+            $$->ins = $2->ins;
+            backpatch($2->truelist, $4->ins);
+            $$->nextlist = merge($2->falselist, $5->nextlist);
+
+            //STE code start
+            current_ste = get_prev_scope(current_ste);
+            //STE code end
+        }
+        | else_if_scope test COLON M suite N nts_star  {  
+            $$ = create_node(8, "elif_stmt", $1, $2, $3, $4, $5, $6, $7);
+            $$->ins = $2->ins;
+            backpatch($2->truelist, $4->ins);
+            backpatch($2->falselist, $7->ins);
+            $$->nextlist = merge($5->nextlist, merge($6->nextlist, $7->nextlist));
+        }
+        | else_if_scope test COLON M suite N else_scope COLON M suite  {  
+            $$ = create_node(11, "elif_else_stmt", $1, $2, $3, $4, $5, $6, $7, $8, $9, $10);
+            $$->ins = $2->ins;
+            backpatch($2->truelist, $4->ins);
+            backpatch($2->falselist, $9->ins);
+            $$->nextlist = merge($5->nextlist, merge($6->nextlist,$10->nextlist));
+
+            //STE code start
+            current_ste = get_prev_scope(current_ste);
+            //STE code end
+        }
+        ;
+        
+while_stmt: while_scope M while_expr COLON M suite   {  
             $$ = create_node(7, "while_stmt", $1, $2, $3, $4, $5, $6);
             $$->ins = $2->ins;
             backpatch($6->nextlist, $2->ins);
             backpatch($3->truelist, $5->ins);
             $$->nextlist = $3->falselist;
             create_ins(0, "goto", to_string($2->ins), "", "");
+
+            //STE code start
+            current_ste = get_prev_scope(current_ste);
+            //STE code end
         }
-		| WHILE M test COLON M suite N ELSE COLON M suite  {   
+		| while_scope M while_expr COLON M suite N else_scope COLON M suite  {   
 			$$ = create_node(12, "while_else_stmt", $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11);
 			$$->ins = $2->ins;
 			backpatch($7->nextlist, $2->ins);
 			backpatch($6->nextlist, $2->ins);
 			backpatch($3->truelist, $5->ins);
 			backpatch($3->falselist, $10->ins);
-			$$->nextlist = merge($7->nextlist, $11->nextlist); //verify
+			$$->nextlist = $11->nextlist; //verify //verified 
+
+            //STE code start
+            current_ste = get_prev_scope(current_ste);
+            //STE code end
         }
         ;
-for_stmt: FOR expr IN range_stmt COLON suite    { 
-            // $$ = create_node(7, "for_stmt", $1, $2, $3, $4, $5, $6);
-            // $$->ins = $2->ins;
 
+while_scope: WHILE {
+        $$=$1;
+        current_ste = insert_entry_new_scope(current_ste);
+        populate_new_scope(current_ste->prev_scope, "WHILE", "WHILE", 0, $1->lineno, 0);
+    }
+    ;
+
+while_expr: test   { 
+            $$=$1;
+            $$->ins = $1->ins;
+            loopStack.push($$->ins);
         }
-        | FOR expr IN range_stmt COLON suite ELSE COLON suite   { 
+        ;
+for_stmt: for_scope for_core COLON M suite    { 
+            $$ = create_node(6, "for_stmt", $1, $2, $3, $4, $5);
+            $$->ins = $1->ins;
+
+            backpatch($2->truelist, $4->ins);
+            $$->nextlist = $2->falselist;   //check this filling //checked
+
+            // create_ins(1, $2->for_it, "+", $2->for_it, "1");
+            // backpatch($5->nextlist, instCount); //suite nextlist will be patched to update statement of for loop
+            backpatch($5->nextlist, $2->ins); //suite nextlist will be patched to update statement of for loop
+            create_ins(0, "goto", to_string($2->ins), "", "");
+
+            //STE code start
+            current_ste = get_prev_scope(current_ste);
+            //STE code end            
+        }
+        | for_scope for_core COLON M suite N ELSE COLON M suite   { 
+            $$ = create_node(11, "for_else_stmt", $1, $2, $3, $4, $5, $6, $7, $8, $9, $10);
+            $$->ins = $1->ins;
+
+            $10->nextlist = merge($10->nextlist, makelist(instCount+1));
+            create_ins(0, "goto", "", "", "");
             
+            // create_ins(1, $2->for_it, "+", $2->for_it, "1");
+            // backpatch($6->nextlist, instCount); 
+            // backpatch($5->nextlist, instCount);
+            backpatch($6->nextlist, $2->ins); 
+            backpatch($5->nextlist, $2->ins);
+            create_ins(0, "goto", to_string($2->ins), "", "");
+
+            backpatch($2->truelist, $4->ins);
+            backpatch($2->falselist, $9->ins);
+
+            $$->nextlist = $10->nextlist; //verify
+
+            //STE code start
+            current_ste = get_prev_scope(current_ste);
+            //STE code end
         }
         ;
 
-range_stmt: RANGE OPEN_BRACKET test CLOSE_BRACKET 
-        | RANGE OPEN_BRACKET test COMMA test CLOSE_BRACKET 
+for_core: expr IN range_stmt   { 
+            $$ = create_node(3, "for_core", $1, $2, $3);
+
+
+            create_ins(0, $1->addr, "=", to_string(chartonum($3->for_start)-1), "");
+
+            create_ins(1, $1->addr, "+", $1->addr, "1");
+            loopStack.push(instCount);
+            $$->ins = instCount;
+            string temp = newTemp();
+            create_ins(1, temp, "<", $1->addr, $3->for_end);
+            $$->truelist = makelist(instCount+1);
+            $$->falselist = makelist(instCount+2);
+            create_ins(0, "if", temp, "goto", "");
+            create_ins(0, "goto", "", "", "");        
+        }
+        ;
+
+for_scope: FOR {
+        //STE code start
+        //loopStack.push($$->ins);
+        current_ste = insert_entry_new_scope(current_ste);
+        populate_new_scope(current_ste->prev_scope, "FOR", "FOR", 0, $1->lineno, 0);
+        //STE code end
+    }
+    ;
+
+range_stmt: RANGE OPEN_BRACKET for_test CLOSE_BRACKET {
+            $$ = create_node(5, "range_stmt", $1, $2, $3, $4);
+            $$->ins = $3->ins;
+
+            $$->for_end = $3->addr;
+            $$->for_start = strdup("0");
+        }
+        | RANGE OPEN_BRACKET for_test COMMA test CLOSE_BRACKET {
+            $$ = create_node(7, "range_stmt", $1, $2, $3, $4, $5, $6);
+            $$->ins = $3->ins;
+
+            $$->for_end = $5->addr;
+            $$->for_start = $3->addr;
+        }
+        ;
+
+for_test : test {
+            $$=$1;
+            $$->ins = $1->ins;
+            //loopStack.push($$->ins);
+        }
         ;
 
 suite: simple_stmt  {
@@ -463,27 +611,6 @@ suite: simple_stmt  {
         }
         ;
 
-nts_star : ELIF test COLON M suite  {  
-            $$=create_node(6, "elif_stmt", $1, $2, $3, $4, $5);
-            $$->ins = $2->ins;
-            backpatch($2->truelist, $4->ins);
-            $$->nextlist = merge($2->falselist, $5->nextlist);
-        }
-        | ELIF test COLON M suite N nts_star  {  
-            $$ = create_node(8, "elif_stmt", $1, $2, $3, $4, $5, $6, $7);
-            $$->ins = $2->ins;
-            backpatch($2->truelist, $4->ins);
-            backpatch($2->falselist, $7->ins);
-            $$->nextlist = merge($5->nextlist, merge($6->nextlist, $7->nextlist));
-        }
-        | ELIF test COLON M suite N ELSE COLON M suite  {  
-            $$ = create_node(11, "elif_else_stmt", $1, $2, $3, $4, $5, $6, $7, $8, $9, $10);
-            $$->ins = $2->ins;
-            backpatch($2->truelist, $4->ins);
-            backpatch($2->falselist, $9->ins);
-            $$->nextlist = merge($5->nextlist, merge($6->nextlist,$10->nextlist));
-        }
-        ;
 
 test: or_test   { 
             $$=$1;
@@ -754,22 +881,6 @@ atom: OPEN_BRACKET testlist CLOSE_BRACKET  {
         $$ = $1;
         $$->ins = instCount+1;
      }
-    /* | NAME COLON TYPE_HINT  { 
-        $$ = create_node(4, "atom", $1, $2, $3);
-        $$->ins = instCount+1;
-
-        //STE code start
-        ste* lookup_ste = current_ste;
-        if(lookup(lookup_ste, $1->addr) == NULL){
-            current_ste = insert_entry_same_scope(current_ste, "VARIABLE", $1->addr, $3->addr, $1->lineno, 1);
-        }
-        else{
-            cerr<<"Error: Variable "<<$1->addr<<" already declared\n";
-            exit(1);
-        }
-        //STE code end
-
-    } */
     | NUMBER        { 
         $$ = $1;
         $$->ins = instCount+1;
@@ -781,10 +892,6 @@ atom: OPEN_BRACKET testlist CLOSE_BRACKET  {
         $$ = $1;
         $$->ins = instCount+1;
     }
-    /* | TYPE_HINT     { 
-        $$ = $1;
-        $$->ins = instCount+1;
-    } */
     ;
 STRING_PLUS: STRING     {
             $$ = $1;
@@ -858,21 +965,21 @@ testlist_list: test         {
         }
         ;   
 
-classdef: CLASS X COLON suite      { 
+classdef: CLASS class_name COLON suite      { 
             current_ste = get_prev_scope(current_ste);
             populate_new_scope(current_ste, "CLASS", $2->addr, 0, $1->lineno, 1);
         }
-        | CLASS X OPEN_BRACKET CLOSE_BRACKET COLON suite      { 
+        | CLASS class_name OPEN_BRACKET CLOSE_BRACKET COLON suite      { 
             current_ste = get_prev_scope(current_ste);
             populate_new_scope(current_ste, "CLASS", $2->addr, 0, $1->lineno, 1);
         }
-        | CLASS X OPEN_BRACKET arglist CLOSE_BRACKET COLON suite      { 
+        | CLASS class_name OPEN_BRACKET arglist CLOSE_BRACKET COLON suite      { 
            current_ste = get_prev_scope(current_ste);
             populate_new_scope(current_ste, "CLASS", $2->addr, $4->num_params, $1->lineno, 1);
         }
         ;
 
-X: NAME {
+class_name: NAME {
         $$=$1;
         //STE code start
         ste* lookup_ste = current_ste;
@@ -933,6 +1040,7 @@ stmt_plus: stmt     {
         | stmt stmt_plus    { 
             $$=create_node(3,"stmt_plus",$1,$2);
 			$$->ins = $1 -> ins;
+            $$->nextlist = merge($1->nextlist, $2->nextlist);
         }
 
 %%
@@ -1028,6 +1136,24 @@ ste* setup_global_sym_table(ste* curr_ste){
     curr_ste = insert_entry_same_scope(curr_ste, "OR", "or", "RESERVED_KEYWORD", -1, -1);
     return curr_ste;
 }
+
+ /* int get_offset(node* TYPE_HINT){
+    if(TYPE_HINT->addr == "int"){
+        return 4;
+    }
+    else if(TYPE_HINT->addr == "float"){
+        return 8;
+    }
+    else if(TYPE_HINT->addr == "bool"){
+        return 1;
+    }
+    else if(TYPE_HINT->addr == "None"){
+        return 0;
+    } 
+    else if(TYPE_HINT->addr == "str"){
+        
+    }
+} */
 
 
 

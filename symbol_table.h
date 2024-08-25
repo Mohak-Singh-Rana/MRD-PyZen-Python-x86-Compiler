@@ -5,6 +5,7 @@ using namespace std;
 typedef struct symbol_table_entry{
     string token, lexeme, type; //for variables
     int lineno; //for variables, functions, classes
+    int offset; //for variables
     int isvar = 0;  //check if it is a variable
     string return_type = "None", id;  //for functions, classes
     int num_params;        //for functions, classes
