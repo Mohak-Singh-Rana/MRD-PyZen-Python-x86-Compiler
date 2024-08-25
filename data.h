@@ -27,6 +27,8 @@ typedef struct node
 
     int list_size=0;
 
+    vector<string> func_par_type;
+
     vector<int> truelist;
     vector<int> falselist;
     vector<int> nextlist;

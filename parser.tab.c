@@ -94,6 +94,7 @@
     void backpatch_str(vector<int> p, string str);
     void create_ins(int type,string i,string op,string arg1,string arg2);
     vector<int> merge(vector<int> p1, vector<int> p2);
+    void vector_copy(vector<string> v1,vector<string> v2);
     string newTemp();
     char* str_to_ch(string s);
     int tempCount;
@@ -143,7 +144,7 @@
         return s;
     }
 
-#line 147 "parser.tab.c"
+#line 148 "parser.tab.c"
 
 # ifndef YY_CAST
 #  ifdef __cplusplus
@@ -704,24 +705,24 @@ static const yytype_int8 yytranslate[] =
 /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_int16 yyrline[] =
 {
-       0,    92,    92,    98,   105,   110,   114,   117,   120,   126,
-     141,   152,   161,   172,   221,   225,   231,   237,   243,   250,
-     258,   274,   277,   295,   299,   323,   326,   331,   334,   339,
-     342,   349,   352,   355,   360,   385,   415,   432,   435,   518,
-     558,   577,   580,   604,   607,   610,   615,   626,   632,   635,
-     643,   647,   653,   657,   662,   665,   669,   673,   676,   681,
-     692,   704,   711,   717,   729,   736,   747,   758,   768,   775,
-     788,   800,   815,   822,   828,   846,   871,   892,   902,   909,
-     918,   925,   928,   931,   937,   943,   946,   954,   961,   966,
-     969,   977,   984,   989,   995,   998,  1003,  1010,  1013,  1034,
-    1037,  1040,  1043,  1046,  1049,  1052,  1055,  1058,  1061,  1064,
-    1069,  1072,  1105,  1108,  1141,  1145,  1178,  1181,  1214,  1217,
-    1252,  1287,  1290,  1327,  1330,  1333,  1336,  1339,  1344,  1356,
-    1360,  1363,  1366,  1370,  1373,  1386,  1389,  1518,  1547,  1590,
-    1611,  1620,  1652,  1655,  1660,  1676,  1681,  1686,  1713,  1718,
-    1721,  1727,  1738,  1744,  1753,  1760,  1763,  1766,  1778,  1783,
-    1791,  1796,  1815,  1826,  1877,  1898,  1917,  1936,  1999,  2003,
-    2009,  2012,  2039,  2042,  2046,  2055,  2065,  2068,  2076,  2079
+       0,    93,    93,    99,   106,   111,   115,   118,   121,   127,
+     146,   160,   169,   180,   229,   233,   239,   249,   258,   265,
+     273,   295,   298,   319,   323,   350,   353,   358,   361,   366,
+     369,   376,   379,   382,   387,   424,   478,   495,   498,   581,
+     635,   654,   657,   681,   684,   687,   692,   703,   709,   712,
+     720,   726,   732,   736,   741,   744,   748,   752,   755,   760,
+     771,   783,   790,   796,   808,   815,   826,   837,   847,   854,
+     867,   879,   894,   901,   907,   925,   950,   971,   981,   988,
+     997,  1004,  1007,  1010,  1016,  1022,  1025,  1033,  1040,  1045,
+    1048,  1056,  1063,  1068,  1074,  1077,  1082,  1089,  1092,  1113,
+    1116,  1119,  1122,  1125,  1128,  1131,  1134,  1137,  1140,  1143,
+    1148,  1151,  1184,  1187,  1220,  1224,  1257,  1260,  1293,  1296,
+    1331,  1366,  1369,  1406,  1409,  1412,  1415,  1418,  1423,  1435,
+    1439,  1442,  1445,  1449,  1452,  1465,  1468,  1621,  1650,  1712,
+    1733,  1742,  1787,  1790,  1795,  1811,  1816,  1821,  1848,  1853,
+    1856,  1862,  1873,  1879,  1888,  1895,  1901,  1907,  1919,  1924,
+    1932,  1940,  1962,  1977,  2032,  2053,  2072,  2091,  2154,  2158,
+    2164,  2167,  2194,  2197,  2201,  2211,  2227,  2232,  2243,  2246
 };
 #endif
 
@@ -1578,68 +1579,68 @@ yyreduce:
   switch (yyn)
     {
   case 2: /* M: %empty  */
-#line 92 "parser.y"
+#line 93 "parser.y"
          {
         (yyval.elem) = create_node(1, "Marker Non-terminal M");
         (yyval.elem)->ins = instCount+1;
 }
-#line 1587 "parser.tab.c"
+#line 1588 "parser.tab.c"
     break;
 
   case 3: /* N: %empty  */
-#line 98 "parser.y"
+#line 99 "parser.y"
          {
         (yyval.elem) = create_node(1, "Marker Non-terminal N");
         (yyval.elem)->nextlist = makelist(instCount+1);
         create_ins(0, "goto", "", "", "");
 }
-#line 1597 "parser.tab.c"
+#line 1598 "parser.tab.c"
     break;
 
   case 4: /* file: snippet  */
-#line 105 "parser.y"
+#line 106 "parser.y"
               {
                 (yyval.elem) = (yyvsp[0].elem);
             }
-#line 1605 "parser.tab.c"
+#line 1606 "parser.tab.c"
     break;
 
   case 5: /* snippet: NEWLINE  */
-#line 110 "parser.y"
+#line 111 "parser.y"
                  {
        (yyval.elem)=(yyvsp[0].elem);
 	   (yyval.elem)->ins = instCount+1;
     }
-#line 1614 "parser.tab.c"
+#line 1615 "parser.tab.c"
     break;
 
   case 6: /* snippet: stmt  */
-#line 114 "parser.y"
+#line 115 "parser.y"
             { 
         (yyval.elem)=(yyvsp[0].elem);
     }
-#line 1622 "parser.tab.c"
+#line 1623 "parser.tab.c"
     break;
 
   case 7: /* snippet: NEWLINE snippet  */
-#line 117 "parser.y"
+#line 118 "parser.y"
                        { 
         (yyval.elem)=(yyvsp[0].elem);
     }
-#line 1630 "parser.tab.c"
+#line 1631 "parser.tab.c"
     break;
 
   case 8: /* snippet: stmt snippet  */
-#line 120 "parser.y"
+#line 121 "parser.y"
                    {  
         (yyval.elem) = create_node(3, "snippet", (yyvsp[-1].elem), (yyvsp[0].elem));
         (yyval.elem)->ins = (yyvsp[-1].elem)->ins;
     }
-#line 1639 "parser.tab.c"
+#line 1640 "parser.tab.c"
     break;
 
   case 9: /* funcdef: DEF func_name parameters COLON suite  */
-#line 126 "parser.y"
+#line 127 "parser.y"
                                               {
             //STE code start
             current_ste = get_prev_scope(current_ste);
@@ -1654,12 +1655,16 @@ yyreduce:
             backpatch_str((yyvsp[0].elem)->nextlist, "ra");
             // thisTemps.push(reg1);
 
+            //populate in symbol table
+            populate_fun_par_type(current_ste,(yyvsp[-2].elem)->func_par_type);
+            //if(current_ste->num_params)cout<<"pls "<<current_ste->func_par_type[0]<<endl;
+
         }
-#line 1659 "parser.tab.c"
+#line 1664 "parser.tab.c"
     break;
 
   case 10: /* funcdef: DEF func_name parameters ARROW_OPER func_ret_type COLON suite  */
-#line 141 "parser.y"
+#line 146 "parser.y"
                                                                         {
             current_ste = get_prev_scope(current_ste);
             //cout<<"in funcfull"<<endl;
@@ -1670,12 +1675,15 @@ yyreduce:
 			// create_ins(0,$2->return_func,"=","PopParam","");
             create_ins(0,"Goto","ra","","");
             create_ins(0,"EndFunc","","","");
+
+            //populate in symbol table
+            populate_fun_par_type(current_ste,(yyvsp[-4].elem)->func_par_type);
         }
-#line 1675 "parser.tab.c"
+#line 1683 "parser.tab.c"
     break;
 
   case 11: /* funcdef: DEF func_name OPEN_BRACKET CLOSE_BRACKET COLON suite  */
-#line 152 "parser.y"
+#line 160 "parser.y"
                                                                {
             current_ste = get_prev_scope(current_ste);
             populate_new_scope(current_ste, "FUNCTION", (yyvsp[-4].elem)->addr, 0, (yyvsp[-5].elem)->lineno, 1);
@@ -1685,11 +1693,11 @@ yyreduce:
             create_ins(0,"Goto","ra","","");
             create_ins(0,"EndFunc","","","");
         }
-#line 1689 "parser.tab.c"
+#line 1697 "parser.tab.c"
     break;
 
   case 12: /* funcdef: DEF func_name OPEN_BRACKET CLOSE_BRACKET ARROW_OPER func_ret_type COLON suite  */
-#line 161 "parser.y"
+#line 169 "parser.y"
                                                                                        {
             current_ste = get_prev_scope(current_ste);
             populate_new_scope(current_ste, "FUNCTION", (yyvsp[-6].elem)->addr, 0, (yyvsp[-7].elem)->lineno, 1,(yyvsp[-2].elem)->addr);
@@ -1699,11 +1707,11 @@ yyreduce:
             create_ins(0,"Goto","ra","","");
             create_ins(0,"EndFunc","","","");
         }
-#line 1703 "parser.tab.c"
+#line 1711 "parser.tab.c"
     break;
 
   case 13: /* func_name: NAME  */
-#line 173 "parser.y"
+#line 181 "parser.y"
     {   
         (yyval.elem)=(yyvsp[0].elem);
 
@@ -1728,61 +1736,68 @@ yyreduce:
         }
         //STE code end
     }
-#line 1732 "parser.tab.c"
+#line 1740 "parser.tab.c"
     break;
 
   case 14: /* func_ret_type: TYPE_HINT  */
-#line 221 "parser.y"
+#line 229 "parser.y"
                         {
         (yyval.elem)=(yyvsp[0].elem);
         get_prev_scope(current_ste)->return_type = (yyvsp[0].elem)->addr;
     }
-#line 1741 "parser.tab.c"
+#line 1749 "parser.tab.c"
     break;
 
   case 15: /* func_ret_type: NONE  */
-#line 225 "parser.y"
+#line 233 "parser.y"
           {
         (yyval.elem)=(yyvsp[0].elem);
         get_prev_scope(current_ste)->return_type = "None";
     }
-#line 1750 "parser.tab.c"
+#line 1758 "parser.tab.c"
     break;
 
   case 16: /* parameters: OPEN_BRACKET typedargslist CLOSE_BRACKET  */
-#line 231 "parser.y"
+#line 239 "parser.y"
                                                      {  
             (yyval.elem) = create_node(4, "parameters", (yyvsp[-2].elem), (yyvsp[-1].elem), (yyvsp[0].elem));
             (yyval.elem)->ins = (yyvsp[-1].elem)->ins;
             (yyval.elem)->num_params = (yyvsp[-1].elem)->num_params;
             // cout<<"parameterts done"<<endl;
+
+            //handle vector of par type 
+            (yyval.elem)->func_par_type = (yyvsp[-1].elem)->func_par_type;
+            // cout<<"par: "<<$$->func_par_type.size() <<" "<< $2->func_par_type.size() <<endl;
         }
-#line 1761 "parser.tab.c"
+#line 1773 "parser.tab.c"
     break;
 
   case 17: /* parameters: OPEN_BRACKET SELF COMMA typedargslist CLOSE_BRACKET  */
-#line 237 "parser.y"
+#line 249 "parser.y"
                                                               {
             //cout<<"in self para"<<endl;
             (yyval.elem) = create_node(6, "parameters", (yyvsp[-4].elem), (yyvsp[-3].elem), (yyvsp[-2].elem), (yyvsp[-1].elem), (yyvsp[0].elem));
             (yyval.elem)->ins = (yyvsp[-1].elem)->ins;
             (yyval.elem)->num_params = (yyvsp[-1].elem)->num_params;
+
+            //handle vector of par type 
+            (yyval.elem)->func_par_type = (yyvsp[-1].elem)->func_par_type;
         }
-#line 1772 "parser.tab.c"
+#line 1787 "parser.tab.c"
     break;
 
   case 18: /* parameters: OPEN_BRACKET SELF CLOSE_BRACKET  */
-#line 243 "parser.y"
+#line 258 "parser.y"
                                           {
             (yyval.elem) = create_node(3, "parameters", (yyvsp[-2].elem), (yyvsp[-1].elem), (yyvsp[0].elem));
             (yyval.elem)->ins = instCount+1;
             (yyval.elem)->num_params = 0;
         }
-#line 1782 "parser.tab.c"
+#line 1797 "parser.tab.c"
     break;
 
   case 19: /* typedargslist: typedarg  */
-#line 250 "parser.y"
+#line 265 "parser.y"
                             {  
             (yyval.elem)=(yyvsp[0].elem);
             (yyval.elem)->num_params=1;
@@ -1791,11 +1806,11 @@ yyreduce:
             // paramStack.pop();
 			create_ins(0,(yyvsp[0].elem)->addr,"=","PopParam","");
         }
-#line 1795 "parser.tab.c"
+#line 1810 "parser.tab.c"
     break;
 
   case 20: /* typedargslist: typedargslist COMMA typedarg  */
-#line 258 "parser.y"
+#line 273 "parser.y"
                                          {  
             (yyval.elem) = create_node(4, "typedargslist", (yyvsp[-2].elem), (yyvsp[-1].elem), (yyvsp[0].elem));
             (yyval.elem)->ins = (yyvsp[-2].elem)->ins;
@@ -1804,20 +1819,26 @@ yyreduce:
             (yyval.elem)->ins = instCount+1;
             // paramStack.pop();
 			create_ins(0,(yyvsp[0].elem)->addr,"=","PopParam","");
+
+            //handle vector of par type 
+            (yyval.elem)->func_par_type = (yyvsp[-2].elem)->func_par_type;
+            for(int i=0;i < (yyvsp[0].elem)->func_par_type.size(); i++){
+                (yyval.elem)->func_par_type.push_back((yyvsp[0].elem)->func_par_type[i]);
+            }
         }
-#line 1809 "parser.tab.c"
+#line 1830 "parser.tab.c"
     break;
 
   case 21: /* typedarg: tfpdef  */
-#line 274 "parser.y"
+#line 295 "parser.y"
                    {  
             (yyval.elem)=(yyvsp[0].elem);
         }
-#line 1817 "parser.tab.c"
+#line 1838 "parser.tab.c"
     break;
 
   case 22: /* typedarg: tfpdef EQUAL test  */
-#line 277 "parser.y"
+#line 298 "parser.y"
                             {  
             (yyval.elem) = create_node(4, "typedarg", (yyvsp[-2].elem), (yyvsp[-1].elem), (yyvsp[0].elem));
             (yyval.elem)->ins = (yyvsp[-2].elem)->ins;
@@ -1833,21 +1854,24 @@ yyreduce:
                 //Type_checking
             }
             //typecheck end
+
+            //handle vector of par type 
+            (yyval.elem)->func_par_type = (yyvsp[-2].elem)->func_par_type;
         }
-#line 1838 "parser.tab.c"
+#line 1862 "parser.tab.c"
     break;
 
   case 23: /* tfpdef: NAME  */
-#line 295 "parser.y"
+#line 319 "parser.y"
              {  
             (yyval.elem)=(yyvsp[0].elem);
 			(yyval.elem)->ins = instCount+1;
         }
-#line 1847 "parser.tab.c"
+#line 1871 "parser.tab.c"
     break;
 
   case 24: /* tfpdef: NAME COLON TYPE_HINT  */
-#line 299 "parser.y"
+#line 323 "parser.y"
                                {  
             (yyval.elem) = create_node(4, "tfpdef", (yyvsp[-2].elem), (yyvsp[-1].elem), (yyvsp[0].elem)); 
 			(yyval.elem)->ins = instCount+1;
@@ -1868,87 +1892,90 @@ yyreduce:
                 cerr<<"Error: Variable "<<(yyvsp[-2].elem)->addr<<" already declared\n";
                 exit(1);
             }
-            //STE code end
+            //STE code end 
+
+            //handle vector of par type 
+            (yyval.elem)->func_par_type.push_back(chartostring((yyvsp[0].elem)->addr));
         }
-#line 1874 "parser.tab.c"
+#line 1901 "parser.tab.c"
     break;
 
   case 25: /* stmt: simple_stmt  */
-#line 323 "parser.y"
+#line 350 "parser.y"
                         { 
         	(yyval.elem)=(yyvsp[0].elem);
         }
-#line 1882 "parser.tab.c"
+#line 1909 "parser.tab.c"
     break;
 
   case 26: /* stmt: compound_stmt  */
-#line 326 "parser.y"
+#line 353 "parser.y"
                             { 
             (yyval.elem)=(yyvsp[0].elem); 
         }
-#line 1890 "parser.tab.c"
+#line 1917 "parser.tab.c"
     break;
 
   case 27: /* simple_stmt: small_stmt_list SEMI_COLON NEWLINE  */
-#line 331 "parser.y"
+#line 358 "parser.y"
                                                 {  
             (yyval.elem)=(yyvsp[-2].elem);
         }
-#line 1898 "parser.tab.c"
+#line 1925 "parser.tab.c"
     break;
 
   case 28: /* simple_stmt: small_stmt_list NEWLINE  */
-#line 334 "parser.y"
+#line 361 "parser.y"
                                    {  
             (yyval.elem)=(yyvsp[-1].elem);
         }
-#line 1906 "parser.tab.c"
+#line 1933 "parser.tab.c"
     break;
 
   case 29: /* small_stmt_list: small_stmt  */
-#line 339 "parser.y"
+#line 366 "parser.y"
                                 {   
             (yyval.elem)=(yyvsp[0].elem);
         }
-#line 1914 "parser.tab.c"
+#line 1941 "parser.tab.c"
     break;
 
   case 30: /* small_stmt_list: small_stmt_list SEMI_COLON small_stmt  */
-#line 342 "parser.y"
+#line 369 "parser.y"
                                                      {  
            (yyval.elem) = create_node(3, "small_stmt_list", (yyvsp[-2].elem), (yyvsp[-1].elem), (yyvsp[0].elem));
 		   (yyval.elem)->ins = (yyvsp[-2].elem)->ins;
            (yyval.elem)->nextlist = merge((yyvsp[-2].elem)->nextlist, (yyvsp[0].elem)->nextlist);
         }
-#line 1924 "parser.tab.c"
+#line 1951 "parser.tab.c"
     break;
 
   case 31: /* small_stmt: expr_stmt  */
-#line 349 "parser.y"
+#line 376 "parser.y"
                             {  
            (yyval.elem)=(yyvsp[0].elem);
         }
-#line 1932 "parser.tab.c"
+#line 1959 "parser.tab.c"
     break;
 
   case 32: /* small_stmt: flow_stmt  */
-#line 352 "parser.y"
+#line 379 "parser.y"
                         {  
            (yyval.elem)=(yyvsp[0].elem);
         }
-#line 1940 "parser.tab.c"
+#line 1967 "parser.tab.c"
     break;
 
   case 33: /* small_stmt: global_stmt  */
-#line 355 "parser.y"
+#line 382 "parser.y"
                             {  
             (yyval.elem)=(yyvsp[0].elem);
         }
-#line 1948 "parser.tab.c"
+#line 1975 "parser.tab.c"
     break;
 
   case 34: /* expr_stmt: test ASSIGN_OPERATOR test  */
-#line 360 "parser.y"
+#line 387 "parser.y"
                                      { 
             (yyval.elem) = create_node(4, "expr_stmt", (yyvsp[-2].elem), (yyvsp[-1].elem), (yyvsp[0].elem));
             (yyval.elem)->ins = (yyvsp[-2].elem)->ins;
@@ -1963,22 +1990,34 @@ yyreduce:
             // create_ins(1, temp, oper, $1->addr, $3->addr);
             // create_ins(0, $1->addr, "=", temp, "");
 
-            //lookup for LHS
-            if(lookup(current_ste, (yyvsp[-2].elem)->addr) == NULL){
-                cerr<<"Error: Variable "<<(yyvsp[-2].elem)->addr<<" not declared\n";
-                exit(1);
-            }
-            else{
-                //Type_checking
-
-            }
-            //Type checking end
+            //typecheck
+                string ret_type=typecast((yyvsp[-2].elem)->atom_type,(yyvsp[0].elem)->atom_type,(yyvsp[-1].elem)->addr);
+                if(ret_type == "Error"){
+                    cerr<<"Error: Type mismatch1a in assignment\n";
+                    exit(1);
+                }
+                if(ret_type != (yyvsp[0].elem)->atom_type){
+                    string temp = newTemp();
+                    create_ins(1, temp, oper, "("+ret_type+")"+chartostring((yyvsp[0].elem)->addr),chartostring((yyvsp[-2].elem)->addr));
+                    create_ins(0, (yyvsp[-2].elem)->addr, "=", temp, "");
+                }
+                else if(ret_type != (yyvsp[-2].elem)->atom_type){
+                    string temp = newTemp();
+                    create_ins(1, temp, oper, "("+ret_type+")"+chartostring((yyvsp[-2].elem)->addr),chartostring((yyvsp[0].elem)->addr));
+                    create_ins(0, (yyvsp[-2].elem)->addr, "=", temp, "");
+                }
+                else{
+                    string temp = newTemp();
+                    create_ins(1, temp, oper, (yyvsp[-2].elem)->addr, (yyvsp[0].elem)->addr);
+                    create_ins(0, (yyvsp[-2].elem)->addr, "=", temp, "");
+                }
+            //typecheck done
         }
-#line 1978 "parser.tab.c"
+#line 2017 "parser.tab.c"
     break;
 
   case 35: /* expr_stmt: test COLON TYPE_HINT ASSIGN_OPERATOR test  */
-#line 385 "parser.y"
+#line 424 "parser.y"
                                                     { // Is this rule really required?
             (yyval.elem) = create_node(4, "expr_stmt", (yyvsp[-4].elem), (yyvsp[-3].elem), (yyvsp[-2].elem));
             (yyval.elem)->ins = (yyvsp[-4].elem)->ins;
@@ -1989,9 +2028,9 @@ yyreduce:
                 oper.push_back((yyvsp[-3].elem)->addr[i]);
                 i++;
             }
-            string temp = newTemp();
-            create_ins(1, temp, oper, (yyvsp[-4].elem)->addr, (yyvsp[0].elem)->addr);
-            create_ins(0, (yyvsp[-4].elem)->addr, "=", temp, "");
+            // string temp = newTemp();
+            // create_ins(1, temp, oper, $1->addr, $5->addr);
+            // create_ins(0, $1->addr, "=", temp, "");
 
             //Type checking
             (yyvsp[-4].elem)->atom_type = (yyvsp[-2].elem)->addr;
@@ -2008,12 +2047,36 @@ yyreduce:
             }
             //STE code end
 
+            //typecheck
+                string ret_type=typecast((yyvsp[-4].elem)->atom_type,(yyvsp[0].elem)->atom_type,(yyvsp[-3].elem)->addr);
+                if(ret_type == "Error"){
+                    cerr<<"Error: Type mismatch1a in assignment\n";
+                    exit(1);
+                }
+                if(ret_type != (yyvsp[0].elem)->atom_type){
+                    string temp = newTemp();
+                    create_ins(1, temp, oper, "("+ret_type+")"+chartostring((yyvsp[0].elem)->addr),chartostring((yyvsp[-4].elem)->addr));
+                    create_ins(0, (yyvsp[-4].elem)->addr, "=", temp, "");
+                }
+                else if(ret_type != (yyvsp[-4].elem)->atom_type){
+                    string temp = newTemp();
+                    create_ins(1, temp, oper, "("+ret_type+")"+chartostring((yyvsp[-4].elem)->addr),chartostring((yyvsp[0].elem)->addr));
+                    create_ins(0, (yyvsp[-4].elem)->addr, "=", temp, "");
+                }
+                else{
+                    string temp = newTemp();
+                    create_ins(1, temp, oper, (yyvsp[-4].elem)->addr, (yyvsp[0].elem)->addr);
+                    create_ins(0, (yyvsp[-4].elem)->addr, "=", temp, "");
+                }
+            //typecheck done
+
+
         }
-#line 2013 "parser.tab.c"
+#line 2076 "parser.tab.c"
     break;
 
   case 36: /* expr_stmt: test COLON test ASSIGN_OPERATOR test  */
-#line 415 "parser.y"
+#line 478 "parser.y"
                                                {  
             (yyval.elem) = create_node(4, "expr_stmt", (yyvsp[-4].elem), (yyvsp[-3].elem), (yyvsp[-2].elem));
             (yyval.elem)->ins = (yyvsp[-4].elem)->ins;
@@ -2031,19 +2094,19 @@ yyreduce:
             //STE code end
 
         }
-#line 2035 "parser.tab.c"
+#line 2098 "parser.tab.c"
     break;
 
   case 37: /* expr_stmt: testlist  */
-#line 432 "parser.y"
+#line 495 "parser.y"
                    {
 			(yyval.elem)=(yyvsp[0].elem);
         }
-#line 2043 "parser.tab.c"
+#line 2106 "parser.tab.c"
     break;
 
   case 38: /* expr_stmt: test EQUAL eq_testlist_star_expr_plus  */
-#line 435 "parser.y"
+#line 498 "parser.y"
                                                {
             (yyval.elem) = create_node(4, "eq_testlist_star_expr_plus", (yyvsp[-2].elem), (yyvsp[-1].elem), (yyvsp[0].elem));
 			(yyval.elem)->ins = (yyvsp[-2].elem)->ins;
@@ -2051,69 +2114,69 @@ yyreduce:
 
 //this works for test a.b type only
             //Type_checking
-            if(chartostring((yyvsp[-2].elem)->type)=="self_call"){ // this is to get atom type of self.len and I am not going to next scope
-                ste* lookup_ste = lookup(current_ste, "self");
-                string temp="";
-                while(lookup_ste!=NULL){
-                    if(lookup_ste->type==(yyvsp[-2].elem)->class_param){
-                        temp = lookup_ste->lexeme;
-                        break;
-                    }
-                    lookup_ste = lookup_ste->next;
-                }
-                (yyvsp[-2].elem)->atom_type = temp;
-            }
-            if(chartostring((yyvsp[0].elem)->type)=="self_call"){ // this is to get atom type of self.len and I am not going to next scope
-                ste* lookup_ste = lookup(current_ste, "self");
-                string temp="";
-                while(lookup_ste!=NULL){
-                    if(lookup_ste->type==(yyvsp[0].elem)->class_param){
-                        temp = lookup_ste->lexeme;
-                        break;
-                    }
-                    lookup_ste = lookup_ste->next;
-                }
-                (yyvsp[0].elem)->atom_type = temp;
-            }
-            if(chartostring((yyvsp[-2].elem)->type)=="class_call"){ // this is to get atom type of self.len and I am not going to next scope
-                string c_name="";
-                int i=0;
-                while((yyvsp[-2].elem)->addr[i]!='.'){
-                    c_name.push_back((yyvsp[-2].elem)->addr[i]);
-                    i++;
-                }
-                ste* lookup_ste = lookup(current_ste, c_name);
-                string temp="";
-                while(lookup_ste!=NULL){
-                    if(lookup_ste->type==(yyvsp[-2].elem)->class_param){
-                        temp = lookup_ste->lexeme;
-                        break;
-                    }
-                    lookup_ste = lookup_ste->next;
-                }
-                (yyvsp[-2].elem)->atom_type = temp;
-            }
-            if(chartostring((yyvsp[0].elem)->type)=="class_call"){ // this is to get atom type of self.len and I am not going to next scope
-                string c_name="";
-                int i=0;
-                while((yyvsp[-2].elem)->addr[i]!='.'){
-                    c_name.push_back((yyvsp[-2].elem)->addr[i]);
-                    i++;
-                }
-                ste* lookup_ste = lookup(current_ste, c_name);
-                string temp="";
-                while(lookup_ste!=NULL){
-                    if(lookup_ste->type==(yyvsp[0].elem)->class_param){
-                        temp = lookup_ste->lexeme;
-                        break;
-                    }
-                    lookup_ste = lookup_ste->next;
-                }
-                (yyvsp[0].elem)->atom_type = temp;
-            }
+            // if(chartostring($1->type)=="self_call"){ // this is to get atom type of self.len and I am not going to next scope
+            //     ste* lookup_ste = lookup(current_ste, "self");
+            //     string temp="";
+            //     while(lookup_ste!=NULL){
+            //         if(lookup_ste->type==$1->class_param){
+            //             temp = lookup_ste->lexeme;
+            //             break;
+            //         }
+            //         lookup_ste = lookup_ste->next;
+            //     }
+            //     $1->atom_type = temp;
+            // }
+            // if(chartostring($3->type)=="self_call"){ // this is to get atom type of self.len and I am not going to next scope
+            //     ste* lookup_ste = lookup(current_ste, "self");
+            //     string temp="";
+            //     while(lookup_ste!=NULL){
+            //         if(lookup_ste->type==$3->class_param){
+            //             temp = lookup_ste->lexeme;
+            //             break;
+            //         }
+            //         lookup_ste = lookup_ste->next;
+            //     }
+            //     $3->atom_type = temp; //ye kya hai atom_type hamesha int float hona chahiye na
+            // }
+            // if(chartostring($1->type)=="class_call"){ // this is to get atom type of self.len and I am not going to next scope
+            //     string c_name="";
+            //     int i=0;
+            //     while($1->addr[i]!='.'){
+            //         c_name.push_back($1->addr[i]);
+            //         i++;
+            //     }
+            //     ste* lookup_ste = lookup(current_ste, c_name);
+            //     string temp="";
+            //     while(lookup_ste!=NULL){
+            //         if(lookup_ste->type==$1->class_param){
+            //             temp = lookup_ste->lexeme;
+            //             break;
+            //         }
+            //         lookup_ste = lookup_ste->next;
+            //     }
+            //     $1->atom_type = temp; //ye kya hai atom_type hamesha int float hona chahiye na
+            // }
+            // if(chartostring($3->type)=="class_call"){ // this is to get atom type of self.len and I am not going to next scope
+            //     string c_name="";
+            //     int i=0;
+            //     while($1->addr[i]!='.'){
+            //         c_name.push_back($1->addr[i]);
+            //         i++;
+            //     }
+            //     ste* lookup_ste = lookup(current_ste, c_name);
+            //     string temp="";
+            //     while(lookup_ste!=NULL){
+            //         if(lookup_ste->type==$3->class_param){
+            //             temp = lookup_ste->lexeme;
+            //             break;
+            //         }
+            //         lookup_ste = lookup_ste->next;
+            //     }
+            //     $3->atom_type = temp;
+            // }
+                //cout<< "test EQUAL eQtest: "<<$1->atom_type << " "<< $3->atom_type << endl;
             //typecheck
                 string ret_type=typecast((yyvsp[-2].elem)->atom_type,(yyvsp[0].elem)->atom_type,"=");
-                //cout<<$1->atom_type<<" "<<$3->atom_type<<" "<<ret_type<<endl;
                 if(ret_type == "Error"){
                     cerr<<"Error: Type mismatch1a in assignment\n";
                     exit(1);
@@ -2126,11 +2189,11 @@ yyreduce:
                 }
             //typecheck done
         }
-#line 2130 "parser.tab.c"
+#line 2193 "parser.tab.c"
     break;
 
   case 39: /* expr_stmt: test COLON TYPE_HINT EQUAL eq_testlist_star_expr_plus  */
-#line 518 "parser.y"
+#line 581 "parser.y"
                                                                {
             (yyval.elem) = create_node(4, "eq_testlist_star_expr_plus", (yyvsp[-4].elem), (yyvsp[-3].elem), (yyvsp[-2].elem));
 			(yyval.elem)->ins = (yyvsp[-4].elem)->ins;
@@ -2170,12 +2233,26 @@ yyreduce:
                 }
             }
             //STE code end
+
+            //typecheck
+                string ret_type=typecast((yyvsp[-4].elem)->atom_type,(yyvsp[0].elem)->atom_type,"=");
+                if(ret_type == "Error"){
+                    cerr<<"Error: Type mismatch1a in assignment\n";
+                    exit(1);
+                }
+                if(ret_type != (yyvsp[0].elem)->atom_type){
+                    create_ins(0, (yyvsp[-4].elem)->addr, "=", "("+ret_type+")"+chartostring((yyvsp[0].elem)->addr),"");
+                }
+                else{
+                    create_ins(0, (yyvsp[-4].elem)->addr, "=", (yyvsp[0].elem)->addr, "");
+                }
+            //typecheck done
         }
-#line 2175 "parser.tab.c"
+#line 2252 "parser.tab.c"
     break;
 
   case 40: /* expr_stmt: test COLON test EQUAL eq_testlist_star_expr_plus  */
-#line 558 "parser.y"
+#line 635 "parser.y"
                                                           {  //ye karna bhi hai? ha bhecnchod
             cout<<"in tctee"<<endl;
             (yyval.elem) = create_node(4, "eq_testlist_star_expr_plus", (yyvsp[-4].elem), (yyvsp[-3].elem), (yyvsp[-2].elem));
@@ -2192,19 +2269,19 @@ yyreduce:
             }
             //STE code end
         }
-#line 2196 "parser.tab.c"
+#line 2273 "parser.tab.c"
     break;
 
   case 41: /* eq_testlist_star_expr_plus: test  */
-#line 577 "parser.y"
+#line 654 "parser.y"
                                  {
             (yyval.elem)=(yyvsp[0].elem);
         }
-#line 2204 "parser.tab.c"
+#line 2281 "parser.tab.c"
     break;
 
   case 42: /* eq_testlist_star_expr_plus: test EQUAL eq_testlist_star_expr_plus  */
-#line 580 "parser.y"
+#line 657 "parser.y"
                                                {
             (yyval.elem) = create_node(4, "eq_testlist_star_expr_plus", (yyvsp[-2].elem), (yyvsp[-1].elem), (yyvsp[0].elem));
             (yyval.elem)->ins = (yyvsp[-2].elem)->ins;
@@ -2227,35 +2304,35 @@ yyreduce:
                 }
             //typecheck done
         }
-#line 2231 "parser.tab.c"
+#line 2308 "parser.tab.c"
     break;
 
   case 43: /* flow_stmt: break_stmt  */
-#line 604 "parser.y"
+#line 681 "parser.y"
                         {  
             (yyval.elem)=(yyvsp[0].elem);
         }
-#line 2239 "parser.tab.c"
+#line 2316 "parser.tab.c"
     break;
 
   case 44: /* flow_stmt: continue_stmt  */
-#line 607 "parser.y"
+#line 684 "parser.y"
                             {  
             (yyval.elem)=(yyvsp[0].elem);
         }
-#line 2247 "parser.tab.c"
+#line 2324 "parser.tab.c"
     break;
 
   case 45: /* flow_stmt: return_stmt  */
-#line 610 "parser.y"
+#line 687 "parser.y"
                          {  
             (yyval.elem)=(yyvsp[0].elem);
         }
-#line 2255 "parser.tab.c"
+#line 2332 "parser.tab.c"
     break;
 
   case 46: /* break_stmt: BREAK  */
-#line 615 "parser.y"
+#line 692 "parser.y"
                     {  
             // cout<<"break entered"<<endl;
             (yyval.elem)=(yyvsp[0].elem);
@@ -2266,118 +2343,120 @@ yyreduce:
             loopStack.push(temp);
             // cout<<"break ended"<<endl;
         }
-#line 2270 "parser.tab.c"
+#line 2347 "parser.tab.c"
     break;
 
   case 47: /* continue_stmt: CONTINUE  */
-#line 626 "parser.y"
+#line 703 "parser.y"
                             {  
             (yyval.elem)=(yyvsp[0].elem);
             (yyval.elem)->ins = instCount+1;
             create_ins(0, "goto", to_string(loopStack.top()), "", "");
         }
-#line 2280 "parser.tab.c"
+#line 2357 "parser.tab.c"
     break;
 
   case 48: /* return_stmt: RETURN  */
-#line 632 "parser.y"
+#line 709 "parser.y"
                         {  
             create_ins(0,"return","","","");
         }
-#line 2288 "parser.tab.c"
+#line 2365 "parser.tab.c"
     break;
 
   case 49: /* return_stmt: RETURN test  */
-#line 635 "parser.y"
+#line 712 "parser.y"
                           {  
             (yyval.elem)->return_param = str_to_ch(newTemp());
             create_ins(0,(yyval.elem)->return_param,"=",(yyvsp[0].elem)->addr,"");
             // paramStack.push($$->return_param);
             create_ins(0,"return",(yyval.elem)->return_param,"","");
         }
-#line 2299 "parser.tab.c"
+#line 2376 "parser.tab.c"
     break;
 
   case 50: /* global_stmt: GLOBAL NAME  */
-#line 643 "parser.y"
+#line 720 "parser.y"
                            {  
             (yyval.elem) = create_node(3, "global_stmt", (yyvsp[-1].elem), (yyvsp[0].elem));
             (yyval.elem)->ins = instCount+1;
+
+            
         }
-#line 2308 "parser.tab.c"
+#line 2387 "parser.tab.c"
     break;
 
   case 51: /* global_stmt: GLOBAL NAME comma_name_star  */
-#line 647 "parser.y"
+#line 726 "parser.y"
                                       {   
             (yyval.elem) = create_node(4, "global_stmt", (yyvsp[-2].elem), (yyvsp[-1].elem), (yyvsp[0].elem));
             (yyval.elem)->ins = (yyvsp[0].elem)->ins;
         }
-#line 2317 "parser.tab.c"
+#line 2396 "parser.tab.c"
     break;
 
   case 52: /* comma_name_star: COMMA NAME  */
-#line 653 "parser.y"
+#line 732 "parser.y"
                                {  
             (yyval.elem) = create_node(3, "comma_name_star", (yyvsp[-1].elem), (yyvsp[0].elem));
             (yyval.elem)->ins = instCount+1;
         }
-#line 2326 "parser.tab.c"
+#line 2405 "parser.tab.c"
     break;
 
   case 53: /* comma_name_star: COMMA NAME comma_name_star  */
-#line 657 "parser.y"
+#line 736 "parser.y"
                                         {  
             (yyval.elem) = create_node(4, "comma_name_star", (yyvsp[-2].elem), (yyvsp[-1].elem), (yyvsp[0].elem));
             (yyval.elem)->ins = (yyvsp[0].elem)->ins;
         }
-#line 2335 "parser.tab.c"
+#line 2414 "parser.tab.c"
     break;
 
   case 54: /* compound_stmt: if_stmt  */
-#line 662 "parser.y"
+#line 741 "parser.y"
                             { 
             (yyval.elem)=(yyvsp[0].elem);  
         }
-#line 2343 "parser.tab.c"
+#line 2422 "parser.tab.c"
     break;
 
   case 55: /* compound_stmt: while_stmt  */
-#line 665 "parser.y"
+#line 744 "parser.y"
                        {  
             (yyval.elem)=(yyvsp[0].elem);
             loopStack.pop();
         }
-#line 2352 "parser.tab.c"
+#line 2431 "parser.tab.c"
     break;
 
   case 56: /* compound_stmt: for_stmt  */
-#line 669 "parser.y"
+#line 748 "parser.y"
                        {  
             (yyval.elem)=(yyvsp[0].elem);
             loopStack.pop();
         }
-#line 2361 "parser.tab.c"
+#line 2440 "parser.tab.c"
     break;
 
   case 57: /* compound_stmt: funcdef  */
-#line 673 "parser.y"
+#line 752 "parser.y"
                        {  
             (yyval.elem)=(yyvsp[0].elem);
         }
-#line 2369 "parser.tab.c"
+#line 2448 "parser.tab.c"
     break;
 
   case 58: /* compound_stmt: classdef  */
-#line 676 "parser.y"
+#line 755 "parser.y"
                        {  
            (yyval.elem)=(yyvsp[0].elem);
         }
-#line 2377 "parser.tab.c"
+#line 2456 "parser.tab.c"
     break;
 
   case 59: /* if_stmt: if_scope test COLON M suite  */
-#line 681 "parser.y"
+#line 760 "parser.y"
                                          {  
            (yyval.elem)=create_node(6, "if_stmt", (yyvsp[-4].elem), (yyvsp[-3].elem), (yyvsp[-2].elem), (yyvsp[-1].elem), (yyvsp[0].elem));
            (yyval.elem)->ins = (yyvsp[-3].elem)->ins;
@@ -2389,11 +2468,11 @@ yyreduce:
             //STE code end
 
         }
-#line 2393 "parser.tab.c"
+#line 2472 "parser.tab.c"
     break;
 
   case 60: /* if_stmt: if_scope test COLON M suite N else_scope COLON M suite  */
-#line 692 "parser.y"
+#line 771 "parser.y"
                                                                    {  
             (yyval.elem) = create_node(11, "if_else_stmt", (yyvsp[-9].elem),(yyvsp[-8].elem), (yyvsp[-7].elem), (yyvsp[-6].elem), (yyvsp[-5].elem), (yyvsp[-4].elem), (yyvsp[-3].elem), (yyvsp[-2].elem), (yyvsp[-1].elem), (yyvsp[0].elem));
             backpatch((yyvsp[-8].elem)->truelist, (yyvsp[-6].elem)->ins);
@@ -2406,11 +2485,11 @@ yyreduce:
             //STE code end
 
         }
-#line 2410 "parser.tab.c"
+#line 2489 "parser.tab.c"
     break;
 
   case 61: /* if_stmt: if_scope test COLON M suite N nts_star  */
-#line 704 "parser.y"
+#line 783 "parser.y"
                                                     {  
             (yyval.elem) = create_node(8, "if_elif_stmt", (yyvsp[-6].elem),(yyvsp[-5].elem), (yyvsp[-4].elem), (yyvsp[-3].elem), (yyvsp[-2].elem), (yyvsp[-1].elem), (yyvsp[0].elem));
             backpatch((yyvsp[-5].elem)->truelist, (yyvsp[-3].elem)->ins);
@@ -2418,20 +2497,20 @@ yyreduce:
             vector<int> temp = merge((yyvsp[-2].elem)->nextlist, (yyvsp[-1].elem)->nextlist);
             (yyval.elem)->nextlist = merge(temp, (yyvsp[0].elem)->nextlist);    
         }
-#line 2422 "parser.tab.c"
+#line 2501 "parser.tab.c"
     break;
 
   case 62: /* if_stmt: if_scope d_expr COLON suite  */
-#line 711 "parser.y"
+#line 790 "parser.y"
                                       {
             (yyval.elem) = create_node(5, "if_stmt", (yyvsp[-3].elem), (yyvsp[-2].elem), (yyvsp[-1].elem), (yyvsp[0].elem));
             (yyval.elem)->ins = (yyvsp[-2].elem)->ins;
         }
-#line 2431 "parser.tab.c"
+#line 2510 "parser.tab.c"
     break;
 
   case 63: /* d_expr: D_NAME EQUAL_EQUAL STRING  */
-#line 717 "parser.y"
+#line 796 "parser.y"
                                    {
             string dunder = chartostring((yyvsp[0].elem)->addr);
             cout<<(yyvsp[0].elem)->addr<<endl;
@@ -2443,21 +2522,21 @@ yyreduce:
                 (yyval.elem)->ins = instCount;
             }
         }
-#line 2447 "parser.tab.c"
+#line 2526 "parser.tab.c"
     break;
 
   case 64: /* if_scope: IF  */
-#line 729 "parser.y"
+#line 808 "parser.y"
             {
         (yyval.elem)=(yyvsp[0].elem);
         // current_ste = insert_entry_new_scope(current_ste);
         // populate_new_scope(current_ste->prev_scope, "IF", "IF", 0, $1->lineno, 0);
     }
-#line 2457 "parser.tab.c"
+#line 2536 "parser.tab.c"
     break;
 
   case 65: /* else_scope: ELSE  */
-#line 736 "parser.y"
+#line 815 "parser.y"
                 {
         (yyval.elem)=(yyvsp[0].elem);
         //STE code start
@@ -2467,11 +2546,11 @@ yyreduce:
 
         //STE code end
     }
-#line 2471 "parser.tab.c"
+#line 2550 "parser.tab.c"
     break;
 
   case 66: /* else_if_scope: ELIF  */
-#line 747 "parser.y"
+#line 826 "parser.y"
                    {
         (yyval.elem)=(yyvsp[0].elem);
         //STE code start
@@ -2480,11 +2559,11 @@ yyreduce:
         // populate_new_scope(current_ste->prev_scope, "ELSE_IF", "ELSE_IF", 0, $1->lineno, 1);
         //STE code end
     }
-#line 2484 "parser.tab.c"
+#line 2563 "parser.tab.c"
     break;
 
   case 67: /* nts_star: else_if_scope test COLON M suite  */
-#line 758 "parser.y"
+#line 837 "parser.y"
                                              {  
             (yyval.elem)=create_node(6, "elif_stmt", (yyvsp[-4].elem), (yyvsp[-3].elem), (yyvsp[-2].elem), (yyvsp[-1].elem), (yyvsp[0].elem));
             (yyval.elem)->ins = (yyvsp[-3].elem)->ins;
@@ -2495,11 +2574,11 @@ yyreduce:
             // current_ste = get_prev_scope(current_ste);
             //STE code end
         }
-#line 2499 "parser.tab.c"
+#line 2578 "parser.tab.c"
     break;
 
   case 68: /* nts_star: else_if_scope test COLON M suite N nts_star  */
-#line 768 "parser.y"
+#line 847 "parser.y"
                                                        {  
             (yyval.elem) = create_node(8, "elif_stmt", (yyvsp[-6].elem), (yyvsp[-5].elem), (yyvsp[-4].elem), (yyvsp[-3].elem), (yyvsp[-2].elem), (yyvsp[-1].elem), (yyvsp[0].elem));
             (yyval.elem)->ins = (yyvsp[-5].elem)->ins;
@@ -2507,11 +2586,11 @@ yyreduce:
             backpatch((yyvsp[-5].elem)->falselist, (yyvsp[0].elem)->ins);
             (yyval.elem)->nextlist = merge((yyvsp[-2].elem)->nextlist, merge((yyvsp[-1].elem)->nextlist, (yyvsp[0].elem)->nextlist));
         }
-#line 2511 "parser.tab.c"
+#line 2590 "parser.tab.c"
     break;
 
   case 69: /* nts_star: else_if_scope test COLON M suite N else_scope COLON M suite  */
-#line 775 "parser.y"
+#line 854 "parser.y"
                                                                        {  
             (yyval.elem) = create_node(11, "elif_else_stmt", (yyvsp[-9].elem), (yyvsp[-8].elem), (yyvsp[-7].elem), (yyvsp[-6].elem), (yyvsp[-5].elem), (yyvsp[-4].elem), (yyvsp[-3].elem), (yyvsp[-2].elem), (yyvsp[-1].elem), (yyvsp[0].elem));
             (yyval.elem)->ins = (yyvsp[-8].elem)->ins;
@@ -2523,11 +2602,11 @@ yyreduce:
             // current_ste = get_prev_scope(current_ste);
             //STE code end
         }
-#line 2527 "parser.tab.c"
+#line 2606 "parser.tab.c"
     break;
 
   case 70: /* while_stmt: while_scope M while_expr COLON M suite  */
-#line 788 "parser.y"
+#line 867 "parser.y"
                                                      {  
             (yyval.elem) = create_node(7, "while_stmt", (yyvsp[-5].elem), (yyvsp[-4].elem), (yyvsp[-3].elem), (yyvsp[-2].elem), (yyvsp[-1].elem), (yyvsp[0].elem));
             (yyval.elem)->ins = (yyvsp[-4].elem)->ins;
@@ -2540,11 +2619,11 @@ yyreduce:
             // current_ste = get_prev_scope(current_ste);
             //STE code end
         }
-#line 2544 "parser.tab.c"
+#line 2623 "parser.tab.c"
     break;
 
   case 71: /* while_stmt: while_scope M while_expr COLON M suite N else_scope COLON M suite  */
-#line 800 "parser.y"
+#line 879 "parser.y"
                                                                                      {   
 			(yyval.elem) = create_node(12, "while_else_stmt", (yyvsp[-10].elem), (yyvsp[-9].elem), (yyvsp[-8].elem), (yyvsp[-7].elem), (yyvsp[-6].elem), (yyvsp[-5].elem), (yyvsp[-4].elem), (yyvsp[-3].elem), (yyvsp[-2].elem), (yyvsp[-1].elem), (yyvsp[0].elem));
 			(yyval.elem)->ins = (yyvsp[-9].elem)->ins;
@@ -2558,31 +2637,31 @@ yyreduce:
             // current_ste = get_prev_scope(current_ste);
             //STE code end
         }
-#line 2562 "parser.tab.c"
+#line 2641 "parser.tab.c"
     break;
 
   case 72: /* while_scope: WHILE  */
-#line 815 "parser.y"
+#line 894 "parser.y"
                    {
         (yyval.elem)=(yyvsp[0].elem);
         // current_ste = insert_entry_new_scope(current_ste);
         // populate_new_scope(current_ste->prev_scope, "WHILE", "WHILE", 0, $1->lineno, 0);
     }
-#line 2572 "parser.tab.c"
+#line 2651 "parser.tab.c"
     break;
 
   case 73: /* while_expr: test  */
-#line 822 "parser.y"
+#line 901 "parser.y"
                    { 
             (yyval.elem)=(yyvsp[0].elem);
             (yyval.elem)->ins = (yyvsp[0].elem)->ins;
             loopStack.push((yyval.elem)->ins);
         }
-#line 2582 "parser.tab.c"
+#line 2661 "parser.tab.c"
     break;
 
   case 74: /* for_stmt: for_scope for_core COLON M suite  */
-#line 828 "parser.y"
+#line 907 "parser.y"
                                               { 
             (yyval.elem) = create_node(6, "for_stmt", (yyvsp[-4].elem), (yyvsp[-3].elem), (yyvsp[-2].elem), (yyvsp[-1].elem), (yyvsp[0].elem));
             (yyval.elem)->ins = (yyvsp[-4].elem)->ins;
@@ -2601,11 +2680,11 @@ yyreduce:
             //STE code end   
                  
         }
-#line 2605 "parser.tab.c"
+#line 2684 "parser.tab.c"
     break;
 
   case 75: /* for_stmt: for_scope for_core COLON M suite N ELSE COLON M suite  */
-#line 846 "parser.y"
+#line 925 "parser.y"
                                                                   { 
             (yyval.elem) = create_node(11, "for_else_stmt", (yyvsp[-9].elem), (yyvsp[-8].elem), (yyvsp[-7].elem), (yyvsp[-6].elem), (yyvsp[-5].elem), (yyvsp[-4].elem), (yyvsp[-3].elem), (yyvsp[-2].elem), (yyvsp[-1].elem), (yyvsp[0].elem));
             (yyval.elem)->ins = (yyvsp[-9].elem)->ins;
@@ -2629,11 +2708,11 @@ yyreduce:
             // current_ste = get_prev_scope(current_ste);
             //STE code end
         }
-#line 2633 "parser.tab.c"
+#line 2712 "parser.tab.c"
     break;
 
   case 76: /* for_core: expr IN range_stmt  */
-#line 871 "parser.y"
+#line 950 "parser.y"
                                { 
             // cout<<"for entered"<<endl;
             
@@ -2653,11 +2732,11 @@ yyreduce:
             create_ins(0, "goto", "", "", "");
                
         }
-#line 2657 "parser.tab.c"
+#line 2736 "parser.tab.c"
     break;
 
   case 77: /* for_scope: FOR  */
-#line 892 "parser.y"
+#line 971 "parser.y"
                {
         (yyval.elem)=(yyvsp[0].elem);
         //STE code start
@@ -2666,11 +2745,11 @@ yyreduce:
         // populate_new_scope(current_ste->prev_scope, "FOR", "FOR", 0, $1->lineno, 0);
         //STE code end
     }
-#line 2670 "parser.tab.c"
+#line 2749 "parser.tab.c"
     break;
 
   case 78: /* range_stmt: RANGE OPEN_BRACKET for_test CLOSE_BRACKET  */
-#line 902 "parser.y"
+#line 981 "parser.y"
                                                       {
             (yyval.elem) = create_node(5, "range_stmt", (yyvsp[-3].elem), (yyvsp[-2].elem), (yyvsp[-1].elem), (yyvsp[0].elem));
             (yyval.elem)->ins = (yyvsp[-1].elem)->ins;
@@ -2678,11 +2757,11 @@ yyreduce:
             (yyval.elem)->for_end = (yyvsp[-1].elem)->addr;
             (yyval.elem)->for_start = strdup("0");
         }
-#line 2682 "parser.tab.c"
+#line 2761 "parser.tab.c"
     break;
 
   case 79: /* range_stmt: RANGE OPEN_BRACKET for_test COMMA test CLOSE_BRACKET  */
-#line 909 "parser.y"
+#line 988 "parser.y"
                                                                {
             (yyval.elem) = create_node(7, "range_stmt", (yyvsp[-5].elem), (yyvsp[-4].elem), (yyvsp[-3].elem), (yyvsp[-2].elem), (yyvsp[-1].elem), (yyvsp[0].elem));
             (yyval.elem)->ins = (yyvsp[-3].elem)->ins;
@@ -2690,61 +2769,61 @@ yyreduce:
             (yyval.elem)->for_end = (yyvsp[-1].elem)->addr;
             (yyval.elem)->for_start = (yyvsp[-3].elem)->addr;
         }
-#line 2694 "parser.tab.c"
+#line 2773 "parser.tab.c"
     break;
 
   case 80: /* for_test: test  */
-#line 918 "parser.y"
+#line 997 "parser.y"
                 {
             (yyval.elem)=(yyvsp[0].elem);
             (yyval.elem)->ins = (yyvsp[0].elem)->ins;
             //loopStack.push($$->ins);
         }
-#line 2704 "parser.tab.c"
+#line 2783 "parser.tab.c"
     break;
 
   case 81: /* suite: simple_stmt  */
-#line 925 "parser.y"
+#line 1004 "parser.y"
                     {
             (yyval.elem)=(yyvsp[0].elem);
         }
-#line 2712 "parser.tab.c"
+#line 2791 "parser.tab.c"
     break;
 
   case 82: /* suite: NEWLINE INDENT stmt_plus DEDENT  */
-#line 928 "parser.y"
+#line 1007 "parser.y"
                                             {
             (yyval.elem)=(yyvsp[-1].elem);
         }
-#line 2720 "parser.tab.c"
+#line 2799 "parser.tab.c"
     break;
 
   case 83: /* suite: NEWLINE INDENT stmt_plus NEWLINE DEDENT  */
-#line 931 "parser.y"
+#line 1010 "parser.y"
                                                     { 
             (yyval.elem)=(yyvsp[-2].elem);
         }
-#line 2728 "parser.tab.c"
+#line 2807 "parser.tab.c"
     break;
 
   case 84: /* test: or_test  */
-#line 937 "parser.y"
+#line 1016 "parser.y"
                 { 
             (yyval.elem)=(yyvsp[0].elem);
         }
-#line 2736 "parser.tab.c"
+#line 2815 "parser.tab.c"
     break;
 
   case 85: /* or_test: and_test  */
-#line 943 "parser.y"
+#line 1022 "parser.y"
                      { 
             (yyval.elem)=(yyvsp[0].elem);
         }
-#line 2744 "parser.tab.c"
+#line 2823 "parser.tab.c"
     break;
 
   case 86: /* or_test: and_test_star OR M and_test  */
-#line 946 "parser.y"
+#line 1025 "parser.y"
                                          {  
             (yyval.elem) = create_node(5, "or_test", (yyvsp[-3].elem), (yyvsp[-2].elem), (yyvsp[-1].elem), (yyvsp[0].elem));
             (yyval.elem)->ins = (yyvsp[-3].elem)->ins;
@@ -2752,11 +2831,11 @@ yyreduce:
             (yyval.elem)->truelist = merge((yyvsp[-3].elem)->truelist, (yyvsp[0].elem)->truelist);
             (yyval.elem)->falselist = (yyvsp[0].elem)->falselist;
         }
-#line 2756 "parser.tab.c"
+#line 2835 "parser.tab.c"
     break;
 
   case 87: /* and_test_star: and_test_star OR M and_test  */
-#line 954 "parser.y"
+#line 1033 "parser.y"
                                             {
             (yyval.elem) = create_node(5, "and_test_star", (yyvsp[-3].elem), (yyvsp[-2].elem), (yyvsp[-1].elem), (yyvsp[0].elem));
             (yyval.elem)->ins = (yyvsp[-3].elem)->ins;
@@ -2764,27 +2843,27 @@ yyreduce:
             (yyval.elem)->truelist = merge((yyvsp[-3].elem)->truelist, (yyvsp[0].elem)->truelist);
             (yyval.elem)->falselist = (yyvsp[0].elem)->falselist;
         }
-#line 2768 "parser.tab.c"
+#line 2847 "parser.tab.c"
     break;
 
   case 88: /* and_test_star: and_test  */
-#line 961 "parser.y"
+#line 1040 "parser.y"
                      { 
             (yyval.elem)=(yyvsp[0].elem);
         }
-#line 2776 "parser.tab.c"
+#line 2855 "parser.tab.c"
     break;
 
   case 89: /* and_test: not_test  */
-#line 966 "parser.y"
+#line 1045 "parser.y"
                     {
             (yyval.elem)=(yyvsp[0].elem);
         }
-#line 2784 "parser.tab.c"
+#line 2863 "parser.tab.c"
     break;
 
   case 90: /* and_test: not_test_star AND M not_test  */
-#line 969 "parser.y"
+#line 1048 "parser.y"
                                           {  
             (yyval.elem) = create_node(5, "and_test", (yyvsp[-3].elem), (yyvsp[-2].elem), (yyvsp[-1].elem), (yyvsp[0].elem));
             (yyval.elem)->ins = (yyvsp[-3].elem)->ins;
@@ -2792,11 +2871,11 @@ yyreduce:
             (yyval.elem)->falselist = merge((yyvsp[-3].elem)->falselist, (yyvsp[0].elem)->falselist);
             (yyval.elem)->truelist = (yyvsp[0].elem)->truelist;
         }
-#line 2796 "parser.tab.c"
+#line 2875 "parser.tab.c"
     break;
 
   case 91: /* not_test_star: not_test_star AND M not_test  */
-#line 977 "parser.y"
+#line 1056 "parser.y"
                                               { 
             (yyval.elem) = create_node(5, "not_test_star", (yyvsp[-3].elem), (yyvsp[-2].elem), (yyvsp[-1].elem), (yyvsp[0].elem));
             (yyval.elem)->ins = (yyvsp[-3].elem)->ins;
@@ -2804,66 +2883,66 @@ yyreduce:
             (yyval.elem)->falselist = merge((yyvsp[-3].elem)->falselist, (yyvsp[0].elem)->falselist);
             (yyval.elem)->truelist = (yyvsp[0].elem)->truelist;
         }
-#line 2808 "parser.tab.c"
+#line 2887 "parser.tab.c"
     break;
 
   case 92: /* not_test_star: not_test  */
-#line 984 "parser.y"
+#line 1063 "parser.y"
                      { 
             (yyval.elem)=(yyvsp[0].elem);
         }
-#line 2816 "parser.tab.c"
+#line 2895 "parser.tab.c"
     break;
 
   case 93: /* not_test: NOT not_test  */
-#line 989 "parser.y"
+#line 1068 "parser.y"
                          { 
             (yyval.elem) = create_node(3, "not_test", (yyvsp[-1].elem), (yyvsp[0].elem));
             (yyval.elem)->ins = (yyvsp[0].elem)->ins;
             (yyval.elem)->truelist = (yyvsp[0].elem)->falselist;
             (yyval.elem)->falselist = (yyvsp[0].elem)->truelist;
         }
-#line 2827 "parser.tab.c"
+#line 2906 "parser.tab.c"
     break;
 
   case 94: /* not_test: comparison  */
-#line 995 "parser.y"
+#line 1074 "parser.y"
                         { 
             (yyval.elem)=(yyvsp[0].elem);
         }
-#line 2835 "parser.tab.c"
+#line 2914 "parser.tab.c"
     break;
 
   case 95: /* not_test: TRUE  */
-#line 998 "parser.y"
+#line 1077 "parser.y"
               {
             (yyval.elem)=(yyvsp[0].elem);
             (yyval.elem)->truelist = makelist(instCount+1);
             create_ins(0, "goto", "", "", "");
         }
-#line 2845 "parser.tab.c"
+#line 2924 "parser.tab.c"
     break;
 
   case 96: /* not_test: FALSE  */
-#line 1003 "parser.y"
+#line 1082 "parser.y"
                {
             (yyval.elem)=(yyvsp[0].elem);
             (yyval.elem)->falselist = makelist(instCount+2);
             create_ins(0, "goto", "", "", "");
         }
-#line 2855 "parser.tab.c"
+#line 2934 "parser.tab.c"
     break;
 
   case 97: /* comparison: expr  */
-#line 1010 "parser.y"
+#line 1089 "parser.y"
                   {
             (yyval.elem)=(yyvsp[0].elem);
         }
-#line 2863 "parser.tab.c"
+#line 2942 "parser.tab.c"
     break;
 
   case 98: /* comparison: expr comp_op comparison  */
-#line 1013 "parser.y"
+#line 1092 "parser.y"
                                    { 
             (yyval.elem)=create_node(4, "comparison", (yyvsp[-2].elem), (yyvsp[-1].elem), (yyvsp[0].elem));
             (yyval.elem)->ins = (yyvsp[-2].elem)->ins;
@@ -2882,107 +2961,107 @@ yyreduce:
             create_ins(0, "if", (yyval.elem)->addr, "goto", "");
             create_ins(0, "goto", "", "", "");
         }
-#line 2886 "parser.tab.c"
+#line 2965 "parser.tab.c"
     break;
 
   case 99: /* comp_op: LESS_THAN  */
-#line 1034 "parser.y"
+#line 1113 "parser.y"
                     {
         (yyval.elem) = (yyvsp[0].elem);
     }
-#line 2894 "parser.tab.c"
+#line 2973 "parser.tab.c"
     break;
 
   case 100: /* comp_op: GREATER_THAN  */
-#line 1037 "parser.y"
+#line 1116 "parser.y"
                     { 
        (yyval.elem) = (yyvsp[0].elem);
     }
-#line 2902 "parser.tab.c"
+#line 2981 "parser.tab.c"
     break;
 
   case 101: /* comp_op: EQUAL_EQUAL  */
-#line 1040 "parser.y"
+#line 1119 "parser.y"
                     { 
         (yyval.elem) = (yyvsp[0].elem);
     }
-#line 2910 "parser.tab.c"
+#line 2989 "parser.tab.c"
     break;
 
   case 102: /* comp_op: GREATER_THAN_EQUAL  */
-#line 1043 "parser.y"
+#line 1122 "parser.y"
                             { 
         (yyval.elem) = (yyvsp[0].elem);
     }
-#line 2918 "parser.tab.c"
+#line 2997 "parser.tab.c"
     break;
 
   case 103: /* comp_op: LESS_THAN_EQUAL  */
-#line 1046 "parser.y"
+#line 1125 "parser.y"
                         {
         (yyval.elem) = (yyvsp[0].elem);
     }
-#line 2926 "parser.tab.c"
+#line 3005 "parser.tab.c"
     break;
 
   case 104: /* comp_op: NOT_EQUAL_ARROW  */
-#line 1049 "parser.y"
+#line 1128 "parser.y"
                         {
         (yyval.elem) = (yyvsp[0].elem);
     }
-#line 2934 "parser.tab.c"
+#line 3013 "parser.tab.c"
     break;
 
   case 105: /* comp_op: NOT_EQUAL  */
-#line 1052 "parser.y"
+#line 1131 "parser.y"
                    {
        (yyval.elem) = (yyvsp[0].elem);
     }
-#line 2942 "parser.tab.c"
+#line 3021 "parser.tab.c"
     break;
 
   case 106: /* comp_op: IN  */
-#line 1055 "parser.y"
+#line 1134 "parser.y"
             {  
         (yyval.elem) = (yyvsp[0].elem);
     }
-#line 2950 "parser.tab.c"
+#line 3029 "parser.tab.c"
     break;
 
   case 107: /* comp_op: NOT IN  */
-#line 1058 "parser.y"
+#line 1137 "parser.y"
                 { 
         (yyval.elem) = create_node(3, "NOT IN", (yyvsp[-1].elem), (yyvsp[0].elem));
     }
-#line 2958 "parser.tab.c"
+#line 3037 "parser.tab.c"
     break;
 
   case 108: /* comp_op: IS  */
-#line 1061 "parser.y"
+#line 1140 "parser.y"
             { 
         (yyval.elem) = (yyvsp[0].elem);
     }
-#line 2966 "parser.tab.c"
+#line 3045 "parser.tab.c"
     break;
 
   case 109: /* comp_op: IS NOT  */
-#line 1064 "parser.y"
+#line 1143 "parser.y"
                 { 
         (yyval.elem) = create_node(3, "IS NOT", (yyvsp[-1].elem), (yyvsp[0].elem));
     }
-#line 2974 "parser.tab.c"
+#line 3053 "parser.tab.c"
     break;
 
   case 110: /* expr: xor_expr  */
-#line 1069 "parser.y"
+#line 1148 "parser.y"
                   { 
             (yyval.elem)=(yyvsp[0].elem);
         }
-#line 2982 "parser.tab.c"
+#line 3061 "parser.tab.c"
     break;
 
   case 111: /* expr: xor_expr BIT_OR expr  */
-#line 1072 "parser.y"
+#line 1151 "parser.y"
                                   {  
             (yyval.elem) = create_node(4, "expr", (yyvsp[-2].elem), (yyvsp[-1].elem), (yyvsp[0].elem));
             (yyval.elem)->ins = (yyvsp[-2].elem)->ins;
@@ -3014,19 +3093,19 @@ yyreduce:
                 }
             //typecheck end
         }
-#line 3018 "parser.tab.c"
+#line 3097 "parser.tab.c"
     break;
 
   case 112: /* xor_expr: and_expr  */
-#line 1105 "parser.y"
+#line 1184 "parser.y"
                    { 
             (yyval.elem) = (yyvsp[0].elem);
         }
-#line 3026 "parser.tab.c"
+#line 3105 "parser.tab.c"
     break;
 
   case 113: /* xor_expr: and_expr BIT_XOR xor_expr  */
-#line 1108 "parser.y"
+#line 1187 "parser.y"
                                        {  
             (yyval.elem) = create_node(4, "xor_expr", (yyvsp[-2].elem), (yyvsp[-1].elem), (yyvsp[0].elem));
             (yyval.elem)->ins = (yyvsp[-2].elem)->ins;
@@ -3058,20 +3137,20 @@ yyreduce:
                 }
             //typecheck end
         }
-#line 3062 "parser.tab.c"
+#line 3141 "parser.tab.c"
     break;
 
   case 114: /* and_expr: shift_expr  */
-#line 1141 "parser.y"
+#line 1220 "parser.y"
                        { 
             (yyval.elem) = (yyvsp[0].elem);
             
         }
-#line 3071 "parser.tab.c"
+#line 3150 "parser.tab.c"
     break;
 
   case 115: /* and_expr: shift_expr BIT_AND and_expr  */
-#line 1145 "parser.y"
+#line 1224 "parser.y"
                                         {  
             (yyval.elem) = create_node(4, "and_expr", (yyvsp[-2].elem), (yyvsp[-1].elem), (yyvsp[0].elem));
             (yyval.elem)->ins = (yyvsp[-2].elem)->ins;
@@ -3103,19 +3182,19 @@ yyreduce:
                 }
             //typecheck end
         }
-#line 3107 "parser.tab.c"
+#line 3186 "parser.tab.c"
     break;
 
   case 116: /* shift_expr: arith_expr  */
-#line 1178 "parser.y"
+#line 1257 "parser.y"
                          { 
                 (yyval.elem) = (yyvsp[0].elem); 
             }
-#line 3115 "parser.tab.c"
+#line 3194 "parser.tab.c"
     break;
 
   case 117: /* shift_expr: arith_expr SHIFT_OPER shift_expr  */
-#line 1181 "parser.y"
+#line 1260 "parser.y"
                                                  { 
                 (yyval.elem) = create_node(4, "shift_expr", (yyvsp[-2].elem), (yyvsp[-1].elem), (yyvsp[0].elem));
                 (yyval.elem)->ins = (yyvsp[-2].elem)->ins;
@@ -3147,19 +3226,19 @@ yyreduce:
                 }
             //typecheck end
             }
-#line 3151 "parser.tab.c"
+#line 3230 "parser.tab.c"
     break;
 
   case 118: /* arith_expr: term  */
-#line 1214 "parser.y"
+#line 1293 "parser.y"
                  { 
                 (yyval.elem) = (yyvsp[0].elem);
             }
-#line 3159 "parser.tab.c"
+#line 3238 "parser.tab.c"
     break;
 
   case 119: /* arith_expr: arith_expr PLUS term  */
-#line 1217 "parser.y"
+#line 1296 "parser.y"
                                    { 
                 
                 (yyval.elem) = create_node(4, "arith_expr", (yyvsp[-2].elem), (yyvsp[-1].elem), (yyvsp[0].elem));
@@ -3195,11 +3274,11 @@ yyreduce:
                 }
             //typecheck end
             }
-#line 3199 "parser.tab.c"
+#line 3278 "parser.tab.c"
     break;
 
   case 120: /* arith_expr: arith_expr MINUS term  */
-#line 1252 "parser.y"
+#line 1331 "parser.y"
                                     { 
                 (yyval.elem) = create_node(4, "arith_expr", (yyvsp[-2].elem), (yyvsp[-1].elem), (yyvsp[0].elem));
                 (yyval.elem)->ins = (yyvsp[-2].elem)->ins;
@@ -3234,19 +3313,19 @@ yyreduce:
                 }
             //typecheck end
             }
-#line 3238 "parser.tab.c"
+#line 3317 "parser.tab.c"
     break;
 
   case 121: /* term: factor  */
-#line 1287 "parser.y"
+#line 1366 "parser.y"
              {
             (yyval.elem) = (yyvsp[0].elem); 
         }
-#line 3246 "parser.tab.c"
+#line 3325 "parser.tab.c"
     break;
 
   case 122: /* term: term term_choice factor  */
-#line 1290 "parser.y"
+#line 1369 "parser.y"
                                   {
             (yyval.elem) = create_node(4, "term", (yyvsp[-2].elem), (yyvsp[-1].elem), (yyvsp[0].elem));
             (yyval.elem)->ins = (yyvsp[-2].elem)->ins;
@@ -3282,51 +3361,51 @@ yyreduce:
             //typecheck end
         
 		}
-#line 3286 "parser.tab.c"
+#line 3365 "parser.tab.c"
     break;
 
   case 123: /* term_choice: MULTIPLY  */
-#line 1327 "parser.y"
+#line 1406 "parser.y"
                             { 
             (yyval.elem) = (yyvsp[0].elem);
         }
-#line 3294 "parser.tab.c"
+#line 3373 "parser.tab.c"
     break;
 
   case 124: /* term_choice: ATTHERATE  */
-#line 1330 "parser.y"
+#line 1409 "parser.y"
                         { 
             (yyval.elem) = (yyvsp[0].elem);
         }
-#line 3302 "parser.tab.c"
+#line 3381 "parser.tab.c"
     break;
 
   case 125: /* term_choice: DIVIDE  */
-#line 1333 "parser.y"
+#line 1412 "parser.y"
                         { 
             (yyval.elem) = (yyvsp[0].elem);
         }
-#line 3310 "parser.tab.c"
+#line 3389 "parser.tab.c"
     break;
 
   case 126: /* term_choice: REMAINDER  */
-#line 1336 "parser.y"
+#line 1415 "parser.y"
                         { 
             (yyval.elem) = (yyvsp[0].elem);
         }
-#line 3318 "parser.tab.c"
+#line 3397 "parser.tab.c"
     break;
 
   case 127: /* term_choice: FLOOR_DIV_OPER  */
-#line 1339 "parser.y"
+#line 1418 "parser.y"
                            { 
             (yyval.elem) = (yyvsp[0].elem);
         }
-#line 3326 "parser.tab.c"
+#line 3405 "parser.tab.c"
     break;
 
   case 128: /* factor: factor_choice factor  */
-#line 1344 "parser.y"
+#line 1423 "parser.y"
                                     {  
             (yyval.elem) = create_node(3, "factor", (yyvsp[-1].elem), (yyvsp[0].elem));
             (yyval.elem)->ins = (yyvsp[-1].elem)->ins;
@@ -3339,51 +3418,51 @@ yyreduce:
                 exit(1);
             }
         }
-#line 3343 "parser.tab.c"
+#line 3422 "parser.tab.c"
     break;
 
   case 129: /* factor: power  */
-#line 1356 "parser.y"
+#line 1435 "parser.y"
                     { 
             (yyval.elem) = (yyvsp[0].elem);
         }
-#line 3351 "parser.tab.c"
+#line 3430 "parser.tab.c"
     break;
 
   case 130: /* factor_choice: PLUS  */
-#line 1360 "parser.y"
+#line 1439 "parser.y"
                             {
             (yyval.elem)=(yyvsp[0].elem);
         }
-#line 3359 "parser.tab.c"
+#line 3438 "parser.tab.c"
     break;
 
   case 131: /* factor_choice: MINUS  */
-#line 1363 "parser.y"
+#line 1442 "parser.y"
                      { 
             (yyval.elem)=(yyvsp[0].elem);
         }
-#line 3367 "parser.tab.c"
+#line 3446 "parser.tab.c"
     break;
 
   case 132: /* factor_choice: NEGATION  */
-#line 1366 "parser.y"
+#line 1445 "parser.y"
                      { 
             (yyval.elem)=(yyvsp[0].elem);
         }
-#line 3375 "parser.tab.c"
+#line 3454 "parser.tab.c"
     break;
 
   case 133: /* power: atom_expr  */
-#line 1370 "parser.y"
+#line 1449 "parser.y"
                         { 
             (yyval.elem) = (yyvsp[0].elem);
         }
-#line 3383 "parser.tab.c"
+#line 3462 "parser.tab.c"
     break;
 
   case 134: /* power: atom_expr POWER_OPERATOR factor  */
-#line 1373 "parser.y"
+#line 1452 "parser.y"
                                             { 
             (yyval.elem) = create_node(4, "power", (yyvsp[-2].elem), (yyvsp[-1].elem), (yyvsp[0].elem));
             (yyval.elem)->ins = (yyvsp[-2].elem)->ins;
@@ -3395,19 +3474,19 @@ yyreduce:
                 exit(1);
             }
         }
-#line 3399 "parser.tab.c"
+#line 3478 "parser.tab.c"
     break;
 
   case 135: /* atom_expr: atom  */
-#line 1386 "parser.y"
+#line 1465 "parser.y"
                 {  
             (yyval.elem) = (yyvsp[0].elem);  
         }
-#line 3407 "parser.tab.c"
+#line 3486 "parser.tab.c"
     break;
 
   case 136: /* atom_expr: atom_expr trailer  */
-#line 1389 "parser.y"
+#line 1468 "parser.y"
                             {   //this is function call
             (yyval.elem) = create_node(3, "atom_expr", (yyvsp[-1].elem), (yyvsp[0].elem));
             (yyval.elem)->ins = (yyvsp[-1].elem)->ins;
@@ -3418,8 +3497,11 @@ yyreduce:
             create_ins(0, "PopParam", temp, "", "");
             backpatch((yyvsp[0].elem)->nextlist, instCount);
 
+            ste* function_ste;
+
             if(chartostring((yyvsp[-1].elem)->type) == "self_call"){
                 ste* lookup_ste = lookup(current_ste, (yyvsp[-1].elem)->class_param);
+                function_ste=lookup_ste;
                 //print_ste(global_sym_table,0);
                 if(lookup_ste == NULL){
                     cerr<<"Error: Function in selfcall "<<(yyvsp[-1].elem)->class_param<<" not declared in class\n";
@@ -3443,7 +3525,7 @@ yyreduce:
                     cout<<"atom_exprr: class call "<<class_name<<endl;
             
                   //here
-                    ste* lookup_ste = rev_lookup(class_ste, (yyvsp[-1].elem)->class_param); 
+                    ste* lookup_ste = single_rev_lookup(class_ste->next_scope, (yyvsp[-1].elem)->class_param); 
                     if(lookup_ste == NULL){
                         cerr<<"Error: Function "<<(yyvsp[-1].elem)->class_param<<" not declared in class "<<class_name<<endl;
                         exit(1);
@@ -3455,6 +3537,7 @@ yyreduce:
                     //     exit(1);
                     // }
                     //cout<< lookup_ste->return_type<< "in classfunc"<<endl;
+                    function_ste=lookup_ste;
                     (yyval.elem)->atom_type = lookup_ste->return_type;
                     //cout<<$$->atom_type<<endl;
                 
@@ -3478,7 +3561,6 @@ yyreduce:
                 else{
                     lookup_ste = class_map[lookup_ste->type];
                 }
-                lookup_ste = lookup_ste->next_scope;
                 string func_name = "";
                 while((yyvsp[-1].elem)->addr[i] != '\0'){
                     func_name.push_back((yyvsp[-1].elem)->addr[i]);
@@ -3486,6 +3568,7 @@ yyreduce:
                 } 
                 
                 //single rev matlab usi scope me dekhega, hume usi me chahiye kyuki
+                lookup_ste = lookup_ste->next_scope;
                 ste* lookup_ste2 = single_rev_lookup(lookup_ste, func_name);
                 if(lookup_ste2 == NULL){
                     cerr<<"Error: Function "<<func_name<<" not declared in object "<<object_name<<endl;
@@ -3496,6 +3579,7 @@ yyreduce:
                         cerr<<"Error: "<<func_name<<" is not a function\n";
                         exit(1);
                     }
+                    function_ste=lookup_ste;
                     (yyval.elem)->atom_type = lookup_ste2->return_type;
                 }
 
@@ -3503,9 +3587,18 @@ yyreduce:
             else if(chartostring((yyvsp[-1].elem)->type) == "class_constructor"){ //LALRparser(self,"abc") is type wale
                 (yyval.elem)->type = str_to_ch("class_constructor");
                 (yyval.elem)->atom_type = "object";
-                //add 3ac for callling constructor if required// I think it will be in test colon test equal eqtes
+                //add 3ac for calling constructor if required// I think it will be in test colon test equal eqtes
 
                 //see that the parameters passed are correct and type checking
+                ste* lookup_ste;
+                if(class_map.find(chartostring((yyvsp[-1].elem)->addr))==class_map.end()){
+                    cerr<<"Error: Class "<<(yyvsp[-1].elem)->addr<<" not declared\n";
+                }
+                else{
+                    lookup_ste=class_map[chartostring((yyvsp[-1].elem)->addr)];
+                }
+                lookup_ste=single_rev_lookup(lookup_ste->next_scope,"__init__");
+                function_ste=lookup_ste;
             }
             else{
             //typecheck
@@ -3522,26 +3615,36 @@ yyreduce:
                         cerr<<"Error: "<<(yyvsp[-1].elem)->addr<<" is not a function\n";
                         exit(1);
                     }
-                    else{
-                        if((yyvsp[0].elem)->num_params != lookup_ste->num_params){
-                            cerr<<"Error: Number of parameters mismatch in function call\n";
-                            exit(1);
-                        }
-                        // for(int i=0; i<$2->num_params; i++){
-                            
-                        // }
-                    }
+                    function_ste=lookup_ste;
                     (yyval.elem)->atom_type = lookup_ste->return_type;
                     //cout<<$$->atom_type<<endl;
                 }
             }
             //endtypecheck
+
+
+            //function ke parameters ka type check idhar 
+            cout<<(yyvsp[0].elem)->func_par_type.size()<<" "<<function_ste->func_par_type.size()<<endl;
+            if(function_ste->num_params != (yyvsp[0].elem)->num_params){
+                cerr<<"Error: Number of parameters mismatch\n";
+                exit(1);
+            }
+            cout<<"para check start"<<endl;
+            for(int i=0;i< (yyvsp[0].elem)->func_par_type.size();i++){
+                cout<<(yyvsp[0].elem)->func_par_type[i]<<" "<< function_ste->func_par_type[i]<<endl;
+                if((yyvsp[0].elem)->func_par_type[i] != function_ste->func_par_type[i]){
+                    cerr<<"Error: Mismatch of a parameter in function: "<<function_ste->lexeme<<"\n";
+                    exit(1);
+                }
+            }
+            cout<<"para check end"<<endl;
+
         }
-#line 3541 "parser.tab.c"
+#line 3644 "parser.tab.c"
     break;
 
   case 137: /* atom_expr: atom_expr SQUARE_OPEN test SQUARE_CLOSE  */
-#line 1518 "parser.y"
+#line 1621 "parser.y"
                                                  {   //array access
             cout<<"ENTER YOU FUCKING BITCH"<<endl;
             (yyval.elem) = create_node(5, "atom_expr", (yyvsp[-3].elem), (yyvsp[-2].elem), (yyvsp[-1].elem), (yyvsp[0].elem));
@@ -3571,11 +3674,11 @@ yyreduce:
              //check this suppose a[2] hai to hum a ka type dekhenge
 
         }
-#line 3575 "parser.tab.c"
+#line 3678 "parser.tab.c"
     break;
 
   case 138: /* atom_expr: atom_expr DOT NAME  */
-#line 1547 "parser.y"
+#line 1650 "parser.y"
                              { 
             // cout<<"symbol table in atom_expr"<<endl; 
             // print_ste(global_sym_table,0);
@@ -3593,7 +3696,7 @@ yyreduce:
             }
             if(lookup_ste -> token == "OBJECT"){
                 (yyval.elem)->type = str_to_ch("object_call");
-                
+                //see what else to do
             }
             //here it ends
             else{
@@ -3618,12 +3721,31 @@ yyreduce:
                     (yyval.elem)->class_param = ((yyvsp[0].elem)->addr);
                 }
             }
+
+
+            //we need to get atom_type here, //it will be only for already defined
+            //function wale ka to upar trailer me jaake set ho jayega, yaha pe hume sirf normal wale ka nikalna hoga (kisi object ka)
+            ste* lookup_ste2 = lookup(current_ste,(yyvsp[-2].elem)->addr);
+            if(lookup_ste2 ->token == "OBJECT"){
+                string classname= lookup_ste2 -> type;
+                lookup_ste2 = class_map[classname]; //symboltable entry of class
+                ste* attribute = lookup(lookup_ste2,(yyvsp[0].elem)->addr);
+                if(attribute == NULL){
+                    attribute = single_rev_lookup(lookup_ste2->next_scope,(yyvsp[0].elem)->addr);
+                }
+                if(attribute!= NULL){ 
+                    (yyval.elem)->atom_type = attribute->type;
+                }
+                //error condition daal sakte
+            //cout<< "atom expr dot name: "<<$$->atom_type<<endl;
+            }
+
         }
-#line 3623 "parser.tab.c"
+#line 3745 "parser.tab.c"
     break;
 
   case 139: /* atom_expr: LEN OPEN_BRACKET test CLOSE_BRACKET  */
-#line 1590 "parser.y"
+#line 1712 "parser.y"
                                               { 
             (yyval.elem) = create_node(5, "atom_expr", (yyvsp[-3].elem), (yyvsp[-2].elem), (yyvsp[-1].elem), (yyvsp[0].elem));
             (yyval.elem)->ins = (yyvsp[-3].elem)->ins;
@@ -3645,11 +3767,11 @@ yyreduce:
             create_ins(0, temp, "=", "PopParam", "");
             (yyval.elem)->addr = str_to_ch(temp);
         }
-#line 3649 "parser.tab.c"
+#line 3771 "parser.tab.c"
     break;
 
   case 140: /* atom_expr: PRINT OPEN_BRACKET test CLOSE_BRACKET  */
-#line 1611 "parser.y"
+#line 1733 "parser.y"
                                                 { 
             (yyval.elem) = create_node(5, "atom_expr", (yyvsp[-3].elem), (yyvsp[-2].elem), (yyvsp[-1].elem), (yyvsp[0].elem));
             (yyval.elem)->ins = (yyvsp[-3].elem)->ins;
@@ -3659,11 +3781,11 @@ yyreduce:
             create_ins(0, "call", "print", "", "");
             create_ins(0, "PopParam", "1", "", "");
         }
-#line 3663 "parser.tab.c"
+#line 3785 "parser.tab.c"
     break;
 
   case 141: /* atom_expr: SELF DOT NAME  */
-#line 1620 "parser.y"
+#line 1742 "parser.y"
                         {
             (yyval.elem) = create_node(4, "atom_expr", (yyvsp[-2].elem), (yyvsp[-1].elem), (yyvsp[0].elem));
             (yyval.elem)->ins = (yyvsp[-2].elem)->ins;
@@ -3674,31 +3796,44 @@ yyreduce:
             ste* lookup_ste = lookup(current_ste, (yyvsp[0].elem)->addr);
             //include error rule
             (yyval.elem)->class_param = (yyvsp[0].elem)->addr;
-            //cout<< $$->class_param<<endl; 
-            //$$->atom_type = lookup_ste->return_type;
+            
+            //we need to get atom_type here, 
+            //function wale ka to upar trailer me jaake set ho jayega, yaha pe hume sirf normal wal eka nikalna hoga
+            ste* lookup_ste2 = lookup(current_ste,"self");
+            string classname= lookup_ste2 -> token;
+            lookup_ste2 = class_map[classname];
+            ste* attribute = lookup(lookup_ste2,(yyvsp[0].elem)->addr);
+            if(attribute == NULL){
+                attribute = single_rev_lookup(lookup_ste2->next_scope,(yyvsp[0].elem)->addr);
+            }
+            if(attribute!= NULL){ 
+                (yyval.elem)->atom_type = attribute->type;
+            }
+            // cout<<"self dot name: "<< $$->atom_type<<endl;
+
         }
-#line 3681 "parser.tab.c"
+#line 3816 "parser.tab.c"
     break;
 
   case 142: /* atom: OPEN_BRACKET testlist CLOSE_BRACKET  */
-#line 1652 "parser.y"
+#line 1787 "parser.y"
                                          { 
         (yyval.elem)=(yyvsp[-1].elem);
     }
-#line 3689 "parser.tab.c"
+#line 3824 "parser.tab.c"
     break;
 
   case 143: /* atom: OPEN_BRACKET CLOSE_BRACKET  */
-#line 1655 "parser.y"
+#line 1790 "parser.y"
                                     {
         (yyval.elem) = create_node(3, "atom", (yyvsp[-1].elem), (yyvsp[0].elem));
         (yyval.elem)->ins = instCount+1;
     }
-#line 3698 "parser.tab.c"
+#line 3833 "parser.tab.c"
     break;
 
   case 144: /* atom: SQUARE_OPEN testlist SQUARE_CLOSE  */
-#line 1660 "parser.y"
+#line 1795 "parser.y"
                                            { 
         cout<<"hello"<<endl;
         (yyval.elem) = (yyvsp[-1].elem);
@@ -3715,29 +3850,29 @@ yyreduce:
         }
         create_ins(0,"HeapAlloc", to_string(get_width(type)) + "*" + to_string((yyvsp[-1].elem)->list_size), "", "");
     }
-#line 3719 "parser.tab.c"
+#line 3854 "parser.tab.c"
     break;
 
   case 145: /* atom: SQUARE_OPEN SQUARE_CLOSE  */
-#line 1676 "parser.y"
+#line 1811 "parser.y"
                                 {
         (yyval.elem) = create_node(3, "atom", (yyvsp[-1].elem), (yyvsp[0].elem));
         (yyval.elem)->ins = instCount+1;
     }
-#line 3728 "parser.tab.c"
+#line 3863 "parser.tab.c"
     break;
 
   case 146: /* atom: CURLY_OPEN CURLY_CLOSE  */
-#line 1681 "parser.y"
+#line 1816 "parser.y"
                                 { 
         (yyval.elem) = create_node(3, "atom", (yyvsp[-1].elem), (yyvsp[0].elem));
         (yyval.elem)->ins = instCount+1;
     }
-#line 3737 "parser.tab.c"
+#line 3872 "parser.tab.c"
     break;
 
   case 147: /* atom: NAME  */
-#line 1686 "parser.y"
+#line 1821 "parser.y"
               {
         (yyval.elem)->type = str_to_ch("NAME");  //is this required?
         (yyval.elem) = (yyvsp[0].elem);
@@ -3765,61 +3900,61 @@ yyreduce:
             (yyval.elem)->atom_type = "object";
         }
     }
-#line 3769 "parser.tab.c"
+#line 3904 "parser.tab.c"
     break;
 
   case 148: /* atom: NUMBER  */
-#line 1713 "parser.y"
+#line 1848 "parser.y"
                    { 
         (yyval.elem) = (yyvsp[0].elem);
         (yyval.elem)->ins = instCount+1;
         // cout<<$$->atom_type<<endl;
     }
-#line 3779 "parser.tab.c"
+#line 3914 "parser.tab.c"
     break;
 
   case 149: /* atom: STRING_PLUS  */
-#line 1718 "parser.y"
+#line 1853 "parser.y"
                         { 
        (yyval.elem) = (yyvsp[0].elem);
     }
-#line 3787 "parser.tab.c"
+#line 3922 "parser.tab.c"
     break;
 
   case 150: /* atom: ATOM_KEYWORDS  */
-#line 1721 "parser.y"
+#line 1856 "parser.y"
                         { 
         (yyval.elem)->atom_type="bool";
         (yyval.elem)->type=str_to_ch("bool");
         (yyval.elem) = (yyvsp[0].elem);
         (yyval.elem)->ins = instCount+1;
     }
-#line 3798 "parser.tab.c"
+#line 3933 "parser.tab.c"
     break;
 
   case 151: /* atom: NONE  */
-#line 1727 "parser.y"
+#line 1862 "parser.y"
                 { 
         (yyval.elem) = (yyvsp[0].elem);
         (yyval.elem)->ins = instCount+1;
         (yyval.elem)->atom_type="None";
     }
-#line 3808 "parser.tab.c"
+#line 3943 "parser.tab.c"
     break;
 
   case 152: /* STRING_PLUS: STRING  */
-#line 1738 "parser.y"
+#line 1873 "parser.y"
                         {
             (yyval.elem) = (yyvsp[0].elem);
 			(yyval.elem)->ins = instCount+1;
             (yyval.elem)->type=str_to_ch("str");
             (yyval.elem)->atom_type="str";
         }
-#line 3819 "parser.tab.c"
+#line 3954 "parser.tab.c"
     break;
 
   case 153: /* STRING_PLUS: STRING STRING_PLUS  */
-#line 1744 "parser.y"
+#line 1879 "parser.y"
                                 { 
             (yyval.elem) = create_node(3, "STRING_PLUS", (yyvsp[-1].elem), (yyvsp[0].elem));
             (yyval.elem)->ins = (yyvsp[0].elem)->ins;
@@ -3827,11 +3962,11 @@ yyreduce:
             (yyval.elem)->type=str_to_ch("str");
 
         }
-#line 3831 "parser.tab.c"
+#line 3966 "parser.tab.c"
     break;
 
   case 154: /* trailer: OPEN_BRACKET CLOSE_BRACKET  */
-#line 1753 "parser.y"
+#line 1888 "parser.y"
                                      { 
             (yyval.elem) = create_node(3, "trailer", (yyvsp[-1].elem), (yyvsp[0].elem));
             (yyval.elem)->ins = instCount+1;
@@ -3839,46 +3974,52 @@ yyreduce:
             create_ins(0, "PushParam", "", "", "");
             (yyval.elem)->nextlist = makelist(instCount);
         }
-#line 3843 "parser.tab.c"
+#line 3978 "parser.tab.c"
     break;
 
   case 155: /* trailer: OPEN_BRACKET arglist CLOSE_BRACKET  */
-#line 1760 "parser.y"
+#line 1895 "parser.y"
                                               {
             (yyval.elem)=(yyvsp[-1].elem);
+
+            //func_par_type
+            (yyval.elem)->func_par_type = (yyvsp[-1].elem)->func_par_type;
         }
-#line 3851 "parser.tab.c"
+#line 3989 "parser.tab.c"
     break;
 
   case 156: /* trailer: OPEN_BRACKET SELF COMMA arglist CLOSE_BRACKET  */
-#line 1763 "parser.y"
+#line 1901 "parser.y"
                                                          {
             (yyval.elem)=(yyvsp[-1].elem);
+
+            //func_par_type
+            (yyval.elem)->func_par_type = (yyvsp[-1].elem)->func_par_type;
         }
-#line 3859 "parser.tab.c"
+#line 4000 "parser.tab.c"
     break;
 
   case 157: /* trailer: OPEN_BRACKET SELF CLOSE_BRACKET  */
-#line 1766 "parser.y"
+#line 1907 "parser.y"
                                           {
             (yyval.elem) = create_node(4, "trailer", (yyvsp[-2].elem), (yyvsp[-1].elem), (yyvsp[0].elem));
             (yyval.elem)->ins = instCount+1;
         }
-#line 3868 "parser.tab.c"
+#line 4009 "parser.tab.c"
     break;
 
   case 158: /* testlist: testlist_list  */
-#line 1778 "parser.y"
+#line 1919 "parser.y"
                            { 
             //cout<<$1->atom_type<<endl; 
             (yyval.elem) = (yyvsp[0].elem);
             (yyval.elem)-> addr = str_to_ch(chartostring((yyvsp[0].elem)->addr) + "]");
         }
-#line 3878 "parser.tab.c"
+#line 4019 "parser.tab.c"
     break;
 
   case 159: /* testlist: testlist_list COMMA  */
-#line 1783 "parser.y"
+#line 1924 "parser.y"
                                 {
             (yyval.elem)=create_node(3,"testlist",(yyvsp[-1].elem),(yyvsp[0].elem));
             (yyval.elem)->ins = (yyvsp[-1].elem) -> ins;
@@ -3886,21 +4027,24 @@ yyreduce:
             (yyval.elem)->atom_type = (yyvsp[-1].elem)->atom_type;
             (yyval.elem)-> addr = str_to_ch(chartostring((yyvsp[-1].elem)->addr) + "]");
         }
-#line 3890 "parser.tab.c"
+#line 4031 "parser.tab.c"
     break;
 
   case 160: /* testlist_list: test  */
-#line 1791 "parser.y"
+#line 1932 "parser.y"
                             {
             (yyval.elem) = (yyvsp[0].elem);
             (yyval.elem)->list_size = 1;
             (yyval.elem)-> addr = str_to_ch( "[" + chartostring((yyvsp[0].elem)->addr));
+
+            // //function parameters check 
+            // $$->func_par_type.push_back($1->atom_type);
         }
-#line 3900 "parser.tab.c"
+#line 4044 "parser.tab.c"
     break;
 
   case 161: /* testlist_list: test COLON TYPE_HINT  */
-#line 1796 "parser.y"
+#line 1940 "parser.y"
                               {
             (yyval.elem) = create_node(4, "testlist_list", (yyvsp[-2].elem), (yyvsp[-1].elem), (yyvsp[0].elem));
             (yyval.elem)->ins = (yyvsp[-2].elem)->ins;
@@ -3919,12 +4063,15 @@ yyreduce:
             }
             //STE code end
 
+            // //function parameters check 
+            // $$->func_par_type.push_back(chartostring($3->addr));
+
         }
-#line 3924 "parser.tab.c"
+#line 4071 "parser.tab.c"
     break;
 
   case 162: /* testlist_list: testlist_list COMMA test  */
-#line 1815 "parser.y"
+#line 1962 "parser.y"
                                     { 
             (yyval.elem) = create_node(4, "testlist_list", (yyvsp[-2].elem), (yyvsp[-1].elem), (yyvsp[0].elem));
             (yyval.elem)->ins = (yyvsp[-2].elem)->ins;
@@ -3935,12 +4082,16 @@ yyreduce:
             //$$->atom_type = "list["+$3->atom_type+"]";
             //cout<<$$->addr<<endl;
             // cout<<$3->atom_type<<endl;
+
+            // //function parameters check 
+            // $$->func_par_type = $1->func_par_type;
+            // $$->func_par_type.push_back($3->atom_type);
         }
-#line 3940 "parser.tab.c"
+#line 4091 "parser.tab.c"
     break;
 
   case 163: /* testlist_list: testlist_list COMMA test COLON TYPE_HINT  */
-#line 1826 "parser.y"
+#line 1977 "parser.y"
                                                    { 
             (yyval.elem) = create_node(6, "testlist_list", (yyvsp[-4].elem), (yyvsp[-3].elem), (yyvsp[-2].elem), (yyvsp[-1].elem), (yyvsp[0].elem));
             (yyval.elem)->ins = (yyvsp[-4].elem)->ins;
@@ -3958,12 +4109,16 @@ yyreduce:
                 exit(1);
             }
             //STE code end
+
+            // //function parameters check 
+            // $$->func_par_type = $1->func_par_type;
+            // $$->func_par_type.push_back(chartostring($5->addr));
         }
-#line 3963 "parser.tab.c"
+#line 4118 "parser.tab.c"
     break;
 
   case 164: /* classdef: CLASS class_declare COLON class_body_suite  */
-#line 1877 "parser.y"
+#line 2032 "parser.y"
                                                     {
             (yyval.elem) = create_node(5, "classdef", (yyvsp[-3].elem), (yyvsp[-2].elem), (yyvsp[-1].elem),(yyvsp[0].elem));
             (yyval.elem)->ins = (yyvsp[-2].elem)->ins;
@@ -3983,11 +4138,11 @@ yyreduce:
                 }
             }
         }
-#line 3987 "parser.tab.c"
+#line 4142 "parser.tab.c"
     break;
 
   case 165: /* class_declare: NAME  */
-#line 1898 "parser.y"
+#line 2053 "parser.y"
                      {
             (yyval.elem)=(yyvsp[0].elem);
             inClass=1;
@@ -4007,11 +4162,11 @@ yyreduce:
             }
             //STE code end 
         }
-#line 4011 "parser.tab.c"
+#line 4166 "parser.tab.c"
     break;
 
   case 166: /* class_declare: NAME OPEN_BRACKET CLOSE_BRACKET  */
-#line 1917 "parser.y"
+#line 2072 "parser.y"
                                          {
             (yyval.elem)=(yyvsp[-2].elem);
             inClass=1;
@@ -4031,11 +4186,11 @@ yyreduce:
             }
             //STE code end 
         }
-#line 4035 "parser.tab.c"
+#line 4190 "parser.tab.c"
     break;
 
   case 167: /* class_declare: NAME OPEN_BRACKET argument CLOSE_BRACKET  */
-#line 1936 "parser.y"
+#line 2091 "parser.y"
                                                   {
             (yyval.elem) = create_node(5, "class_declare", (yyvsp[-3].elem), (yyvsp[-2].elem), (yyvsp[-1].elem), (yyvsp[0].elem));
             (yyval.elem)->ins = (yyvsp[-1].elem)->ins;
@@ -4071,62 +4226,62 @@ yyreduce:
             }
             
         }
-#line 4075 "parser.tab.c"
+#line 4230 "parser.tab.c"
     break;
 
   case 168: /* class_body_suite: NEWLINE INDENT funcdef_plus DEDENT  */
-#line 1999 "parser.y"
+#line 2154 "parser.y"
                                                         { 
             (yyval.elem)=(yyvsp[-1].elem);
             inClass=0;
         }
-#line 4084 "parser.tab.c"
+#line 4239 "parser.tab.c"
     break;
 
   case 169: /* class_body_suite: NEWLINE INDENT funcdef_plus NEWLINE DEDENT  */
-#line 2003 "parser.y"
+#line 2158 "parser.y"
                                                         { 
             (yyval.elem)=(yyvsp[-2].elem);
             inClass=0;
         }
-#line 4093 "parser.tab.c"
+#line 4248 "parser.tab.c"
     break;
 
   case 170: /* funcdef_plus: funcdef  */
-#line 2009 "parser.y"
+#line 2164 "parser.y"
                        { 
             (yyval.elem)=(yyvsp[0].elem);
         }
-#line 4101 "parser.tab.c"
+#line 4256 "parser.tab.c"
     break;
 
   case 171: /* funcdef_plus: funcdef_plus funcdef  */
-#line 2012 "parser.y"
+#line 2167 "parser.y"
                                  { 
             (yyval.elem)=create_node(3,"funcdef_plus",(yyvsp[-1].elem),(yyvsp[0].elem));
             (yyval.elem)->ins = (yyvsp[-1].elem)->ins;
         }
-#line 4110 "parser.tab.c"
+#line 4265 "parser.tab.c"
     break;
 
   case 172: /* arglist: argument_list  */
-#line 2039 "parser.y"
+#line 2194 "parser.y"
                            { 
             (yyval.elem)=(yyvsp[0].elem);
         }
-#line 4118 "parser.tab.c"
+#line 4273 "parser.tab.c"
     break;
 
   case 173: /* arglist: argument_list COMMA  */
-#line 2042 "parser.y"
+#line 2197 "parser.y"
                                  { 
             (yyval.elem)=(yyvsp[-1].elem);
         }
-#line 4126 "parser.tab.c"
+#line 4281 "parser.tab.c"
     break;
 
   case 174: /* argument_list: argument  */
-#line 2046 "parser.y"
+#line 2201 "parser.y"
                             { 
             (yyval.elem)=(yyvsp[0].elem);
             (yyval.elem)->num_params=1;
@@ -4135,12 +4290,13 @@ yyreduce:
             (yyval.elem)->nextlist = makelist(instCount+1);
             create_ins(0, "PushParam", "", "", "");
             create_ins(0, "PushParam", (yyvsp[0].elem)->addr, "", "");
+        
         }
-#line 4140 "parser.tab.c"
+#line 4296 "parser.tab.c"
     break;
 
   case 175: /* argument_list: argument_list COMMA argument  */
-#line 2055 "parser.y"
+#line 2211 "parser.y"
                                         { 
             (yyval.elem) = create_node(4, "argument_list", (yyvsp[-2].elem), (yyvsp[-1].elem), (yyvsp[0].elem));
             (yyval.elem)->ins = (yyvsp[-2].elem)->ins;
@@ -4148,48 +4304,59 @@ yyreduce:
 
             create_ins(0, "PushParam", (yyvsp[0].elem)->addr, "", "");
             (yyval.elem)->nextlist = (yyvsp[-2].elem)->nextlist;
+
+            //function par type
+            (yyval.elem)->func_par_type = (yyvsp[-2].elem)->func_par_type;
+            for(int i=0;i< (yyvsp[0].elem)->func_par_type.size();i++){
+                (yyval.elem)->func_par_type.push_back((yyvsp[0].elem)->func_par_type[i]);
+            }
         }
-#line 4153 "parser.tab.c"
+#line 4315 "parser.tab.c"
     break;
 
   case 176: /* argument: test  */
-#line 2065 "parser.y"
+#line 2227 "parser.y"
                 {
             (yyval.elem)=(yyvsp[0].elem);
+            //for function parameter typecheck
+            (yyval.elem)->func_par_type.push_back((yyvsp[0].elem)->atom_type);
         }
-#line 4161 "parser.tab.c"
+#line 4325 "parser.tab.c"
     break;
 
   case 177: /* argument: test EQUAL test  */
-#line 2068 "parser.y"
+#line 2232 "parser.y"
                             { 
             (yyval.elem) = create_node(4, "argument", (yyvsp[-2].elem), (yyvsp[-1].elem), (yyvsp[0].elem));
             (yyval.elem)->ins = (yyvsp[-2].elem)->ins;
             create_ins(0, (yyvsp[-2].elem)->addr, (yyvsp[-1].elem)->addr, (yyvsp[0].elem)->addr, "");
+
+            //for function parameter typecheck
+            (yyval.elem)->func_par_type.push_back((yyvsp[-2].elem)->atom_type);
         }
-#line 4171 "parser.tab.c"
+#line 4338 "parser.tab.c"
     break;
 
   case 178: /* stmt_plus: stmt  */
-#line 2076 "parser.y"
+#line 2243 "parser.y"
                     {
             (yyval.elem)=(yyvsp[0].elem);
         }
-#line 4179 "parser.tab.c"
+#line 4346 "parser.tab.c"
     break;
 
   case 179: /* stmt_plus: stmt stmt_plus  */
-#line 2079 "parser.y"
+#line 2246 "parser.y"
                             { 
             (yyval.elem)=create_node(3,"stmt_plus",(yyvsp[-1].elem),(yyvsp[0].elem));
 			(yyval.elem)->ins = (yyvsp[-1].elem) -> ins;
             (yyval.elem)->nextlist = merge((yyvsp[-1].elem)->nextlist, (yyvsp[0].elem)->nextlist);
         }
-#line 4189 "parser.tab.c"
+#line 4356 "parser.tab.c"
     break;
 
 
-#line 4193 "parser.tab.c"
+#line 4360 "parser.tab.c"
 
       default: break;
     }
@@ -4382,7 +4549,7 @@ yyreturnlab:
   return yyresult;
 }
 
-#line 2085 "parser.y"
+#line 2252 "parser.y"
 
 
 void yyerror(string str){
@@ -4454,6 +4621,12 @@ void MakeIRFile()
 		cout << endl;
 		code_out << endl;
 	}
+}
+
+void vector_copy(vector<string> v1,vector<string> v2){
+    for(int i=0;i<v1.size();i++){
+        v2.push_back(v1[i]);
+    }
 }
 
 string typecast(string typ1,string typ2,string op)
@@ -4644,6 +4817,9 @@ ste* setup_global_sym_table(ste* curr_ste){
     curr_ste = insert_entry_same_scope(curr_ste, "ELIF", "elif", "RESERVED_KEYWORD", -1, -1);
     curr_ste = insert_entry_same_scope(curr_ste, "IF", "if", "RESERVED_KEYWORD", -1, -1);
     curr_ste = insert_entry_same_scope(curr_ste, "OR", "or", "RESERVED_KEYWORD", -1, -1);
+    curr_ste = insert_entry_same_scope(curr_ste, "LEN", "len", "RESERVED_FUNCTION", -1, -1);
+    curr_ste = insert_entry_same_scope(curr_ste, "PRINT", "print", "RESERVED_FUNCTION", -1, -1);
+    curr_ste = insert_entry_same_scope(curr_ste, "RANGE", "range", "RESERVED_FUNCTION", -1, -1);
     return curr_ste;
 }
 

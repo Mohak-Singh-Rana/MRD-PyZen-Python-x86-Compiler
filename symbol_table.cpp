@@ -84,6 +84,10 @@ void populate_new_scope(ste* curr_ste, string token, string id,int num_params, i
     curr_ste->is_func_class = is_func_class;
 }
 
+void populate_fun_par_type(ste* current_ste, vector<string> use){
+    current_ste->func_par_type = use;
+}
+
 ste* get_prev_scope(ste* curr_ste){
     ste* temp = curr_ste;
     while(temp->lexeme != "scope_head"){

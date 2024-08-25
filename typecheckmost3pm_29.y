@@ -24,7 +24,6 @@
     void backpatch_str(vector<int> p, string str);
     void create_ins(int type,string i,string op,string arg1,string arg2);
     vector<int> merge(vector<int> p1, vector<int> p2);
-    void vector_copy(vector<string> v1,vector<string> v2);
     string newTemp();
     char* str_to_ch(string s);
     int tempCount;
@@ -244,7 +243,6 @@ parameters: OPEN_BRACKET typedargslist CLOSE_BRACKET {
 
             //handle vector of par type 
             $$->func_par_type = $2->func_par_type;
-            // cout<<"par: "<<$$->func_par_type.size() <<" "<< $2->func_par_type.size() <<endl;
         }
         | OPEN_BRACKET SELF COMMA typedargslist CLOSE_BRACKET {
             //cout<<"in self para"<<endl;
@@ -720,7 +718,6 @@ return_stmt: RETURN     {
 global_stmt:GLOBAL NAME    {  
             $$ = create_node(3, "global_stmt", $1, $2);
             $$->ins = instCount+1;
-                       
         }
         | GLOBAL NAME comma_name_star {   
             $$ = create_node(4, "global_stmt", $1, $2, $3);
@@ -1502,7 +1499,7 @@ atom_expr: atom {
                     cout<<"atom_exprr: class call "<<class_name<<endl;
             
                   //here
-                    ste* lookup_ste = single_rev_lookup(class_ste->next_scope, $1->class_param); 
+                    ste* lookup_ste = rev_lookup(class_ste, $1->class_param); 
                     if(lookup_ste == NULL){
                         cerr<<"Error: Function "<<$1->class_param<<" not declared in class "<<class_name<<endl;
                         exit(1);
@@ -1564,18 +1561,9 @@ atom_expr: atom {
             else if(chartostring($1->type) == "class_constructor"){ //LALRparser(self,"abc") is type wale
                 $$->type = str_to_ch("class_constructor");
                 $$->atom_type = "object";
-                //add 3ac for calling constructor if required// I think it will be in test colon test equal eqtes
+                //add 3ac for callling constructor if required// I think it will be in test colon test equal eqtes
 
                 //see that the parameters passed are correct and type checking
-                ste* lookup_ste;
-                if(class_map.find(chartostring($1->addr))==class_map.end()){
-                    cerr<<"Error: Class "<<$1->addr<<" not declared\n";
-                }
-                else{
-                    lookup_ste=class_map[chartostring($1->addr)];
-                }
-                lookup_ste=single_rev_lookup(lookup_ste->next_scope,"__init__");
-                function_ste=lookup_ste;
             }
             else{
             //typecheck
@@ -1592,7 +1580,15 @@ atom_expr: atom {
                         cerr<<"Error: "<<$1->addr<<" is not a function\n";
                         exit(1);
                     }
-                    function_ste=lookup_ste;
+                    else{
+                        if($2->num_params != lookup_ste->num_params){
+                            cerr<<"Error: Number of parameters mismatch in function call\n";
+                            exit(1);
+                        }
+                        // for(int i=0; i<$2->num_params; i++){
+                            
+                        // }
+                    }
                     $$->atom_type = lookup_ste->return_type;
                     //cout<<$$->atom_type<<endl;
                 }
@@ -1601,20 +1597,6 @@ atom_expr: atom {
 
 
             //function ke parameters ka type check idhar 
-            cout<<$2->func_par_type.size()<<" "<<function_ste->func_par_type.size()<<endl;
-            if(function_ste->num_params != $2->num_params){
-                cerr<<"Error: Number of parameters mismatch\n";
-                exit(1);
-            }
-            cout<<"para check start"<<endl;
-            for(int i=0;i< $2->func_par_type.size();i++){
-                cout<<$2->func_par_type[i]<<" "<< function_ste->func_par_type[i]<<endl;
-                if($2->func_par_type[i] != function_ste->func_par_type[i]){
-                    cerr<<"Error: Mismatch of a parameter in function: "<<function_ste->lexeme<<"\n";
-                    exit(1);
-                }
-            }
-            cout<<"para check end"<<endl;
 
         }
         | atom_expr SQUARE_OPEN test SQUARE_CLOSE{   //array access
@@ -1695,7 +1677,7 @@ atom_expr: atom {
             ste* lookup_ste2 = lookup(current_ste,$1->addr);
             if(lookup_ste2 ->token == "OBJECT"){
                 string classname= lookup_ste2 -> type;
-                lookup_ste2 = class_map[classname]; //symboltable entry of class
+                lookup_ste2 = class_map[classname];
                 ste* attribute = lookup(lookup_ste2,$3->addr);
                 if(attribute == NULL){
                     attribute = single_rev_lookup(lookup_ste2->next_scope,$3->addr);
@@ -1703,8 +1685,7 @@ atom_expr: atom {
                 if(attribute!= NULL){ 
                     $$->atom_type = attribute->type;
                 }
-                //error condition daal sakte
-            //cout<< "atom expr dot name: "<<$$->atom_type<<endl;
+            cout<< "atom expr dot name: "<<$$->atom_type<<endl;
             }
 
         }
@@ -1895,13 +1876,13 @@ trailer: OPEN_BRACKET CLOSE_BRACKET  {
             $$=$2;
 
             //func_par_type
-            $$->func_par_type = $2->func_par_type;
+            //$$->func_par_type = $2->func_par_type;
         }
         | OPEN_BRACKET SELF COMMA arglist CLOSE_BRACKET  {
             $$=$4;
 
             //func_par_type
-            $$->func_par_type = $4->func_par_type;
+            //$$->func_par_type = $4->func_par_type;
         }
         | OPEN_BRACKET SELF CLOSE_BRACKET {
             $$ = create_node(4, "trailer", $1, $2, $3);
@@ -2215,18 +2196,18 @@ argument_list: argument     {
             create_ins(0, "PushParam", $3->addr, "", "");
             $$->nextlist = $1->nextlist;
 
-            //function par type
-            $$->func_par_type = $1->func_par_type;
-            for(int i=0;i< $3->func_par_type.size();i++){
-                $$->func_par_type.push_back($3->func_par_type[i]);
-            }
+            // //function par type
+            // $$->func_par_type = $1->func_par_type;
+            // for(int i=0;i< $3->func_par_type.size();i++){
+            //     $$->func_par_type.push_back($3->func_par_type[i]);
+            // }
         }
         ;
 
 argument: test  {
             $$=$1;
             //for function parameter typecheck
-            $$->func_par_type.push_back($1->atom_type);
+            //$$->func_par_type.push_back($1->atom_type);
         }
         | test EQUAL test   { 
             $$ = create_node(4, "argument", $1, $2, $3);
@@ -2234,7 +2215,7 @@ argument: test  {
             create_ins(0, $1->addr, $2->addr, $3->addr, "");
 
             //for function parameter typecheck
-            $$->func_par_type.push_back($1->atom_type);
+            //$$->func_par_type.push_back($1->atom_type);
         }
         ;
 
@@ -2319,12 +2300,6 @@ void MakeIRFile()
 		cout << endl;
 		code_out << endl;
 	}
-}
-
-void vector_copy(vector<string> v1,vector<string> v2){
-    for(int i=0;i<v1.size();i++){
-        v2.push_back(v1[i]);
-    }
 }
 
 string typecast(string typ1,string typ2,string op)
@@ -2515,9 +2490,6 @@ ste* setup_global_sym_table(ste* curr_ste){
     curr_ste = insert_entry_same_scope(curr_ste, "ELIF", "elif", "RESERVED_KEYWORD", -1, -1);
     curr_ste = insert_entry_same_scope(curr_ste, "IF", "if", "RESERVED_KEYWORD", -1, -1);
     curr_ste = insert_entry_same_scope(curr_ste, "OR", "or", "RESERVED_KEYWORD", -1, -1);
-    curr_ste = insert_entry_same_scope(curr_ste, "LEN", "len", "RESERVED_FUNCTION", -1, -1);
-    curr_ste = insert_entry_same_scope(curr_ste, "PRINT", "print", "RESERVED_FUNCTION", -1, -1);
-    curr_ste = insert_entry_same_scope(curr_ste, "RANGE", "range", "RESERVED_FUNCTION", -1, -1);
     return curr_ste;
 }
 
