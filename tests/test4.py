@@ -2,39 +2,40 @@ class A:
     def method_A(self):
         print("Method from class A")
 
-class B:
+class B(A):
     def method_B(self):
         print("Method from class B")
 
-class C(A, B):
+class C(B):
     def method_C(self):
         print("Method from class C")
 
 def main():
-    num1 = 10
-    num2 = 5
+    num1 : int = 10
+    num2 : float  = 5
     #List
 #Implicit line joining
-    numbers = [1, 2, 3,
+    numbers : list[int] = [1, 2, 3,
             4, 5, 6,
             7, 8, 9]
 
 # Explicit line joining:
-    result = 10 + \
+    result : float = 10 + \
             20 + \
             30
     
     print("Arithmetic Operations:")\
         # Arithmetic operations
 #passed here
-    print("Addition:", num1 + num2)
-    print("Subtraction:", num1 - num2)
-    print("Multiplication:", num1 * num2)
-    print("Division:", num1 / num2)
-    print("Modulus:", num1 % num2)
+    print(num1 + num2)
+    print(num1 - num2)
+    print(num1 * num2)
+    print(num1 / num2)
+    print(num1 % num2)
+    print(result)
 
     # Control flow statements
-    print("\nControl Flow Statements:")
+    print("Control Flow Statements:")
     if num1 > num2:
         print("num1 is greater than num2")
     elif num1 == num2:
@@ -44,11 +45,15 @@ def main():
 
     # Accessing list elements
     print("\nList Elements:")
-    for num in numbers:
-        print(num)
+    i:int
+    for i in range(9):
+        a : int = numbers[i]
+        if(a==4):
+            break
+        print(a)
 
     # Multiple inheritance
-    obj_c = C()
+    obj_c : C = C()
     obj_c.method_A()
     obj_c.method_B()
     obj_c.method_C()

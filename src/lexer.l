@@ -18,7 +18,11 @@
     void noding(char* yytext,string type=""){
         yylval.elem = create_node(1, strdup(yytext));
         yylval.elem->lineno = yylineno;
-        if(type=="NUMBER"){
+        if(type=="bool"){
+            yylval.elem->type = strdup("bool");
+            yylval.elem->atom_type = strdup("bool");
+        }
+        else if(type=="NUMBER"){
             for(int i=0;i<strlen(yytext);i++){
                 if(yytext[i]=='.'){
                     yylval.elem->type = strdup("float");
@@ -265,7 +269,7 @@ NAME      {ID_START}{ID_CONTINUE}*
 <INITIAL,IMPLICIT_LINE_JOINING>{CLASS}  {noding(yytext);  return CLASS;}
 <INITIAL,IMPLICIT_LINE_JOINING>{DEF}    {noding(yytext);  return DEF;}
 <INITIAL,IMPLICIT_LINE_JOINING>{GLOBAL}  { noding(yytext); return GLOBAL;}
-<INITIAL,IMPLICIT_LINE_JOINING>"..."|"True"|"False"  {noding(yytext);  return ATOM_KEYWORDS;}
+<INITIAL,IMPLICIT_LINE_JOINING>"..."|"True"|"False"  {noding(yytext,"bool");  return ATOM_KEYWORDS;}
 <INITIAL,IMPLICIT_LINE_JOINING>{NONE}  {noding(yytext);  return NONE;}
 <INITIAL,IMPLICIT_LINE_JOINING>{LEN}  {noding(yytext);  return LEN;}
 <INITIAL,IMPLICIT_LINE_JOINING>{PRINT}  {noding(yytext);  return PRINT;}

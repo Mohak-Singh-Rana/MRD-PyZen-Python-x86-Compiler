@@ -126,6 +126,17 @@ ste* lookup(ste* lookup_ste, string lexeme)
     return NULL;
 }
 
+ste* same_lookup(ste* lookup_ste, string lexeme)
+{
+    if (lookup_ste == NULL)
+        return NULL;
+    if (lookup_ste->lexeme==lexeme)
+        return lookup_ste;
+    if (lookup_ste->prev!= NULL)
+        return same_lookup(lookup_ste->prev,lexeme);
+    return NULL;
+}
+
 ste* rev_lookup(ste* lookup_ste, string lexeme){
     if (lookup_ste == NULL)
         return NULL;

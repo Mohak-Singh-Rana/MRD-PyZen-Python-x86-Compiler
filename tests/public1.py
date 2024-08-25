@@ -1,15 +1,15 @@
 def bubbleSort(array: list[int]) -> None:
   i: int = 0
   j: int = 0
-  for i in range(len(array)):
+  for i in range(5):
     swapped: bool = False
-    for j in range(0, len(array) - i - 1):
+    for j in range(0, 4-i):
       if array[j] > array[j + 1]:
         temp: int = array[j]
         array[j] = array[j + 1]
         array[j + 1] = temp
         swapped = True
-    if not swapped:
+    if i==3:
       break
 
 
@@ -19,8 +19,9 @@ def main():
 
   print('Sorted Array in Ascending Order:')
   i: int = 0
-  for i in range(len(data)):
-    print(data[i])
+  for i in range(5):
+    a:float = data[i]
+    print(a)
 
 
 if __name__ == "__main__":

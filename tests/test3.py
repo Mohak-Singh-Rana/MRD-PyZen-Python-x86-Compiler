@@ -1,140 +1,54 @@
 class Student:
-    def __init__(self, name, id):
-        self.name = name
-        self.id = id
-        self.courses = []
+    def __init__(self, name : str , age : int , grade : str):
+        self.name : str = name
+        self.age : int = age
+        self.grade : str = grade
 
-    def enroll_course(self, course):
-        if len(course.students) < course.capacity:
-            self.courses.append(course)
-            course.register_student(self)
-            course.capacity -= 1
-        else:
-            print("Course is full, cannot enroll.")
+    def display_info(self):
+        print("Name")
+        print("Age")
+        print("Grade")
 
-    def drop_course(self, course):
-        if course in self.courses:
-            self.courses.remove(course)
-            course.unregister_student(self)
-            course.capacity += 1
-        else:
-            print("Student is not enrolled in this course.")
+    def update_grade(self, new_grade:str):
+        self.grade : str = new_grade
 
-    def view_courses(self):
-        print(f"Student {self.name} is enrolled in the following courses:")
-        if self.courses:
-            for course in self.courses:
-                print(f"- {course.title}")
-        else:
-            print("No courses enrolled.")
+    def update_age(self, new_age:int):
+        self.age : int = new_age
 
-    def view_course_students(self, university):
-        print(f"Student {self.name} is enrolled in the following courses with their respective students:")
-        if self.courses:
-            for course in self.courses:
-                print(f"- {course.title}:")
-                course_students = [student.name for student in course.students]
-                if course_students:
-                    for student_name in course_students:
-                        print(f"  - {student_name}")
-                else:
-                    print("   No students enrolled.")
-        else:
-            print("No courses enrolled.")
+    def calculate_birth_year(self, current_year:int):
+        birth_year : int = current_year - self.age
+        return birth_year
 
 
-class Course:
-    def __init__(self, title, code, capacity):
-        self.title = title
-        self.code = code
-        self.capacity = capacity
-        self.students = []
+def main():
+    student1 : Student = Student("Alice", 17, "12th")
+    student2 : Student = Student("Bob", 16, "11th")
 
-    def register_student(self, student):
-        self.students.append(student)
+    print("Initial Student Information:")
+    print("\nStudent 1:")
+    student1.display_info()
 
-    def unregister_student(self, student):
-        if student in self.students:
-            self.students.remove(student)
+    print("\nStudent 2:")
+    student2.display_info()
 
-    def view_students(self):
-        print(f"Students enrolled in course {self.title} (Code: {self.code}):")
-        if self.students:
-            for student in self.students:
-                print(f"- {student.name} (ID: {student.id})")
-        else:
-            print("No students enrolled.")
+    print("\nUpdating Student Information:")
+    student1.update_grade("11th")
+    student2.update_age(17)
 
-    def view_course_students(self):
-        print(f"Students enrolled in course {self.title} (Code: {self.code}):")
-        if self.students:
-            for student in self.students:
-                print(f"- {student.name} (ID: {student.id})")
-        else:
-            print("No students enrolled.")
+    print("\nUpdated Student Information:")
+    print("\nStudent 1:")
+    student1.display_info()
 
+    print("\nStudent 2:")
+    student2.display_info()
 
-class University:
-    def __init__(self, name):
-        self.name = name
-        self.students = []
-        self.courses = []
+    current_year : int = 2024
+    print("\nCalculating Birth Year:")
+    year1 : int = student1.calculate_birth_year(current_year)
+    year2 : int = student2.calculate_birth_year(current_year)
 
-    def add_student(self, name, id):
-        student = Student(name, id)
-        self.students.append(student)
+    print(year1)
+    print(year2)
 
-    def add_course(self, title, code, capacity):
-        course = Course(title, code, capacity)
-        self.courses.append(course)
-
-    def view_students(self):
-        print(f"Students at {self.name}:")
-        if self.students:
-            for student in self.students:
-                print(f"- {student.name} (ID: {student.id})")
-        else:
-            print("No students found.")
-
-    def view_courses(self):
-        print(f"Courses offered at {self.name}:")
-        if self.courses:
-            for course in self.courses:
-                print(f"- {course.title} (Code: {course.code})")
-        else:
-            print("No courses available.")
-
-    def enroll_students_in_courses(self):
-        for student in self.students:
-            for course in self.courses:
-                if student.id % 3 == 0 and course.capacity > 0:
-                    student.enroll_course(course)
-
-# Example usage
 if __name__ == "__main__":
-    # Create University
-    university = University("ABC University")
-
-    # Add Students
-    university.add_student("John Doe", 1001)
-    university.add_student("Alice Smith", 1002)
-    university.add_student("Bob Johnson", 1003)
-
-    # Add Courses
-    university.add_course("Mathematics", "MATH101", 30)
-    university.add_course("Physics", "PHYS101", 25)
-    university.add_course("Computer Science", "CS101", 20)
-
-    # Enroll Students in Courses
-    university.enroll_students_in_courses()
-
-    # View Students and Courses
-    university.view_students()
-    print()
-    university.view_courses()
-    print()
-    university.courses[0].view_students()
-    print()
-    university.students[0].view_courses()
-    print()
-    university.students[0].view_course_students(university)
+    main()

@@ -1,38 +1,49 @@
-def floyd_warshall(graph, V):
-    dist = [float('inf')] * (V * V)
+class C:
+    def __init__(self, c:int):
+        self.a: int = c
 
-    # Initialize distances with graph values
-    for i in range(V):
-        for j in range(V):
-            if i == j:
-                dist[i * V + j] = 0
-            elif graph[i * V + j] != 0:
-                dist[i * V + j] = graph[i * V + j]
+    def printc(self):
+        print(self.a)
 
-    # Update distances
-    for k in range(V):
-        for i in range(V):
-            for j in range(V):
-                if dist[i * V + k] + dist[k * V + j] < dist[i * V + j]:
-                    dist[i * V + j] = dist[i * V + k] + dist[k * V + j]
+class A:
+    def __init__(self, a:int, b:bool):
+        self.a : int = a
+        self.li: list[bool] = [True, b, b, False, False] 
+        self.b: bool = b
+    
+    def printa(self, d:int) -> int:
+        print(self.a)
+        return self.a
 
-    return dist
+class B(A):
+    def __init__(self, a:int, b:bool, c:int ):
+        self.c:int = c
+        self.a = self.printa(4)
+        self.b = b
+        self.obj:C = C(c)
 
-def print_distances(dist, V):
-    print("Shortest distances between every pair of vertices:")
-    for i in range(V):
-        for j in range(V):
-            print(dist[i * V + j], end=" ")
-        print()
+class D(B):
+    def __init__(self, a:int, b:bool, c:int ):
+        self.c = c
+        self.a = self.printa(4)
+        self.b = b
+        self.obj= C(c)
+        self.d:A = A(4, True)
 
-# Test case
-graph = [
-    0, 5, 0, 10,
-    0, 0, 3, 0,
-    0, 0, 0, 1,
-    0, 0, 0, 0
-]
-V = 4
+def foo() -> int:
+    return 1
 
-result = floyd_warshall(graph, V)
-print_distances(result, V)
+def main():
+  a:B = B(0, False, 0)
+  b:B = B(4,True,1)  
+  c:B = B(1, False, 1)
+  d:B = B(2, False, 2)
+  e:D = D(3, True, 3)
+  
+  b.printa(4)
+
+  obj: A = A(1, True)
+
+
+if __name__ == "__main__":
+  main()
