@@ -33,6 +33,9 @@ typedef struct node
     vector<int> falselist;
     vector<int> nextlist;
     vector<struct node *> children;
+
+    int stack_width = 0;
+    map <string,int> offset_map;
 } NODE;
 
 NODE *create_node(int n_args, ...);

@@ -1,0 +1,34 @@
+1	add: 
+2	BeginFunc 
+3		PushParam RBP 
+4		ra = PopParam 
+5		x = PopParam 
+6		y = PopParam 
+7		t0 = x + y
+8		return t0 
+9		Stackpointer -0 
+10		goto ra 
+11	EndFunc 
+12	main: 
+13	BeginFunc 
+14		PushParam RBP 
+15		ra = PopParam 
+16		PushParamra 21 
+17		PushParam 2 
+18		PushParam 1 
+19		call add 
+20		PopParamAll 2 
+21		PopParamra t1 
+22		Stackpointer +4 
+23		y = t1 
+24		PushParam y 
+25		call print 
+26		PopParamAll 1 
+27		Stackpointer -4 
+28		goto ra 
+29	EndFunc 
+30	PushParamra 33 
+31	call main 
+32	PopParamAll 0 
+33	PopParamra t2 
+34	EOF 

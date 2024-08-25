@@ -29,30 +29,11 @@ class testing():
         break
     return l 
 
-  def loop_func3(n:int)->int:
-    m:int
-    o:int
-    while(m):
-      e : float = n
-      while(o):
-        f : int = 5
-        if(j==5):
-          f += 1
-          break
-      else:
-        o = o + 1
-      e = e + 2
-      if(e < 7):
-        break
-      e=2
-    return o
 
 def main():
   obj : testing = testing()
   obj.loop_func1(5)
   obj.loop_func2(5)
-  obj.loop_func3(6)
-
 
 if __name__ == "__main__":
   main()

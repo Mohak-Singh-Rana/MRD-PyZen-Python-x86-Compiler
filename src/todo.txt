@@ -1,0 +1,9 @@
+string handle karo ki mkc
+
+a>b==c
+
+len: handle it and also uska stack_width wala dekho
+
+atomexpr DOT NAME me atom type else wale me
+
+bhen ke laude karena hai "in" "is" "not in" to do in "1" type innstruction

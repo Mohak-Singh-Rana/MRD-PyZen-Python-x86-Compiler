@@ -1,0 +1,1413 @@
+Starting parse
+Entering state 0
+Stack now 0
+Reading a token
+Next token is token DEF ()
+Shifting token DEF ()
+Entering state 11
+Stack now 0 11
+Reading a token
+Next token is token NAME ()
+Shifting token NAME ()
+Entering state 75
+Stack now 0 11 75
+Reducing stack by rule 13 (line 240):
+   $1 = token NAME ()
+-> $$ = nterm func_name ()
+Entering state 76
+Stack now 0 11 76
+Reading a token
+Next token is token OPEN_BRACKET ()
+Shifting token OPEN_BRACKET ()
+Entering state 135
+Stack now 0 11 76 135
+Reading a token
+Next token is token NAME ()
+Shifting token NAME ()
+Entering state 186
+Stack now 0 11 76 135 186
+Reading a token
+Next token is token COLON ()
+Shifting token COLON ()
+Entering state 224
+Stack now 0 11 76 135 186 224
+Reading a token
+Next token is token TYPE_HINT ()
+Shifting token TYPE_HINT ()
+Entering state 253
+Stack now 0 11 76 135 186 224 253
+Reducing stack by rule 24 (line 429):
+   $1 = token NAME ()
+   $2 = token COLON ()
+   $3 = token TYPE_HINT ()
+-> $$ = nterm tfpdef ()
+Entering state 191
+Stack now 0 11 76 135 191
+Reading a token
+Next token is token COMMA ()
+Reducing stack by rule 21 (line 382):
+   $1 = nterm tfpdef ()
+-> $$ = nterm typedarg ()
+Entering state 190
+Stack now 0 11 76 135 190
+Reducing stack by rule 19 (line 350):
+   $1 = nterm typedarg ()
+-> $$ = nterm typedargslist ()
+Entering state 189
+Stack now 0 11 76 135 189
+Next token is token COMMA ()
+Shifting token COMMA ()
+Entering state 230
+Stack now 0 11 76 135 189 230
+Reading a token
+Next token is token NAME ()
+Shifting token NAME ()
+Entering state 186
+Stack now 0 11 76 135 189 230 186
+Reading a token
+Next token is token COLON ()
+Shifting token COLON ()
+Entering state 224
+Stack now 0 11 76 135 189 230 186 224
+Reading a token
+Next token is token TYPE_HINT ()
+Shifting token TYPE_HINT ()
+Entering state 253
+Stack now 0 11 76 135 189 230 186 224 253
+Reducing stack by rule 24 (line 429):
+   $1 = token NAME ()
+   $2 = token COLON ()
+   $3 = token TYPE_HINT ()
+-> $$ = nterm tfpdef ()
+Entering state 191
+Stack now 0 11 76 135 189 230 191
+Reading a token
+Next token is token CLOSE_BRACKET ()
+Reducing stack by rule 21 (line 382):
+   $1 = nterm tfpdef ()
+-> $$ = nterm typedarg ()
+Entering state 257
+Stack now 0 11 76 135 189 230 257
+Reducing stack by rule 20 (line 359):
+   $1 = nterm typedargslist ()
+   $2 = token COMMA ()
+   $3 = nterm typedarg ()
+-> $$ = nterm typedargslist ()
+Entering state 189
+Stack now 0 11 76 135 189
+Next token is token CLOSE_BRACKET ()
+Shifting token CLOSE_BRACKET ()
+Entering state 229
+Stack now 0 11 76 135 189 229
+Reducing stack by rule 16 (line 306):
+   $1 = token OPEN_BRACKET ()
+   $2 = nterm typedargslist ()
+   $3 = token CLOSE_BRACKET ()
+-> $$ = nterm parameters ()
+Entering state 136
+Stack now 0 11 76 136
+Reading a token
+Next token is token ARROW_OPER ()
+Shifting token ARROW_OPER ()
+Entering state 192
+Stack now 0 11 76 136 192
+Reading a token
+Next token is token TYPE_HINT ()
+Shifting token TYPE_HINT ()
+Entering state 232
+Stack now 0 11 76 136 192 232
+Reducing stack by rule 14 (line 296):
+   $1 = token TYPE_HINT ()
+-> $$ = nterm func_ret_type ()
+Entering state 234
+Stack now 0 11 76 136 192 234
+Reading a token
+Next token is token COLON ()
+Shifting token COLON ()
+Entering state 259
+Stack now 0 11 76 136 192 234 259
+Reading a token
+Next token is token NEWLINE ()
+Shifting token NEWLINE ()
+Entering state 201
+Stack now 0 11 76 136 192 234 259 201
+Reading a token
+Next token is token INDENT ()
+Shifting token INDENT ()
+Entering state 238
+Stack now 0 11 76 136 192 234 259 201 238
+Reading a token
+Next token is token RETURN ()
+Shifting token RETURN ()
+Entering state 9
+Stack now 0 11 76 136 192 234 259 201 238 9
+Reading a token
+Next token is token NAME ()
+Shifting token NAME ()
+Entering state 2
+Stack now 0 11 76 136 192 234 259 201 238 9 2
+Reducing stack by rule 149 (line 2225):
+   $1 = token NAME ()
+-> $$ = nterm atom ()
+Entering state 65
+Stack now 0 11 76 136 192 234 259 201 238 9 65
+Reducing stack by rule 136 (line 1802):
+   $1 = nterm atom ()
+-> $$ = nterm atom_expr ()
+Entering state 64
+Stack now 0 11 76 136 192 234 259 201 238 9 64
+Reading a token
+Next token is token PLUS ()
+Reducing stack by rule 134 (line 1778):
+   $1 = nterm atom_expr ()
+-> $$ = nterm power ()
+Entering state 63
+Stack now 0 11 76 136 192 234 259 201 238 9 63
+Reducing stack by rule 130 (line 1764):
+   $1 = nterm power ()
+-> $$ = nterm factor ()
+Entering state 61
+Stack now 0 11 76 136 192 234 259 201 238 9 61
+Reducing stack by rule 122 (line 1681):
+   $1 = nterm factor ()
+-> $$ = nterm term ()
+Entering state 60
+Stack now 0 11 76 136 192 234 259 201 238 9 60
+Next token is token PLUS ()
+Reducing stack by rule 119 (line 1597):
+   $1 = nterm term ()
+-> $$ = nterm arith_expr ()
+Entering state 59
+Stack now 0 11 76 136 192 234 259 201 238 9 59
+Next token is token PLUS ()
+Shifting token PLUS ()
+Entering state 118
+Stack now 0 11 76 136 192 234 259 201 238 9 59 118
+Reading a token
+Next token is token NAME ()
+Shifting token NAME ()
+Entering state 2
+Stack now 0 11 76 136 192 234 259 201 238 9 59 118 2
+Reducing stack by rule 149 (line 2225):
+   $1 = token NAME ()
+-> $$ = nterm atom ()
+Entering state 65
+Stack now 0 11 76 136 192 234 259 201 238 9 59 118 65
+Reducing stack by rule 136 (line 1802):
+   $1 = nterm atom ()
+-> $$ = nterm atom_expr ()
+Entering state 64
+Stack now 0 11 76 136 192 234 259 201 238 9 59 118 64
+Reading a token
+Next token is token NEWLINE ()
+Reducing stack by rule 134 (line 1778):
+   $1 = nterm atom_expr ()
+-> $$ = nterm power ()
+Entering state 63
+Stack now 0 11 76 136 192 234 259 201 238 9 59 118 63
+Reducing stack by rule 130 (line 1764):
+   $1 = nterm power ()
+-> $$ = nterm factor ()
+Entering state 61
+Stack now 0 11 76 136 192 234 259 201 238 9 59 118 61
+Reducing stack by rule 122 (line 1681):
+   $1 = nterm factor ()
+-> $$ = nterm term ()
+Entering state 169
+Stack now 0 11 76 136 192 234 259 201 238 9 59 118 169
+Next token is token NEWLINE ()
+Reducing stack by rule 120 (line 1600):
+   $1 = nterm arith_expr ()
+   $2 = token PLUS ()
+   $3 = nterm term ()
+-> $$ = nterm arith_expr ()
+Entering state 59
+Stack now 0 11 76 136 192 234 259 201 238 9 59
+Next token is token NEWLINE ()
+Reducing stack by rule 117 (line 1556):
+   $1 = nterm arith_expr ()
+-> $$ = nterm shift_expr ()
+Entering state 58
+Stack now 0 11 76 136 192 234 259 201 238 9 58
+Next token is token NEWLINE ()
+Reducing stack by rule 115 (line 1515):
+   $1 = nterm shift_expr ()
+-> $$ = nterm and_expr ()
+Entering state 57
+Stack now 0 11 76 136 192 234 259 201 238 9 57
+Next token is token NEWLINE ()
+Reducing stack by rule 113 (line 1475):
+   $1 = nterm and_expr ()
+-> $$ = nterm xor_expr ()
+Entering state 56
+Stack now 0 11 76 136 192 234 259 201 238 9 56
+Next token is token NEWLINE ()
+Reducing stack by rule 111 (line 1435):
+   $1 = nterm xor_expr ()
+-> $$ = nterm expr ()
+Entering state 55
+Stack now 0 11 76 136 192 234 259 201 238 9 55
+Next token is token NEWLINE ()
+Reducing stack by rule 98 (line 1363):
+   $1 = nterm expr ()
+-> $$ = nterm comparison ()
+Entering state 54
+Stack now 0 11 76 136 192 234 259 201 238 9 54
+Reducing stack by rule 95 (line 1338):
+   $1 = nterm comparison ()
+-> $$ = nterm not_test ()
+Entering state 53
+Stack now 0 11 76 136 192 234 259 201 238 9 53
+Next token is token NEWLINE ()
+Reducing stack by rule 90 (line 1294):
+   $1 = nterm not_test ()
+-> $$ = nterm and_test ()
+Entering state 51
+Stack now 0 11 76 136 192 234 259 201 238 9 51
+Next token is token NEWLINE ()
+Reducing stack by rule 86 (line 1261):
+   $1 = nterm and_test ()
+-> $$ = nterm or_test ()
+Entering state 49
+Stack now 0 11 76 136 192 234 259 201 238 9 49
+Reducing stack by rule 85 (line 1256):
+   $1 = nterm or_test ()
+-> $$ = nterm test ()
+Entering state 72
+Stack now 0 11 76 136 192 234 259 201 238 9 72
+Reducing stack by rule 49 (line 850):
+   $1 = token RETURN ()
+   $2 = nterm test ()
+-> $$ = nterm return_stmt ()
+Entering state 39
+Stack now 0 11 76 136 192 234 259 201 238 39
+Reducing stack by rule 45 (line 823):
+   $1 = nterm return_stmt ()
+-> $$ = nterm flow_stmt ()
+Entering state 36
+Stack now 0 11 76 136 192 234 259 201 238 36
+Reducing stack by rule 32 (line 502):
+   $1 = nterm flow_stmt ()
+-> $$ = nterm small_stmt ()
+Entering state 34
+Stack now 0 11 76 136 192 234 259 201 238 34
+Reducing stack by rule 29 (line 484):
+   $1 = nterm small_stmt ()
+-> $$ = nterm small_stmt_list ()
+Entering state 33
+Stack now 0 11 76 136 192 234 259 201 238 33
+Next token is token NEWLINE ()
+Shifting token NEWLINE ()
+Entering state 89
+Stack now 0 11 76 136 192 234 259 201 238 33 89
+Reducing stack by rule 28 (line 479):
+   $1 = nterm small_stmt_list ()
+   $2 = token NEWLINE ()
+-> $$ = nterm simple_stmt ()
+Entering state 32
+Stack now 0 11 76 136 192 234 259 201 238 32
+Reducing stack by rule 25 (line 468):
+   $1 = nterm simple_stmt ()
+-> $$ = nterm stmt ()
+Entering state 261
+Stack now 0 11 76 136 192 234 259 201 238 261
+Reading a token
+Next token is token DEDENT ()
+Reducing stack by rule 179 (line 2696):
+   $1 = nterm stmt ()
+-> $$ = nterm stmt_plus ()
+Entering state 262
+Stack now 0 11 76 136 192 234 259 201 238 262
+Next token is token DEDENT ()
+Shifting token DEDENT ()
+Entering state 282
+Stack now 0 11 76 136 192 234 259 201 238 262 282
+Reducing stack by rule 83 (line 1247):
+   $1 = token NEWLINE ()
+   $2 = token INDENT ()
+   $3 = nterm stmt_plus ()
+   $4 = token DEDENT ()
+-> $$ = nterm suite ()
+Entering state 274
+Stack now 0 11 76 136 192 234 259 274
+Reducing stack by rule 9 (line 171):
+   $1 = token DEF ()
+   $2 = nterm func_name ()
+   $3 = nterm parameters ()
+   $4 = token ARROW_OPER ()
+   $5 = nterm func_ret_type ()
+   $6 = token COLON ()
+   $7 = nterm suite ()
+-> $$ = nterm funcdef ()
+Entering state 30
+Stack now 0 30
+Reducing stack by rule 57 (line 898):
+   $1 = nterm funcdef ()
+-> $$ = nterm compound_stmt ()
+Entering state 41
+Stack now 0 41
+Reducing stack by rule 26 (line 471):
+   $1 = nterm compound_stmt ()
+-> $$ = nterm stmt ()
+Entering state 31
+Stack now 0 31
+Reading a token
+Next token is token DEF ()
+Shifting token DEF ()
+Entering state 11
+Stack now 0 31 11
+Reading a token
+Next token is token NAME ()
+Shifting token NAME ()
+Entering state 75
+Stack now 0 31 11 75
+Reducing stack by rule 13 (line 240):
+   $1 = token NAME ()
+-> $$ = nterm func_name ()
+Entering state 76
+Stack now 0 31 11 76
+Reading a token
+Next token is token OPEN_BRACKET ()
+Shifting token OPEN_BRACKET ()
+Entering state 135
+Stack now 0 31 11 76 135
+Reading a token
+Next token is token CLOSE_BRACKET ()
+Shifting token CLOSE_BRACKET ()
+Entering state 187
+Stack now 0 31 11 76 135 187
+Reading a token
+Next token is token COLON ()
+Reducing stack by rule 12 (line 236):
+-> $$ = nterm T ()
+Entering state 226
+Stack now 0 31 11 76 135 187 226
+Next token is token COLON ()
+Shifting token COLON ()
+Entering state 255
+Stack now 0 31 11 76 135 187 226 255
+Reading a token
+Next token is token NEWLINE ()
+Shifting token NEWLINE ()
+Entering state 201
+Stack now 0 31 11 76 135 187 226 255 201
+Reading a token
+Next token is token INDENT ()
+Shifting token INDENT ()
+Entering state 238
+Stack now 0 31 11 76 135 187 226 255 201 238
+Reading a token
+Next token is token NAME ()
+Shifting token NAME ()
+Entering state 2
+Stack now 0 31 11 76 135 187 226 255 201 238 2
+Reducing stack by rule 149 (line 2225):
+   $1 = token NAME ()
+-> $$ = nterm atom ()
+Entering state 65
+Stack now 0 31 11 76 135 187 226 255 201 238 65
+Reducing stack by rule 136 (line 1802):
+   $1 = nterm atom ()
+-> $$ = nterm atom_expr ()
+Entering state 64
+Stack now 0 31 11 76 135 187 226 255 201 238 64
+Reading a token
+Next token is token COLON ()
+Reducing stack by rule 134 (line 1778):
+   $1 = nterm atom_expr ()
+-> $$ = nterm power ()
+Entering state 63
+Stack now 0 31 11 76 135 187 226 255 201 238 63
+Reducing stack by rule 130 (line 1764):
+   $1 = nterm power ()
+-> $$ = nterm factor ()
+Entering state 61
+Stack now 0 31 11 76 135 187 226 255 201 238 61
+Reducing stack by rule 122 (line 1681):
+   $1 = nterm factor ()
+-> $$ = nterm term ()
+Entering state 60
+Stack now 0 31 11 76 135 187 226 255 201 238 60
+Next token is token COLON ()
+Reducing stack by rule 119 (line 1597):
+   $1 = nterm term ()
+-> $$ = nterm arith_expr ()
+Entering state 59
+Stack now 0 31 11 76 135 187 226 255 201 238 59
+Next token is token COLON ()
+Reducing stack by rule 117 (line 1556):
+   $1 = nterm arith_expr ()
+-> $$ = nterm shift_expr ()
+Entering state 58
+Stack now 0 31 11 76 135 187 226 255 201 238 58
+Next token is token COLON ()
+Reducing stack by rule 115 (line 1515):
+   $1 = nterm shift_expr ()
+-> $$ = nterm and_expr ()
+Entering state 57
+Stack now 0 31 11 76 135 187 226 255 201 238 57
+Next token is token COLON ()
+Reducing stack by rule 113 (line 1475):
+   $1 = nterm and_expr ()
+-> $$ = nterm xor_expr ()
+Entering state 56
+Stack now 0 31 11 76 135 187 226 255 201 238 56
+Next token is token COLON ()
+Reducing stack by rule 111 (line 1435):
+   $1 = nterm xor_expr ()
+-> $$ = nterm expr ()
+Entering state 55
+Stack now 0 31 11 76 135 187 226 255 201 238 55
+Next token is token COLON ()
+Reducing stack by rule 98 (line 1363):
+   $1 = nterm expr ()
+-> $$ = nterm comparison ()
+Entering state 54
+Stack now 0 31 11 76 135 187 226 255 201 238 54
+Reducing stack by rule 95 (line 1338):
+   $1 = nterm comparison ()
+-> $$ = nterm not_test ()
+Entering state 53
+Stack now 0 31 11 76 135 187 226 255 201 238 53
+Next token is token COLON ()
+Reducing stack by rule 90 (line 1294):
+   $1 = nterm not_test ()
+-> $$ = nterm and_test ()
+Entering state 51
+Stack now 0 31 11 76 135 187 226 255 201 238 51
+Next token is token COLON ()
+Reducing stack by rule 86 (line 1261):
+   $1 = nterm and_test ()
+-> $$ = nterm or_test ()
+Entering state 49
+Stack now 0 31 11 76 135 187 226 255 201 238 49
+Reducing stack by rule 85 (line 1256):
+   $1 = nterm or_test ()
+-> $$ = nterm test ()
+Entering state 48
+Stack now 0 31 11 76 135 187 226 255 201 238 48
+Next token is token COLON ()
+Shifting token COLON ()
+Entering state 100
+Stack now 0 31 11 76 135 187 226 255 201 238 48 100
+Reading a token
+Next token is token TYPE_HINT ()
+Shifting token TYPE_HINT ()
+Entering state 158
+Stack now 0 31 11 76 135 187 226 255 201 238 48 100 158
+Reading a token
+Next token is token EQUAL ()
+Shifting token EQUAL ()
+Entering state 210
+Stack now 0 31 11 76 135 187 226 255 201 238 48 100 158 210
+Reading a token
+Next token is token NAME ()
+Shifting token NAME ()
+Entering state 2
+Stack now 0 31 11 76 135 187 226 255 201 238 48 100 158 210 2
+Reducing stack by rule 149 (line 2225):
+   $1 = token NAME ()
+-> $$ = nterm atom ()
+Entering state 65
+Stack now 0 31 11 76 135 187 226 255 201 238 48 100 158 210 65
+Reducing stack by rule 136 (line 1802):
+   $1 = nterm atom ()
+-> $$ = nterm atom_expr ()
+Entering state 64
+Stack now 0 31 11 76 135 187 226 255 201 238 48 100 158 210 64
+Reading a token
+Next token is token OPEN_BRACKET ()
+Shifting token OPEN_BRACKET ()
+Entering state 128
+Stack now 0 31 11 76 135 187 226 255 201 238 48 100 158 210 64 128
+Reading a token
+Next token is token NUMBER ()
+Shifting token NUMBER ()
+Entering state 23
+Stack now 0 31 11 76 135 187 226 255 201 238 48 100 158 210 64 128 23
+Reducing stack by rule 150 (line 2254):
+   $1 = token NUMBER ()
+-> $$ = nterm atom ()
+Entering state 65
+Stack now 0 31 11 76 135 187 226 255 201 238 48 100 158 210 64 128 65
+Reducing stack by rule 136 (line 1802):
+   $1 = nterm atom ()
+-> $$ = nterm atom_expr ()
+Entering state 64
+Stack now 0 31 11 76 135 187 226 255 201 238 48 100 158 210 64 128 64
+Reading a token
+Next token is token COMMA ()
+Reducing stack by rule 134 (line 1778):
+   $1 = nterm atom_expr ()
+-> $$ = nterm power ()
+Entering state 63
+Stack now 0 31 11 76 135 187 226 255 201 238 48 100 158 210 64 128 63
+Reducing stack by rule 130 (line 1764):
+   $1 = nterm power ()
+-> $$ = nterm factor ()
+Entering state 61
+Stack now 0 31 11 76 135 187 226 255 201 238 48 100 158 210 64 128 61
+Reducing stack by rule 122 (line 1681):
+   $1 = nterm factor ()
+-> $$ = nterm term ()
+Entering state 60
+Stack now 0 31 11 76 135 187 226 255 201 238 48 100 158 210 64 128 60
+Next token is token COMMA ()
+Reducing stack by rule 119 (line 1597):
+   $1 = nterm term ()
+-> $$ = nterm arith_expr ()
+Entering state 59
+Stack now 0 31 11 76 135 187 226 255 201 238 48 100 158 210 64 128 59
+Next token is token COMMA ()
+Reducing stack by rule 117 (line 1556):
+   $1 = nterm arith_expr ()
+-> $$ = nterm shift_expr ()
+Entering state 58
+Stack now 0 31 11 76 135 187 226 255 201 238 48 100 158 210 64 128 58
+Next token is token COMMA ()
+Reducing stack by rule 115 (line 1515):
+   $1 = nterm shift_expr ()
+-> $$ = nterm and_expr ()
+Entering state 57
+Stack now 0 31 11 76 135 187 226 255 201 238 48 100 158 210 64 128 57
+Next token is token COMMA ()
+Reducing stack by rule 113 (line 1475):
+   $1 = nterm and_expr ()
+-> $$ = nterm xor_expr ()
+Entering state 56
+Stack now 0 31 11 76 135 187 226 255 201 238 48 100 158 210 64 128 56
+Next token is token COMMA ()
+Reducing stack by rule 111 (line 1435):
+   $1 = nterm xor_expr ()
+-> $$ = nterm expr ()
+Entering state 55
+Stack now 0 31 11 76 135 187 226 255 201 238 48 100 158 210 64 128 55
+Next token is token COMMA ()
+Reducing stack by rule 98 (line 1363):
+   $1 = nterm expr ()
+-> $$ = nterm comparison ()
+Entering state 54
+Stack now 0 31 11 76 135 187 226 255 201 238 48 100 158 210 64 128 54
+Reducing stack by rule 95 (line 1338):
+   $1 = nterm comparison ()
+-> $$ = nterm not_test ()
+Entering state 53
+Stack now 0 31 11 76 135 187 226 255 201 238 48 100 158 210 64 128 53
+Next token is token COMMA ()
+Reducing stack by rule 90 (line 1294):
+   $1 = nterm not_test ()
+-> $$ = nterm and_test ()
+Entering state 51
+Stack now 0 31 11 76 135 187 226 255 201 238 48 100 158 210 64 128 51
+Next token is token COMMA ()
+Reducing stack by rule 86 (line 1261):
+   $1 = nterm and_test ()
+-> $$ = nterm or_test ()
+Entering state 49
+Stack now 0 31 11 76 135 187 226 255 201 238 48 100 158 210 64 128 49
+Reducing stack by rule 85 (line 1256):
+   $1 = nterm or_test ()
+-> $$ = nterm test ()
+Entering state 175
+Stack now 0 31 11 76 135 187 226 255 201 238 48 100 158 210 64 128 175
+Next token is token COMMA ()
+Reducing stack by rule 177 (line 2675):
+   $1 = nterm test ()
+-> $$ = nterm argument ()
+Entering state 178
+Stack now 0 31 11 76 135 187 226 255 201 238 48 100 158 210 64 128 178
+Next token is token COMMA ()
+Shifting token COMMA ()
+Entering state 219
+Stack now 0 31 11 76 135 187 226 255 201 238 48 100 158 210 64 128 178 219
+Reading a token
+Next token is token NUMBER ()
+Shifting token NUMBER ()
+Entering state 23
+Stack now 0 31 11 76 135 187 226 255 201 238 48 100 158 210 64 128 178 219 23
+Reducing stack by rule 150 (line 2254):
+   $1 = token NUMBER ()
+-> $$ = nterm atom ()
+Entering state 65
+Stack now 0 31 11 76 135 187 226 255 201 238 48 100 158 210 64 128 178 219 65
+Reducing stack by rule 136 (line 1802):
+   $1 = nterm atom ()
+-> $$ = nterm atom_expr ()
+Entering state 64
+Stack now 0 31 11 76 135 187 226 255 201 238 48 100 158 210 64 128 178 219 64
+Reading a token
+Next token is token CLOSE_BRACKET ()
+Reducing stack by rule 134 (line 1778):
+   $1 = nterm atom_expr ()
+-> $$ = nterm power ()
+Entering state 63
+Stack now 0 31 11 76 135 187 226 255 201 238 48 100 158 210 64 128 178 219 63
+Reducing stack by rule 130 (line 1764):
+   $1 = nterm power ()
+-> $$ = nterm factor ()
+Entering state 61
+Stack now 0 31 11 76 135 187 226 255 201 238 48 100 158 210 64 128 178 219 61
+Reducing stack by rule 122 (line 1681):
+   $1 = nterm factor ()
+-> $$ = nterm term ()
+Entering state 60
+Stack now 0 31 11 76 135 187 226 255 201 238 48 100 158 210 64 128 178 219 60
+Next token is token CLOSE_BRACKET ()
+Reducing stack by rule 119 (line 1597):
+   $1 = nterm term ()
+-> $$ = nterm arith_expr ()
+Entering state 59
+Stack now 0 31 11 76 135 187 226 255 201 238 48 100 158 210 64 128 178 219 59
+Next token is token CLOSE_BRACKET ()
+Reducing stack by rule 117 (line 1556):
+   $1 = nterm arith_expr ()
+-> $$ = nterm shift_expr ()
+Entering state 58
+Stack now 0 31 11 76 135 187 226 255 201 238 48 100 158 210 64 128 178 219 58
+Next token is token CLOSE_BRACKET ()
+Reducing stack by rule 115 (line 1515):
+   $1 = nterm shift_expr ()
+-> $$ = nterm and_expr ()
+Entering state 57
+Stack now 0 31 11 76 135 187 226 255 201 238 48 100 158 210 64 128 178 219 57
+Next token is token CLOSE_BRACKET ()
+Reducing stack by rule 113 (line 1475):
+   $1 = nterm and_expr ()
+-> $$ = nterm xor_expr ()
+Entering state 56
+Stack now 0 31 11 76 135 187 226 255 201 238 48 100 158 210 64 128 178 219 56
+Next token is token CLOSE_BRACKET ()
+Reducing stack by rule 111 (line 1435):
+   $1 = nterm xor_expr ()
+-> $$ = nterm expr ()
+Entering state 55
+Stack now 0 31 11 76 135 187 226 255 201 238 48 100 158 210 64 128 178 219 55
+Next token is token CLOSE_BRACKET ()
+Reducing stack by rule 98 (line 1363):
+   $1 = nterm expr ()
+-> $$ = nterm comparison ()
+Entering state 54
+Stack now 0 31 11 76 135 187 226 255 201 238 48 100 158 210 64 128 178 219 54
+Reducing stack by rule 95 (line 1338):
+   $1 = nterm comparison ()
+-> $$ = nterm not_test ()
+Entering state 53
+Stack now 0 31 11 76 135 187 226 255 201 238 48 100 158 210 64 128 178 219 53
+Next token is token CLOSE_BRACKET ()
+Reducing stack by rule 90 (line 1294):
+   $1 = nterm not_test ()
+-> $$ = nterm and_test ()
+Entering state 51
+Stack now 0 31 11 76 135 187 226 255 201 238 48 100 158 210 64 128 178 219 51
+Next token is token CLOSE_BRACKET ()
+Reducing stack by rule 86 (line 1261):
+   $1 = nterm and_test ()
+-> $$ = nterm or_test ()
+Entering state 49
+Stack now 0 31 11 76 135 187 226 255 201 238 48 100 158 210 64 128 178 219 49
+Reducing stack by rule 85 (line 1256):
+   $1 = nterm or_test ()
+-> $$ = nterm test ()
+Entering state 175
+Stack now 0 31 11 76 135 187 226 255 201 238 48 100 158 210 64 128 178 219 175
+Next token is token CLOSE_BRACKET ()
+Reducing stack by rule 177 (line 2675):
+   $1 = nterm test ()
+-> $$ = nterm argument ()
+Entering state 178
+Stack now 0 31 11 76 135 187 226 255 201 238 48 100 158 210 64 128 178 219 178
+Next token is token CLOSE_BRACKET ()
+Reducing stack by rule 175 (line 2643):
+   $1 = nterm argument ()
+-> $$ = nterm argument_list ()
+Entering state 249
+Stack now 0 31 11 76 135 187 226 255 201 238 48 100 158 210 64 128 178 219 249
+Reducing stack by rule 176 (line 2654):
+   $1 = nterm argument ()
+   $2 = token COMMA ()
+   $3 = nterm argument_list ()
+-> $$ = nterm argument_list ()
+Entering state 177
+Stack now 0 31 11 76 135 187 226 255 201 238 48 100 158 210 64 128 177
+Reducing stack by rule 174 (line 2636):
+   $1 = nterm argument_list ()
+-> $$ = nterm arglist ()
+Entering state 176
+Stack now 0 31 11 76 135 187 226 255 201 238 48 100 158 210 64 128 176
+Next token is token CLOSE_BRACKET ()
+Shifting token CLOSE_BRACKET ()
+Entering state 218
+Stack now 0 31 11 76 135 187 226 255 201 238 48 100 158 210 64 128 176 218
+Reducing stack by rule 157 (line 2305):
+   $1 = token OPEN_BRACKET ()
+   $2 = nterm arglist ()
+   $3 = token CLOSE_BRACKET ()
+-> $$ = nterm trailer ()
+Entering state 131
+Stack now 0 31 11 76 135 187 226 255 201 238 48 100 158 210 64 131
+Reducing stack by rule 137 (line 1805):
+   $1 = nterm atom_expr ()
+   $2 = nterm trailer ()
+-> $$ = nterm atom_expr ()
+Entering state 64
+Stack now 0 31 11 76 135 187 226 255 201 238 48 100 158 210 64
+Reading a token
+Next token is token NEWLINE ()
+Reducing stack by rule 134 (line 1778):
+   $1 = nterm atom_expr ()
+-> $$ = nterm power ()
+Entering state 63
+Stack now 0 31 11 76 135 187 226 255 201 238 48 100 158 210 63
+Reducing stack by rule 130 (line 1764):
+   $1 = nterm power ()
+-> $$ = nterm factor ()
+Entering state 61
+Stack now 0 31 11 76 135 187 226 255 201 238 48 100 158 210 61
+Reducing stack by rule 122 (line 1681):
+   $1 = nterm factor ()
+-> $$ = nterm term ()
+Entering state 60
+Stack now 0 31 11 76 135 187 226 255 201 238 48 100 158 210 60
+Next token is token NEWLINE ()
+Reducing stack by rule 119 (line 1597):
+   $1 = nterm term ()
+-> $$ = nterm arith_expr ()
+Entering state 59
+Stack now 0 31 11 76 135 187 226 255 201 238 48 100 158 210 59
+Next token is token NEWLINE ()
+Reducing stack by rule 117 (line 1556):
+   $1 = nterm arith_expr ()
+-> $$ = nterm shift_expr ()
+Entering state 58
+Stack now 0 31 11 76 135 187 226 255 201 238 48 100 158 210 58
+Next token is token NEWLINE ()
+Reducing stack by rule 115 (line 1515):
+   $1 = nterm shift_expr ()
+-> $$ = nterm and_expr ()
+Entering state 57
+Stack now 0 31 11 76 135 187 226 255 201 238 48 100 158 210 57
+Next token is token NEWLINE ()
+Reducing stack by rule 113 (line 1475):
+   $1 = nterm and_expr ()
+-> $$ = nterm xor_expr ()
+Entering state 56
+Stack now 0 31 11 76 135 187 226 255 201 238 48 100 158 210 56
+Next token is token NEWLINE ()
+Reducing stack by rule 111 (line 1435):
+   $1 = nterm xor_expr ()
+-> $$ = nterm expr ()
+Entering state 55
+Stack now 0 31 11 76 135 187 226 255 201 238 48 100 158 210 55
+Next token is token NEWLINE ()
+Reducing stack by rule 98 (line 1363):
+   $1 = nterm expr ()
+-> $$ = nterm comparison ()
+Entering state 54
+Stack now 0 31 11 76 135 187 226 255 201 238 48 100 158 210 54
+Reducing stack by rule 95 (line 1338):
+   $1 = nterm comparison ()
+-> $$ = nterm not_test ()
+Entering state 53
+Stack now 0 31 11 76 135 187 226 255 201 238 48 100 158 210 53
+Next token is token NEWLINE ()
+Reducing stack by rule 90 (line 1294):
+   $1 = nterm not_test ()
+-> $$ = nterm and_test ()
+Entering state 51
+Stack now 0 31 11 76 135 187 226 255 201 238 48 100 158 210 51
+Next token is token NEWLINE ()
+Reducing stack by rule 86 (line 1261):
+   $1 = nterm and_test ()
+-> $$ = nterm or_test ()
+Entering state 49
+Stack now 0 31 11 76 135 187 226 255 201 238 48 100 158 210 49
+Reducing stack by rule 85 (line 1256):
+   $1 = nterm or_test ()
+-> $$ = nterm test ()
+Entering state 157
+Stack now 0 31 11 76 135 187 226 255 201 238 48 100 158 210 157
+Next token is token NEWLINE ()
+Reducing stack by rule 41 (line 786):
+   $1 = nterm test ()
+-> $$ = nterm eq_testlist_star_expr_plus ()
+Entering state 244
+Stack now 0 31 11 76 135 187 226 255 201 238 48 100 158 210 244
+Reducing stack by rule 39 (line 690):
+   $1 = nterm test ()
+   $2 = token COLON ()
+   $3 = token TYPE_HINT ()
+   $4 = token EQUAL ()
+   $5 = nterm eq_testlist_star_expr_plus ()
+-> $$ = nterm expr_stmt ()
+Entering state 35
+Stack now 0 31 11 76 135 187 226 255 201 238 35
+Reducing stack by rule 31 (line 499):
+   $1 = nterm expr_stmt ()
+-> $$ = nterm small_stmt ()
+Entering state 34
+Stack now 0 31 11 76 135 187 226 255 201 238 34
+Reducing stack by rule 29 (line 484):
+   $1 = nterm small_stmt ()
+-> $$ = nterm small_stmt_list ()
+Entering state 33
+Stack now 0 31 11 76 135 187 226 255 201 238 33
+Next token is token NEWLINE ()
+Shifting token NEWLINE ()
+Entering state 89
+Stack now 0 31 11 76 135 187 226 255 201 238 33 89
+Reducing stack by rule 28 (line 479):
+   $1 = nterm small_stmt_list ()
+   $2 = token NEWLINE ()
+-> $$ = nterm simple_stmt ()
+Entering state 32
+Stack now 0 31 11 76 135 187 226 255 201 238 32
+Reducing stack by rule 25 (line 468):
+   $1 = nterm simple_stmt ()
+-> $$ = nterm stmt ()
+Entering state 261
+Stack now 0 31 11 76 135 187 226 255 201 238 261
+Reading a token
+Next token is token PRINT ()
+Shifting token PRINT ()
+Entering state 26
+Stack now 0 31 11 76 135 187 226 255 201 238 261 26
+Reading a token
+Next token is token OPEN_BRACKET ()
+Shifting token OPEN_BRACKET ()
+Entering state 85
+Stack now 0 31 11 76 135 187 226 255 201 238 261 26 85
+Reading a token
+Next token is token NAME ()
+Shifting token NAME ()
+Entering state 2
+Stack now 0 31 11 76 135 187 226 255 201 238 261 26 85 2
+Reducing stack by rule 149 (line 2225):
+   $1 = token NAME ()
+-> $$ = nterm atom ()
+Entering state 65
+Stack now 0 31 11 76 135 187 226 255 201 238 261 26 85 65
+Reducing stack by rule 136 (line 1802):
+   $1 = nterm atom ()
+-> $$ = nterm atom_expr ()
+Entering state 64
+Stack now 0 31 11 76 135 187 226 255 201 238 261 26 85 64
+Reading a token
+Next token is token CLOSE_BRACKET ()
+Reducing stack by rule 134 (line 1778):
+   $1 = nterm atom_expr ()
+-> $$ = nterm power ()
+Entering state 63
+Stack now 0 31 11 76 135 187 226 255 201 238 261 26 85 63
+Reducing stack by rule 130 (line 1764):
+   $1 = nterm power ()
+-> $$ = nterm factor ()
+Entering state 61
+Stack now 0 31 11 76 135 187 226 255 201 238 261 26 85 61
+Reducing stack by rule 122 (line 1681):
+   $1 = nterm factor ()
+-> $$ = nterm term ()
+Entering state 60
+Stack now 0 31 11 76 135 187 226 255 201 238 261 26 85 60
+Next token is token CLOSE_BRACKET ()
+Reducing stack by rule 119 (line 1597):
+   $1 = nterm term ()
+-> $$ = nterm arith_expr ()
+Entering state 59
+Stack now 0 31 11 76 135 187 226 255 201 238 261 26 85 59
+Next token is token CLOSE_BRACKET ()
+Reducing stack by rule 117 (line 1556):
+   $1 = nterm arith_expr ()
+-> $$ = nterm shift_expr ()
+Entering state 58
+Stack now 0 31 11 76 135 187 226 255 201 238 261 26 85 58
+Next token is token CLOSE_BRACKET ()
+Reducing stack by rule 115 (line 1515):
+   $1 = nterm shift_expr ()
+-> $$ = nterm and_expr ()
+Entering state 57
+Stack now 0 31 11 76 135 187 226 255 201 238 261 26 85 57
+Next token is token CLOSE_BRACKET ()
+Reducing stack by rule 113 (line 1475):
+   $1 = nterm and_expr ()
+-> $$ = nterm xor_expr ()
+Entering state 56
+Stack now 0 31 11 76 135 187 226 255 201 238 261 26 85 56
+Next token is token CLOSE_BRACKET ()
+Reducing stack by rule 111 (line 1435):
+   $1 = nterm xor_expr ()
+-> $$ = nterm expr ()
+Entering state 55
+Stack now 0 31 11 76 135 187 226 255 201 238 261 26 85 55
+Next token is token CLOSE_BRACKET ()
+Reducing stack by rule 98 (line 1363):
+   $1 = nterm expr ()
+-> $$ = nterm comparison ()
+Entering state 54
+Stack now 0 31 11 76 135 187 226 255 201 238 261 26 85 54
+Reducing stack by rule 95 (line 1338):
+   $1 = nterm comparison ()
+-> $$ = nterm not_test ()
+Entering state 53
+Stack now 0 31 11 76 135 187 226 255 201 238 261 26 85 53
+Next token is token CLOSE_BRACKET ()
+Reducing stack by rule 90 (line 1294):
+   $1 = nterm not_test ()
+-> $$ = nterm and_test ()
+Entering state 51
+Stack now 0 31 11 76 135 187 226 255 201 238 261 26 85 51
+Next token is token CLOSE_BRACKET ()
+Reducing stack by rule 86 (line 1261):
+   $1 = nterm and_test ()
+-> $$ = nterm or_test ()
+Entering state 49
+Stack now 0 31 11 76 135 187 226 255 201 238 261 26 85 49
+Reducing stack by rule 85 (line 1256):
+   $1 = nterm or_test ()
+-> $$ = nterm test ()
+Entering state 144
+Stack now 0 31 11 76 135 187 226 255 201 238 261 26 85 144
+Next token is token CLOSE_BRACKET ()
+Shifting token CLOSE_BRACKET ()
+Entering state 198
+Stack now 0 31 11 76 135 187 226 255 201 238 261 26 85 144 198
+Reducing stack by rule 141 (line 2135):
+   $1 = token PRINT ()
+   $2 = token OPEN_BRACKET ()
+   $3 = nterm test ()
+   $4 = token CLOSE_BRACKET ()
+-> $$ = nterm atom_expr ()
+Entering state 64
+Stack now 0 31 11 76 135 187 226 255 201 238 261 64
+Reading a token
+Next token is token NEWLINE ()
+Reducing stack by rule 134 (line 1778):
+   $1 = nterm atom_expr ()
+-> $$ = nterm power ()
+Entering state 63
+Stack now 0 31 11 76 135 187 226 255 201 238 261 63
+Reducing stack by rule 130 (line 1764):
+   $1 = nterm power ()
+-> $$ = nterm factor ()
+Entering state 61
+Stack now 0 31 11 76 135 187 226 255 201 238 261 61
+Reducing stack by rule 122 (line 1681):
+   $1 = nterm factor ()
+-> $$ = nterm term ()
+Entering state 60
+Stack now 0 31 11 76 135 187 226 255 201 238 261 60
+Next token is token NEWLINE ()
+Reducing stack by rule 119 (line 1597):
+   $1 = nterm term ()
+-> $$ = nterm arith_expr ()
+Entering state 59
+Stack now 0 31 11 76 135 187 226 255 201 238 261 59
+Next token is token NEWLINE ()
+Reducing stack by rule 117 (line 1556):
+   $1 = nterm arith_expr ()
+-> $$ = nterm shift_expr ()
+Entering state 58
+Stack now 0 31 11 76 135 187 226 255 201 238 261 58
+Next token is token NEWLINE ()
+Reducing stack by rule 115 (line 1515):
+   $1 = nterm shift_expr ()
+-> $$ = nterm and_expr ()
+Entering state 57
+Stack now 0 31 11 76 135 187 226 255 201 238 261 57
+Next token is token NEWLINE ()
+Reducing stack by rule 113 (line 1475):
+   $1 = nterm and_expr ()
+-> $$ = nterm xor_expr ()
+Entering state 56
+Stack now 0 31 11 76 135 187 226 255 201 238 261 56
+Next token is token NEWLINE ()
+Reducing stack by rule 111 (line 1435):
+   $1 = nterm xor_expr ()
+-> $$ = nterm expr ()
+Entering state 55
+Stack now 0 31 11 76 135 187 226 255 201 238 261 55
+Next token is token NEWLINE ()
+Reducing stack by rule 98 (line 1363):
+   $1 = nterm expr ()
+-> $$ = nterm comparison ()
+Entering state 54
+Stack now 0 31 11 76 135 187 226 255 201 238 261 54
+Reducing stack by rule 95 (line 1338):
+   $1 = nterm comparison ()
+-> $$ = nterm not_test ()
+Entering state 53
+Stack now 0 31 11 76 135 187 226 255 201 238 261 53
+Next token is token NEWLINE ()
+Reducing stack by rule 90 (line 1294):
+   $1 = nterm not_test ()
+-> $$ = nterm and_test ()
+Entering state 51
+Stack now 0 31 11 76 135 187 226 255 201 238 261 51
+Next token is token NEWLINE ()
+Reducing stack by rule 86 (line 1261):
+   $1 = nterm and_test ()
+-> $$ = nterm or_test ()
+Entering state 49
+Stack now 0 31 11 76 135 187 226 255 201 238 261 49
+Reducing stack by rule 85 (line 1256):
+   $1 = nterm or_test ()
+-> $$ = nterm test ()
+Entering state 48
+Stack now 0 31 11 76 135 187 226 255 201 238 261 48
+Next token is token NEWLINE ()
+Reducing stack by rule 162 (line 2350):
+   $1 = nterm test ()
+-> $$ = nterm testlist_list ()
+Entering state 68
+Stack now 0 31 11 76 135 187 226 255 201 238 261 68
+Next token is token NEWLINE ()
+Reducing stack by rule 160 (line 2330):
+   $1 = nterm testlist_list ()
+-> $$ = nterm testlist ()
+Entering state 67
+Stack now 0 31 11 76 135 187 226 255 201 238 261 67
+Reducing stack by rule 37 (line 632):
+   $1 = nterm testlist ()
+-> $$ = nterm expr_stmt ()
+Entering state 35
+Stack now 0 31 11 76 135 187 226 255 201 238 261 35
+Reducing stack by rule 31 (line 499):
+   $1 = nterm expr_stmt ()
+-> $$ = nterm small_stmt ()
+Entering state 34
+Stack now 0 31 11 76 135 187 226 255 201 238 261 34
+Reducing stack by rule 29 (line 484):
+   $1 = nterm small_stmt ()
+-> $$ = nterm small_stmt_list ()
+Entering state 33
+Stack now 0 31 11 76 135 187 226 255 201 238 261 33
+Next token is token NEWLINE ()
+Shifting token NEWLINE ()
+Entering state 89
+Stack now 0 31 11 76 135 187 226 255 201 238 261 33 89
+Reducing stack by rule 28 (line 479):
+   $1 = nterm small_stmt_list ()
+   $2 = token NEWLINE ()
+-> $$ = nterm simple_stmt ()
+Entering state 32
+Stack now 0 31 11 76 135 187 226 255 201 238 261 32
+Reducing stack by rule 25 (line 468):
+   $1 = nterm simple_stmt ()
+-> $$ = nterm stmt ()
+Entering state 261
+Stack now 0 31 11 76 135 187 226 255 201 238 261 261
+Reading a token
+Next token is token DEDENT ()
+Reducing stack by rule 179 (line 2696):
+   $1 = nterm stmt ()
+-> $$ = nterm stmt_plus ()
+Entering state 280
+Stack now 0 31 11 76 135 187 226 255 201 238 261 280
+Reducing stack by rule 180 (line 2699):
+   $1 = nterm stmt ()
+   $2 = nterm stmt_plus ()
+-> $$ = nterm stmt_plus ()
+Entering state 262
+Stack now 0 31 11 76 135 187 226 255 201 238 262
+Next token is token DEDENT ()
+Shifting token DEDENT ()
+Entering state 282
+Stack now 0 31 11 76 135 187 226 255 201 238 262 282
+Reducing stack by rule 83 (line 1247):
+   $1 = token NEWLINE ()
+   $2 = token INDENT ()
+   $3 = nterm stmt_plus ()
+   $4 = token DEDENT ()
+-> $$ = nterm suite ()
+Entering state 272
+Stack now 0 31 11 76 135 187 226 255 272
+Reducing stack by rule 10 (line 194):
+   $1 = token DEF ()
+   $2 = nterm func_name ()
+   $3 = token OPEN_BRACKET ()
+   $4 = token CLOSE_BRACKET ()
+   $5 = nterm T ()
+   $6 = token COLON ()
+   $7 = nterm suite ()
+-> $$ = nterm funcdef ()
+Entering state 30
+Stack now 0 31 30
+Reducing stack by rule 57 (line 898):
+   $1 = nterm funcdef ()
+-> $$ = nterm compound_stmt ()
+Entering state 41
+Stack now 0 31 41
+Reducing stack by rule 26 (line 471):
+   $1 = nterm compound_stmt ()
+-> $$ = nterm stmt ()
+Entering state 31
+Stack now 0 31 31
+Reading a token
+Next token is token IF ()
+Shifting token IF ()
+Entering state 3
+Stack now 0 31 31 3
+Reducing stack by rule 65 (line 983):
+   $1 = token IF ()
+-> $$ = nterm if_scope ()
+Entering state 43
+Stack now 0 31 31 43
+Reading a token
+Next token is token D_NAME ()
+Shifting token D_NAME ()
+Entering state 91
+Stack now 0 31 31 43 91
+Reading a token
+Next token is token EQUAL_EQUAL ()
+Shifting token EQUAL_EQUAL ()
+Entering state 148
+Stack now 0 31 31 43 91 148
+Reading a token
+Next token is token STRING ()
+Shifting token STRING ()
+Entering state 199
+Stack now 0 31 31 43 91 148 199
+Reducing stack by rule 64 (line 971):
+   $1 = token D_NAME ()
+   $2 = token EQUAL_EQUAL ()
+   $3 = token STRING ()
+-> $$ = nterm d_expr ()
+Entering state 93
+Stack now 0 31 31 43 93
+Reading a token
+Next token is token COLON ()
+Shifting token COLON ()
+Entering state 150
+Stack now 0 31 31 43 93 150
+Reading a token
+Next token is token NEWLINE ()
+Shifting token NEWLINE ()
+Entering state 201
+Stack now 0 31 31 43 93 150 201
+Reading a token
+Next token is token INDENT ()
+Shifting token INDENT ()
+Entering state 238
+Stack now 0 31 31 43 93 150 201 238
+Reading a token
+Next token is token NAME ()
+Shifting token NAME ()
+Entering state 2
+Stack now 0 31 31 43 93 150 201 238 2
+Reducing stack by rule 149 (line 2225):
+   $1 = token NAME ()
+-> $$ = nterm atom ()
+Entering state 65
+Stack now 0 31 31 43 93 150 201 238 65
+Reducing stack by rule 136 (line 1802):
+   $1 = nterm atom ()
+-> $$ = nterm atom_expr ()
+Entering state 64
+Stack now 0 31 31 43 93 150 201 238 64
+Reading a token
+Next token is token OPEN_BRACKET ()
+Shifting token OPEN_BRACKET ()
+Entering state 128
+Stack now 0 31 31 43 93 150 201 238 64 128
+Reading a token
+Next token is token CLOSE_BRACKET ()
+Shifting token CLOSE_BRACKET ()
+Entering state 173
+Stack now 0 31 31 43 93 150 201 238 64 128 173
+Reducing stack by rule 156 (line 2297):
+   $1 = token OPEN_BRACKET ()
+   $2 = token CLOSE_BRACKET ()
+-> $$ = nterm trailer ()
+Entering state 131
+Stack now 0 31 31 43 93 150 201 238 64 131
+Reducing stack by rule 137 (line 1805):
+   $1 = nterm atom_expr ()
+   $2 = nterm trailer ()
+-> $$ = nterm atom_expr ()
+Entering state 64
+Stack now 0 31 31 43 93 150 201 238 64
+Reading a token
+Next token is token NEWLINE ()
+Reducing stack by rule 134 (line 1778):
+   $1 = nterm atom_expr ()
+-> $$ = nterm power ()
+Entering state 63
+Stack now 0 31 31 43 93 150 201 238 63
+Reducing stack by rule 130 (line 1764):
+   $1 = nterm power ()
+-> $$ = nterm factor ()
+Entering state 61
+Stack now 0 31 31 43 93 150 201 238 61
+Reducing stack by rule 122 (line 1681):
+   $1 = nterm factor ()
+-> $$ = nterm term ()
+Entering state 60
+Stack now 0 31 31 43 93 150 201 238 60
+Next token is token NEWLINE ()
+Reducing stack by rule 119 (line 1597):
+   $1 = nterm term ()
+-> $$ = nterm arith_expr ()
+Entering state 59
+Stack now 0 31 31 43 93 150 201 238 59
+Next token is token NEWLINE ()
+Reducing stack by rule 117 (line 1556):
+   $1 = nterm arith_expr ()
+-> $$ = nterm shift_expr ()
+Entering state 58
+Stack now 0 31 31 43 93 150 201 238 58
+Next token is token NEWLINE ()
+Reducing stack by rule 115 (line 1515):
+   $1 = nterm shift_expr ()
+-> $$ = nterm and_expr ()
+Entering state 57
+Stack now 0 31 31 43 93 150 201 238 57
+Next token is token NEWLINE ()
+Reducing stack by rule 113 (line 1475):
+   $1 = nterm and_expr ()
+-> $$ = nterm xor_expr ()
+Entering state 56
+Stack now 0 31 31 43 93 150 201 238 56
+Next token is token NEWLINE ()
+Reducing stack by rule 111 (line 1435):
+   $1 = nterm xor_expr ()
+-> $$ = nterm expr ()
+Entering state 55
+Stack now 0 31 31 43 93 150 201 238 55
+Next token is token NEWLINE ()
+Reducing stack by rule 98 (line 1363):
+   $1 = nterm expr ()
+-> $$ = nterm comparison ()
+Entering state 54
+Stack now 0 31 31 43 93 150 201 238 54
+Reducing stack by rule 95 (line 1338):
+   $1 = nterm comparison ()
+-> $$ = nterm not_test ()
+Entering state 53
+Stack now 0 31 31 43 93 150 201 238 53
+Next token is token NEWLINE ()
+Reducing stack by rule 90 (line 1294):
+   $1 = nterm not_test ()
+-> $$ = nterm and_test ()
+Entering state 51
+Stack now 0 31 31 43 93 150 201 238 51
+Next token is token NEWLINE ()
+Reducing stack by rule 86 (line 1261):
+   $1 = nterm and_test ()
+-> $$ = nterm or_test ()
+Entering state 49
+Stack now 0 31 31 43 93 150 201 238 49
+Reducing stack by rule 85 (line 1256):
+   $1 = nterm or_test ()
+-> $$ = nterm test ()
+Entering state 48
+Stack now 0 31 31 43 93 150 201 238 48
+Next token is token NEWLINE ()
+Reducing stack by rule 162 (line 2350):
+   $1 = nterm test ()
+-> $$ = nterm testlist_list ()
+Entering state 68
+Stack now 0 31 31 43 93 150 201 238 68
+Next token is token NEWLINE ()
+Reducing stack by rule 160 (line 2330):
+   $1 = nterm testlist_list ()
+-> $$ = nterm testlist ()
+Entering state 67
+Stack now 0 31 31 43 93 150 201 238 67
+Reducing stack by rule 37 (line 632):
+   $1 = nterm testlist ()
+-> $$ = nterm expr_stmt ()
+Entering state 35
+Stack now 0 31 31 43 93 150 201 238 35
+Reducing stack by rule 31 (line 499):
+   $1 = nterm expr_stmt ()
+-> $$ = nterm small_stmt ()
+Entering state 34
+Stack now 0 31 31 43 93 150 201 238 34
+Reducing stack by rule 29 (line 484):
+   $1 = nterm small_stmt ()
+-> $$ = nterm small_stmt_list ()
+Entering state 33
+Stack now 0 31 31 43 93 150 201 238 33
+Next token is token NEWLINE ()
+Shifting token NEWLINE ()
+Entering state 89
+Stack now 0 31 31 43 93 150 201 238 33 89
+Reducing stack by rule 28 (line 479):
+   $1 = nterm small_stmt_list ()
+   $2 = token NEWLINE ()
+-> $$ = nterm simple_stmt ()
+Entering state 32
+Stack now 0 31 31 43 93 150 201 238 32
+Reducing stack by rule 25 (line 468):
+   $1 = nterm simple_stmt ()
+-> $$ = nterm stmt ()
+Entering state 261
+Stack now 0 31 31 43 93 150 201 238 261
+Reading a token
+Next token is token DEDENT ()
+Reducing stack by rule 179 (line 2696):
+   $1 = nterm stmt ()
+-> $$ = nterm stmt_plus ()
+Entering state 262
+Stack now 0 31 31 43 93 150 201 238 262
+Next token is token DEDENT ()
+Shifting token DEDENT ()
+Entering state 282
+Stack now 0 31 31 43 93 150 201 238 262 282
+Reducing stack by rule 83 (line 1247):
+   $1 = token NEWLINE ()
+   $2 = token INDENT ()
+   $3 = nterm stmt_plus ()
+   $4 = token DEDENT ()
+-> $$ = nterm suite ()
+Entering state 203
+Stack now 0 31 31 43 93 150 203
+Reducing stack by rule 62 (line 956):
+   $1 = nterm if_scope ()
+   $2 = nterm d_expr ()
+   $3 = token COLON ()
+   $4 = nterm suite ()
+-> $$ = nterm if_stmt ()
+Entering state 42
+Stack now 0 31 31 42
+Reducing stack by rule 54 (line 887):
+   $1 = nterm if_stmt ()
+-> $$ = nterm compound_stmt ()
+Entering state 41
+Stack now 0 31 31 41
+Reducing stack by rule 26 (line 471):
+   $1 = nterm compound_stmt ()
+-> $$ = nterm stmt ()
+Entering state 31
+Stack now 0 31 31 31
+Reading a token
+Now at end of input.
+Reducing stack by rule 5 (line 130):
+   $1 = nterm stmt ()
+-> $$ = nterm snippet ()
+Entering state 88
+Stack now 0 31 31 88
+Reducing stack by rule 7 (line 136):
+   $1 = nterm stmt ()
+   $2 = nterm snippet ()
+-> $$ = nterm snippet ()
+Entering state 88
+Stack now 0 31 88
+Reducing stack by rule 7 (line 136):
+   $1 = nterm stmt ()
+   $2 = nterm snippet ()
+-> $$ = nterm snippet ()
+Entering state 29
+Stack now 0 29
+Reducing stack by rule 3 (line 119):
+   $1 = nterm snippet ()
+-> $$ = nterm file ()
+Entering state 28
+Stack now 0 28
+Now at end of input.
+Shifting token "end of file" ()
+Entering state 87
+Stack now 0 28 87
+Stack now 0 28 87
+Cleanup: popping token "end of file" ()
+Cleanup: popping nterm file ()
+./run.sh: line 9:  1078 Segmentation fault      (core dumped) ./asm

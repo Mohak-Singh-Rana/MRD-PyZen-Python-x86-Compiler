@@ -17,6 +17,10 @@ typedef struct symbol_table_entry{
     int offset = 0;  //offset of the variable
     int list_size=0;
     vector<string>func_par_type;
+
+    int stack_width=0;
+    map<string, int> offset_map ;
+
 } ste ;
 
 // typedef struct symbol_table_map_entry {

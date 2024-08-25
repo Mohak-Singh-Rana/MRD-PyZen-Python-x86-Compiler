@@ -1,0 +1,21 @@
+Level,Sublevel,Token,Lexeme,Type,Line Number,Is Function/Class,Return Type
+0,1,FUNCTION,add,FUNCTION,1,1,int,8,
+size=3
+t0 => -8
+x => 16
+y => 24
+
+1,1,VARIABLE,x,int,1,0,None,0,
+size=0
+
+1,2,VARIABLE,y,int,1,0,None,0,
+size=0
+
+0,2,FUNCTION,main,FUNCTION,4,1,None,16,
+size=2
+t1 => -8
+y => -16
+
+1,1,VARIABLE,y,int,5,0,None,0,
+size=0
+

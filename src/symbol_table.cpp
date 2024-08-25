@@ -16,16 +16,16 @@ int get_width(string TYPE_HINT){
         return 0;
     } 
     else if(TYPE_HINT == "list[int]"){
-        return 4;
+        return 8;
     }
     else if(TYPE_HINT == "list[float]"){
         return 8;
     }
     else if(TYPE_HINT == "list[bool]"){
-        return 1;
+        return 8;
     }
     else if(TYPE_HINT == "list[None]"){
-        return 0;
+        return 8;
     }
     return 0;
     

@@ -1,7 +1,9 @@
 class ShiftReduceParser:
 
   def __init__(self, name_: str):
-    self.srname: str = name_ 
+    self.srname: str = name_
+    a:int =10
+  
 
 
 class LR0Parser(ShiftReduceParser):

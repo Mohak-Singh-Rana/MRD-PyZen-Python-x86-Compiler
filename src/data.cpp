@@ -22,7 +22,7 @@ NODE* create_node(int n_args, ...)
         element->children.push_back(child);
     }
     va_end(valist);
-
+    
     return element;
 }
 
