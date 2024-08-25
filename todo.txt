@@ -1,0 +1,3 @@
+ see true false in while stmt
+ while(a or b)
+ 

@@ -1,10 +1,7 @@
-1	t0 = a < b
-2	if t0 goto 4 
-3	goto 
-4	t1 = c < d
-5	if t1 goto 7 
-6	goto 9 
-7	x = y 
-8	goto 1 
-9	x = z 
-10	goto 1 
+1	t0 = b > 6
+2	if t0 goto 
+3	goto 4 
+4	t1 = 2 + 3
+5	t2 = t1 + 4
+6	x = t2 
+7	goto 1 

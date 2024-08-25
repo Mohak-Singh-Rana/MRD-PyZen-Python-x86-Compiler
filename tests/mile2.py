@@ -1,5 +1,2 @@
-while (a < b):
-    if (c < d):
-        x = y
-    else:
-        x = z
+while (not b > 6):
+    x= 2+3+4

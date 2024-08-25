@@ -161,7 +161,7 @@ NAME      {ID_START}{ID_CONTINUE}*
                 indent = indent/2;
                 if (indent > indent_stack.top()) {
                     indent_stack.push(indent);
-                    return INDENT;
+                    noding(yytext); return INDENT;
                 } else if (indent < indent_stack.top()) {
                     while (indent < indent_stack.top()) {
                         indent_stack.pop();
@@ -187,7 +187,7 @@ NAME      {ID_START}{ID_CONTINUE}*
                     if(dedent_count>0){
                         dedent_count--;
                         unput('\n');
-                        return DEDENT;
+                        noding(yytext); return DEDENT;
                     }
                     else{
                         BEGIN(INITIAL);
@@ -253,10 +253,10 @@ NAME      {ID_START}{ID_CONTINUE}*
 <INITIAL,IMPLICIT_LINE_JOINING>{NAME}      { noding(yytext); return NAME;}
 <INITIAL>{NEWLINE}[ ]*/{NEWLINE}   {}
 <INITIAL>{NEWLINE}[ ]*{COMMENT}/{NEWLINE}   { }
-<INITIAL>{NEWLINE}/" "   {return NEWLINE;}
+<INITIAL>{NEWLINE}/" "   {noding(yytext); return NEWLINE;}
 <INITIAL>{NEWLINE}   {   
                 if(indent_stack.top()==0){
-                    return NEWLINE;
+                    noding(yytext); return NEWLINE;
                 }
                 else{
                     while (indent_stack.top()>0) {
@@ -278,11 +278,12 @@ NAME      {ID_START}{ID_CONTINUE}*
                     if(newline_return==1){
                         newline_return=0;
                         unput('\n');
-                        return NEWLINE;
+                        noding(yytext); return NEWLINE;
                     }
                     else if(dedent_count>0){
                         dedent_count--;
                         unput('\n');
+                        noding(yytext); 
                         return DEDENT;
                     }
                     else{

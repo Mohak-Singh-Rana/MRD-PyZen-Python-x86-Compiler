@@ -1173,7 +1173,7 @@ YY_RULE_SETUP
                 indent = indent/2;
                 if (indent > indent_stack.top()) {
                     indent_stack.push(indent);
-                    return INDENT;
+                    noding(yytext); return INDENT;
                 } else if (indent < indent_stack.top()) {
                     while (indent < indent_stack.top()) {
                         indent_stack.pop();
@@ -1203,7 +1203,7 @@ YY_RULE_SETUP
                     if(dedent_count>0){
                         dedent_count--;
                         unput('\n');
-                        return DEDENT;
+                        noding(yytext); return DEDENT;
                     }
                     else{
                         BEGIN(INITIAL);
@@ -1512,7 +1512,7 @@ YY_LINENO_REWIND_TO(yy_cp - 1);
 YY_DO_BEFORE_ACTION; /* set up yytext again */
 YY_RULE_SETUP
 #line 256 "lexer.l"
-{return NEWLINE;}
+{noding(yytext); return NEWLINE;}
 	YY_BREAK
 case 62:
 /* rule 62 can match eol */
@@ -1520,7 +1520,7 @@ YY_RULE_SETUP
 #line 257 "lexer.l"
 {   
                 if(indent_stack.top()==0){
-                    return NEWLINE;
+                    noding(yytext); return NEWLINE;
                 }
                 else{
                     while (indent_stack.top()>0) {
@@ -1546,11 +1546,12 @@ YY_RULE_SETUP
                     if(newline_return==1){
                         newline_return=0;
                         unput('\n');
-                        return NEWLINE;
+                        noding(yytext); return NEWLINE;
                     }
                     else if(dedent_count>0){
                         dedent_count--;
                         unput('\n');
+                        noding(yytext); 
                         return DEDENT;
                     }
                     else{
@@ -1560,12 +1561,12 @@ YY_RULE_SETUP
 	YY_BREAK
 case 64:
 YY_RULE_SETUP
-#line 293 "lexer.l"
+#line 294 "lexer.l"
 {}
 	YY_BREAK
 case 65:
 YY_RULE_SETUP
-#line 295 "lexer.l"
+#line 296 "lexer.l"
 { 
                                     fprintf(stderr, "Invalid character %s at line number: %d\n", yytext, yylineno);
                                     // print_ast(); 
@@ -1574,10 +1575,10 @@ YY_RULE_SETUP
 	YY_BREAK
 case 66:
 YY_RULE_SETUP
-#line 302 "lexer.l"
+#line 303 "lexer.l"
 ECHO;
 	YY_BREAK
-#line 1581 "lex.yy.c"
+#line 1582 "lex.yy.c"
 			case YY_STATE_EOF(INITIAL):
 			case YY_STATE_EOF(INDENT_STATE):
 			case YY_STATE_EOF(DEDENT_STATE):
@@ -2572,6 +2573,6 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 302 "lexer.l"
+#line 303 "lexer.l"
 
 
